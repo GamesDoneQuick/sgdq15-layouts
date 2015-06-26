@@ -1,0 +1,7 @@
+{
+  "name": "sgdq15-layouts",
+  "dependencies": {
+    "gsap": "~1.17.0",
+    "polymer": "~1.0.4"
+  }
+}

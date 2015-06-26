@@ -1,0 +1,266 @@
+<link rel="import" href="../../components/polymer/polymer.html" />
+
+<dom-module id="sgdq-omnibar">
+    <style>
+        :host {
+            display: flex;
+            position: absolute;
+            width: 1280px;
+            bottom: 0;
+            left: 0;
+            color: white;
+            z-index: 10;
+            align-items: flex-end;
+        }
+
+        #main {
+            display: inline-flex;
+            height: 53px;
+            background: url("main_bg.png") repeat-x;
+            border-top: 2px solid #95b1c3;
+            flex-grow: 1;
+            align-items: flex-end;
+        }
+
+        #head {
+            display: inline-flex;
+            align-items: flex-end;
+            height: 100%;
+        }
+
+        #logoContainer {
+            width: 118px;
+            height: 100%;
+            margin-right: -5px;
+            background: url("logo_bg.png") no-repeat;
+            z-index: 1;
+        }
+
+        #logo {
+            width: 110px;
+            height: 100%;
+            background: url("logo_gdq.png") no-repeat center;
+        }
+
+        #labelContainer {
+            display: flex;
+            width: 147px;
+            height: 100%;
+            padding-left: 5px;
+            border-right: 2px solid white;
+            text-align: center;
+            background: url("label_bg.png") no-repeat right;
+            background-color: #103A4E;
+            align-items: center;
+        }
+
+        #label {
+            width: 100%;
+        }
+
+        #body {
+            padding-left: 10px;
+        }
+
+        #total {
+            display: flex;
+            height: 61px;
+            margin-left: -2px;
+            padding-left: 11px;
+            padding-right: 11px;
+            text-align: center;
+            background: url("total_bg.png") no-repeat left;
+            align-items: center;
+            text-shadow: 1px 3px 3px rgba(0, 0, 0, 0.35);
+            font-size: 45px;
+        }
+    </style>
+
+    <template>
+        <div id="main">
+            <div id="head">
+                <div id="logoContainer">
+                    <div id="logo"></div>
+                </div>
+                <div id="labelContainer">
+                    <div id="label">UP NEXT</div>
+                </div>
+            </div>
+            <div id="body">
+                <div id="topline"></div>
+                <div id="bottomline"></div>
+            </div>
+        </div>
+        <div id="totalContainer">
+            <div id="total">
+                Retrieving...
+            </div>
+        </div>
+    </template>
+</dom-module>
+
+<script>
+    // TODO: up next, prizes, arbitrary
+
+    Polymer({
+        is: 'sgdq-omnibar',
+
+        properties: {
+            tl: {
+                type: Object,
+                value: new TimelineLite({autoRemoveChildren: true}),
+                readOnly: true
+            },
+            padTime: {
+                type: Number,
+                value: 3,
+                readOnly: true
+            },
+            displayDuration: {
+                type: Number,
+                value: 10,
+                readOnly: true
+            },
+            lastShownGrandPrizeIdx: {
+                type: Number,
+                value: -1
+            }
+        },
+
+        /*
+         * Lifecycle
+         */
+        ready: function() {
+            // TODO: delete when done testing
+            window.omnibar = this;
+
+            // Prep all elements for animation
+            TweenLite.set(this.$.labelContainer, {x: '-100%'});
+
+            // Set up Replicants
+            nodecg.Replicant('currentPrizes')
+                    .on('change', function(oldVal, newVal) {
+                        window.currentGrandPrizes = newVal.filter(function() {return newVal.category === 'Grand'});
+                        window.currentNormalPrizes = newVal.filter(function() {return newVal.category !== 'Grand'});
+                    });
+        },
+
+        /*
+         * Methods
+         */
+        showIncentives: function() {
+            var self = this;
+            this.tl.call(function() {
+                var labelTL = this._showLabel('DONATION BATTLE', '25px');
+                var tmpTL = this.labelShowing ? new TimelineLite() : labelTL;
+                tmpTL.to(this.$.body, 0.25, {
+                    opacity: 0,
+                    ease: Linear.easeNone,
+                    onComplete: function() {
+                        self.$.topline.innerHTML = 'INCENTIVES HERE';
+                    }
+                });
+                tmpTL.to(this.$.body, 0.25, {
+                    opacity: 1,
+                    ease: Linear.easeNone
+                });
+            }, null, this);
+            this._padTimeline();
+        },
+
+        showPrizes: function(immediate) {
+            var self = this;
+            if (immediate) this.tl.clear();
+            this.tl.call(function() {
+                var labelTL = this._showLabel('RAFFLE PRIZES', '25px');
+                var tmpTL = this.labelShowing ? new TimelineLite() : labelTL;
+
+                // Figure out what grand prize to show in this batch.
+                var lastShownGrandPrizeIdx = window.currentGrandPrizes.indexOf(self.lastShownGrandPrize);
+                var nextGrandPrizeIdx = lastShownGrandPrizeIdx >= window.currentGrantPrizes.length -1
+                    ? 0
+                    : lastShownGrandPrizeIdx + 1;
+                var nextGrandPrize = window.currentGrandPrizes[nextGrandPrizeIdx];
+
+                // Make a new array with our lone grand prize + all normal prizes
+                var prizesToDisplay = window.currentNormalPrizes.slice(0).unshift(nextGrandPrize);
+
+                prizesToDisplay.forEach(function(prize) {
+                    tmpTL.to(this.$.body, 0.25, {
+                        opacity: 0,
+                        ease: Linear.easeNone,
+                        onComplete: function() {
+                            self.$.topline.innerHTML = 'PROVIDED BY ' + prize.provided;
+                            if (prize.grand) {
+                                self.$.bottomline.innerHTML = 'Grand Prize: ' + prize.name + ' (Minimum Bid: '
+                                        + prize.minimumbid + ')';
+                            } else {
+                                self.$.bottomline.innerHTML = prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
+                            }
+                        }
+                    });
+                    tmpTL.to(this.$.body, 0.25, {
+                        opacity: 1,
+                        ease: Linear.easeNone
+                    });
+
+                    // Give the prize some time to show
+                    tmpTL.to({}, self.displayDuration, {});
+                })
+            }, null, this);
+            this._padTimeline();
+        },
+
+        showNext: function() {
+            this._showLabel('UP NEXT', '31px');
+            this._padTimeline();
+        },
+
+        _showLabel: function(text, size) {
+            var self = this;
+            var tmpTL = new TimelineLite();
+            if (this.labelShowing) {
+                tmpTL.to(this.$.label, 0.25, {
+                    opacity: 0,
+                    ease: Linear.easeNone,
+                    onComplete: function() {
+                        self.$.label.innerHTML = text;
+                        self.$.label.style.fontSize = size;
+                    }
+                });
+                tmpTL.to(this.$.label, 0.25, {
+                    opacity: 1,
+                    ease: Linear.easeNone
+                });
+            } else {
+                tmpTL.to(this.$.labelContainer, 0.5, {
+                    onStart: function() {
+                        self.labelShowing = true;
+                        self.$.label.innerHTML = text;
+                        self.$.label.style.fontSize = size;
+                    },
+                    x: '0%',
+                    ease: Power3.easeOut
+                });
+            }
+            return tmpTL;
+        },
+
+        _hideLabel: function() {
+            var self = this;
+            var tmpTL = new TimelineLite();
+            this.tl.to(this.$.labelContainer, 0.5, {
+                onStart: function() {
+                    self.labelShowing = false;
+                },
+                x: '-100%',
+                ease: Power3.easeIn
+            });
+            return tmpTL;
+        },
+
+        _padTimeline: function() {
+            this.tl.to({}, this.padTime, {});
+        }
+    });
+</script>

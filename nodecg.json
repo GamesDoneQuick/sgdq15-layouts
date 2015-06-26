@@ -1,0 +1,15 @@
+{
+  "name": "sgdq15-layouts",
+  "version": "0.0.1",
+  "nodecgDependency": "~0.6.0",
+  "homepage": "http://gamesdonequick.com/",
+  "authors": [
+    "Chris Hanel <chrishanel@gmail.com>",
+    "Alex Van Camp <email@alexvan.camp>"
+  ],
+  "description": "Summer Games Done Quick 2015 layouts",
+  "license": "Apache 2.0",
+  "extension": {
+    "path": "extension.js"
+  }
+}

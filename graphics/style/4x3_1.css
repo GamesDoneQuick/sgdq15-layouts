@@ -1,0 +1,9 @@
+#sidebar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 394px;
+    height: 665px;
+    overflow: hidden;
+    background: url("../img/full_background.png") no-repeat top right;
+}
