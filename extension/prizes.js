@@ -2,7 +2,9 @@
 'use strict';
 
 // The list of currently active prizes can be retrieved from this url
-var PRIZES_URL = 'https://gamesdonequick.com/tracker/search/?type=prize&feed=current';
+// TODO: CHANGE THIS BACK
+//var PRIZES_URL = 'https://gamesdonequick.com/tracker/search/?type=prize&feed=current';
+var PRIZES_URL = 'https://gamesdonequick.com/tracker/search/?type=prize&event=16';
 var POLL_INTERVAL = 3 * 60 * 1000;
 
 var util = require('util');
