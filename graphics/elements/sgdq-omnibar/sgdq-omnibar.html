@@ -1,4 +1,4 @@
-<link rel="import" href="../../components/polymer/polymer.html" />
+<link rel="import" href="../../components/polymer/polymer.html"/>
 
 <dom-module id="sgdq-omnibar">
     <style>
@@ -113,7 +113,7 @@
             },
             padTime: {
                 type: Number,
-                value: 3,
+                value: 2,
                 readOnly: true
             },
             displayDuration: {
@@ -130,7 +130,7 @@
         /*
          * Lifecycle
          */
-        ready: function() {
+        ready: function () {
             // TODO: delete when done testing
             window.omnibar = this;
 
@@ -139,24 +139,28 @@
 
             // Set up Replicants
             nodecg.Replicant('currentPrizes')
-                    .on('change', function(oldVal, newVal) {
-                        window.currentGrandPrizes = newVal.filter(function() {return newVal.category === 'Grand'});
-                        window.currentNormalPrizes = newVal.filter(function() {return newVal.category !== 'Grand'});
+                    .on('change', function (oldVal, newVal) {
+                        window.currentGrandPrizes = newVal.filter(function (prize) {
+                            return prize.grand;
+                        });
+                        window.currentNormalPrizes = newVal.filter(function (prize) {
+                            return !prize.grand;
+                        });
                     });
         },
 
         /*
          * Methods
          */
-        showIncentives: function() {
+        showIncentives: function () {
             var self = this;
-            this.tl.call(function() {
+            this.tl.call(function () {
                 var labelTL = this._showLabel('DONATION BATTLE', '25px');
                 var tmpTL = this.labelShowing ? new TimelineLite() : labelTL;
                 tmpTL.to(this.$.body, 0.25, {
                     opacity: 0,
                     ease: Linear.easeNone,
-                    onComplete: function() {
+                    onComplete: function () {
                         self.$.topline.innerHTML = 'INCENTIVES HERE';
                     }
                 });
@@ -168,62 +172,64 @@
             this._padTimeline();
         },
 
-        showPrizes: function(immediate) {
+        showPrizes: function (immediate) {
             var self = this;
             if (immediate) this.tl.clear();
-            this.tl.call(function() {
-                var labelTL = this._showLabel('RAFFLE PRIZES', '25px');
-                var tmpTL = this.labelShowing ? new TimelineLite() : labelTL;
+            this.tl.call(this._showLabel, ['RAFFLE PRIZES', '25px'], this);
 
-                // Figure out what grand prize to show in this batch.
-                var lastShownGrandPrizeIdx = window.currentGrandPrizes.indexOf(self.lastShownGrandPrize);
-                var nextGrandPrizeIdx = lastShownGrandPrizeIdx >= window.currentGrantPrizes.length -1
+            // Figure out what grand prize to show in this batch.
+            var lastShownGrandPrizeIdx = window.currentGrandPrizes.indexOf(self.lastShownGrandPrize);
+            var nextGrandPrizeIdx = lastShownGrandPrizeIdx >= window.currentGrandPrizes.length - 1
                     ? 0
                     : lastShownGrandPrizeIdx + 1;
-                var nextGrandPrize = window.currentGrandPrizes[nextGrandPrizeIdx];
+            var nextGrandPrize = window.currentGrandPrizes[nextGrandPrizeIdx];
 
-                // Make a new array with our lone grand prize + all normal prizes
-                var prizesToDisplay = window.currentNormalPrizes.slice(0).unshift(nextGrandPrize);
+            // Make a new array with our lone grand prize + all normal prizes
+            var prizesToDisplay = window.currentNormalPrizes.slice(0);
+            if (nextGrandPrize) prizesToDisplay.unshift(nextGrandPrize);
 
-                prizesToDisplay.forEach(function(prize) {
-                    tmpTL.to(this.$.body, 0.25, {
-                        opacity: 0,
-                        ease: Linear.easeNone,
-                        onComplete: function() {
-                            self.$.topline.innerHTML = 'PROVIDED BY ' + prize.provided;
-                            if (prize.grand) {
-                                self.$.bottomline.innerHTML = 'Grand Prize: ' + prize.name + ' (Minimum Bid: '
-                                        + prize.minimumbid + ')';
-                            } else {
-                                self.$.bottomline.innerHTML = prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
-                            }
+            // Loop over each prize and queue it up on the timeline
+            prizesToDisplay.forEach(function (prize) {
+                console.log(prize);
+                self.tl.to(self.$.body, 0.25, {
+                    opacity: 0,
+                    ease: Linear.easeNone,
+                    onComplete: function () {
+                        self.$.topline.innerHTML = 'PROVIDED BY ' + prize.provided.toUpperCase();
+                        if (prize.grand) {
+                            self.$.bottomline.innerHTML = 'Grand Prize: ' + prize.name + ' (Minimum Bid: '
+                                    + prize.minimumbid + ')';
+                        } else {
+                            self.$.bottomline.innerHTML = prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
                         }
-                    });
-                    tmpTL.to(this.$.body, 0.25, {
-                        opacity: 1,
-                        ease: Linear.easeNone
-                    });
+                    }
+                });
 
-                    // Give the prize some time to show
-                    tmpTL.to({}, self.displayDuration, {});
-                })
-            }, null, this);
+                self.tl.to(self.$.body, 0.25, {
+                    opacity: 1,
+                    ease: Linear.easeNone
+                });
+
+                // Give the prize some time to show
+                self.tl.to({}, self.displayDuration, {});
+            });
+
             this._padTimeline();
         },
 
-        showNext: function() {
+        showNext: function () {
             this._showLabel('UP NEXT', '31px');
             this._padTimeline();
         },
 
-        _showLabel: function(text, size) {
+        _showLabel: function (text, size) {
             var self = this;
             var tmpTL = new TimelineLite();
             if (this.labelShowing) {
                 tmpTL.to(this.$.label, 0.25, {
                     opacity: 0,
                     ease: Linear.easeNone,
-                    onComplete: function() {
+                    onComplete: function () {
                         self.$.label.innerHTML = text;
                         self.$.label.style.fontSize = size;
                     }
@@ -234,7 +240,7 @@
                 });
             } else {
                 tmpTL.to(this.$.labelContainer, 0.5, {
-                    onStart: function() {
+                    onStart: function () {
                         self.labelShowing = true;
                         self.$.label.innerHTML = text;
                         self.$.label.style.fontSize = size;
@@ -246,11 +252,11 @@
             return tmpTL;
         },
 
-        _hideLabel: function() {
+        _hideLabel: function () {
             var self = this;
             var tmpTL = new TimelineLite();
             this.tl.to(this.$.labelContainer, 0.5, {
-                onStart: function() {
+                onStart: function () {
                     self.labelShowing = false;
                 },
                 x: '-100%',
@@ -259,7 +265,7 @@
             return tmpTL;
         },
 
-        _padTimeline: function() {
+        _padTimeline: function () {
             this.tl.to({}, this.padTime, {});
         }
     });
