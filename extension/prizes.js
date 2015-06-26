@@ -13,11 +13,7 @@ var request = require('request');
 var equal = require('deep-equal');
 var numeral = require('numeral');
 
-var nodecg = null;
-
-module.exports = function (extensionApi) {
-    nodecg = extensionApi;
-
+module.exports = function (nodecg) {
     var currentPrizes = nodecg.Replicant('currentPrizes', {defaultValue: []});
 
     // Get initial data

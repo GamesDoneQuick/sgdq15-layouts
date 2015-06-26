@@ -62,6 +62,10 @@
             padding-left: 10px;
         }
 
+        #topline {
+            text-transform: uppercase;
+        }
+
         #total {
             display: flex;
             height: 61px;
@@ -124,6 +128,11 @@
             lastShownGrandPrizeIdx: {
                 type: Number,
                 value: -1
+            },
+            initialized: {
+                type: Boolean,
+                value: false,
+                readOnly: true
             }
         },
 
@@ -134,10 +143,23 @@
             // TODO: delete when done testing
             window.omnibar = this;
 
+            var self = this;
+
             // Prep all elements for animation
             TweenLite.set(this.$.labelContainer, {x: '-100%'});
 
             // Set up Replicants
+            nodecg.Replicant('currentBids')
+                    .on('change', function (oldVal, newVal) {
+                        window.currentBids = newVal;
+
+                        // Bids are the first thing we show, so we use this to start our loop
+                        if (!self.initialized) {
+                            self._setInitialized(true);
+                            self.showBids();
+                        }
+                    });
+
             nodecg.Replicant('currentPrizes')
                     .on('change', function (oldVal, newVal) {
                         window.currentGrandPrizes = newVal.filter(function (prize) {
@@ -148,19 +170,75 @@
                         });
                         window.currentNormalPrizes = window.currentNormalPrizes.slice(0, 5);
                     });
-        },
 
-        attached: function() {
-            this.showIncentives();
+            nodecg.Replicant('schedule')
+                    .on('change', function (oldVal, newVal) {
+                        window.schedule = newVal;
+                        if (window.currentRun) {
+                            var len = newVal.length;
+                            for (var i = 0; i < len; i++) {
+                                if (window.currentRun.name === newVal[i].name) {
+                                    var newIndexOfCurrentRun = newVal[i].index;
+                                }
+                            }
+
+                            window.nextRun = newVal[newIndexOfCurrentRun + 1];
+                        } else {
+                            // default "nextRun" to second run
+                            window.nextRun = newVal[1];
+                        }
+                    });
+
+            nodecg.Replicant('currentRun')
+                    .on('change', function (oldVal, newVal) {
+                        window.currentRun = newVal;
+
+                        // If this is the last run, set next run to null
+                        if (newVal.index === window.schedule.length - 1) {
+                            window.nextRun = null;
+                        } else {
+                            window.nextRun = window.schedule[newVal.index + 1];
+                        }
+                    });
         },
 
         /*
          * Methods
          */
-        showIncentives: function () {
+        showBids: function (immediate) {
             var self = this;
-            this.tl.call(this._showLabel, ['DONATION BATTLE', '25px'], this);
-            this._padTimeline();
+            if (immediate) this.tl.clear();
+            this.tl.call(this._showLabel, ['DONATION BIDS', '25px'], this);
+
+            // Figure out what bids to display in this batch
+            var bidsToDisplay = window.currentBids.slice(0, 3);
+            var lastBidSpeedrun = bidsToDisplay[bidsToDisplay.length - 1].speedrun;
+            var numBids = window.currentBids.length;
+            for (var i = 2; i < numBids; i++) {
+                if (window.currentBids[i].speedrun !== lastBidSpeedrun) break;
+                bidsToDisplay.push(window.currentBids[i]);
+            }
+
+            // Loop over each bid and queue it up on the timeline
+            bidsToDisplay.forEach(function (bid) {
+                self.tl.to(self.$.body, 0.25, {
+                    opacity: 0,
+                    ease: Linear.easeNone,
+                    onComplete: function () {
+                        self.$.topline.innerHTML = 'BID FOR ' + bid.speedrun;
+                        self.$.bottomline.innerHTML = bid.name + ' - ' + bid.total;
+                    }
+                });
+
+                self.tl.to(self.$.body, 0.25, {
+                    opacity: 1,
+                    ease: Linear.easeNone
+                });
+
+                // Give the bid some time to show
+                self.tl.to({}, self.displayDuration, {});
+            });
+
             this.tl.call(this.showPrizes, null, this);
         },
 
@@ -186,7 +264,7 @@
                     opacity: 0,
                     ease: Linear.easeNone,
                     onComplete: function () {
-                        self.$.topline.innerHTML = 'PROVIDED BY ' + prize.provided.toUpperCase();
+                        self.$.topline.innerHTML = 'PROVIDED BY ' + prize.provided;
                         if (prize.grand) {
                             self.$.bottomline.innerHTML = 'Grand Prize: ' + prize.name + ' (Minimum Bid: '
                                     + prize.minimumbid + ')';
@@ -208,10 +286,40 @@
             this.tl.call(this.showNext, null, this);
         },
 
-        showNext: function () {
-            this.tl.call(this._showLabel, ['UP NEXT', '31px'], this);
-            this._padTimeline();
-            this.tl.call(this.showIncentives, null, this);
+        showNext: function (immediate) {
+            if (window.nextRun) {
+                var self = this;
+                if (immediate) this.tl.clear();
+                this.tl.call(this._showLabel, ['UP NEXT', '31px'], this);
+
+                this.tl.to(this.$.body, 0.25, {
+                    opacity: 0,
+                    ease: Linear.easeNone,
+                    onComplete: function () {
+                        /* Depending on how we enter the very end of the schedule, we might end up in this func
+                         * after window.nextRun has been set to null. In that case, we immediately clear the
+                         * timeline and bail out to showing bids again.
+                         */
+                        if (window.nextRun) {
+                            self.$.topline.innerHTML = window.nextRun.runners.join(', ');
+                            self.$.bottomline.innerHTML = window.nextRun.game + ' - ' + window.nextRun.category;
+                        } else {
+                            self.tl.clear();
+                            self.tl.call(self.showBids, null, self);
+                        }
+                    }
+                });
+
+                this.tl.to(this.$.body, 0.25, {
+                    opacity: 1,
+                    ease: Linear.easeNone
+                });
+
+                // Give it some time to show
+                this.tl.to({}, this.displayDuration, {});
+
+                this.tl.call(this.showBids, null, this);
+            }
         },
 
         _showLabel: function (text, size) {
