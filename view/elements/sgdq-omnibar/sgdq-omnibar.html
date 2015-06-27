@@ -273,7 +273,7 @@
             var lastBidSpeedrun = bidsToDisplay[bidsToDisplay.length - 1].speedrun;
             var numBids = window.currentBids.length;
             for (var i = 2; i < numBids; i++) {
-                if (lastBidSpeedrun && window.currentBids[i].speedrun !== lastBidSpeedrun) break;
+                if (window.currentBids[i].speedrun !== lastBidSpeedrun) break;
                 bidsToDisplay.push(window.currentBids[i]);
             }
 
