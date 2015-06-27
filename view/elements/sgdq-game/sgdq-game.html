@@ -116,7 +116,6 @@
                         var hostWidth = self._getElementContentWidth(self);
                         [self.$.game, self.$.category].forEach(function(el) {
                             var elWidth = el.scrollWidth;
-                            console.log(el, elWidth, hostWidth);
                             if (elWidth > hostWidth) {
                                 TweenLite.set(el, {scaleX: hostWidth / elWidth});
                             } else {

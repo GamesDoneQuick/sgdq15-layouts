@@ -238,6 +238,20 @@
                     });
 
             nodecg.Replicant('schedule')
+                    .on('declared', function() {
+                        // Don't declare the "currentRun" replicant until the schedule replicant is declared
+                        nodecg.Replicant('currentRun')
+                                .on('change', function (oldVal, newVal) {
+                                    window.currentRun = newVal;
+
+                                    // If this is the last run, set next run to null
+                                    if (newVal.index === window.schedule.length - 1) {
+                                        window.nextRun = null;
+                                    } else {
+                                        window.nextRun = window.schedule[newVal.index + 1];
+                                    }
+                                });
+                    })
                     .on('change', function (oldVal, newVal) {
                         window.schedule = newVal;
                         if (window.currentRun) {
@@ -255,18 +269,6 @@
                         }
                     });
 
-            nodecg.Replicant('currentRun')
-                    .on('change', function (oldVal, newVal) {
-                        window.currentRun = newVal;
-
-                        // If this is the last run, set next run to null
-                        if (newVal.index === window.schedule.length - 1) {
-                            window.nextRun = null;
-                        } else {
-                            window.nextRun = window.schedule[newVal.index + 1];
-                        }
-                    });
-
             nodecg.Replicant('total')
                     .on('change', function (oldVal, newVal) {
                         self.total = newVal;
@@ -279,82 +281,88 @@
         showBids: function (immediate) {
             var self = this;
             if (immediate) this.tl.clear();
-            this.tl.call(this._showLabel, ['DONATION BIDS', '25px'], this);
 
-            // Figure out what bids to display in this batch
-            var bidsToDisplay = window.currentBids.slice(0, 3);
-            var lastBidSpeedrun = bidsToDisplay[bidsToDisplay.length - 1].speedrun;
-            var numBids = window.currentBids.length;
-            for (var i = 2; i < numBids; i++) {
-                if (window.currentBids[i].speedrun !== lastBidSpeedrun) break;
-                bidsToDisplay.push(window.currentBids[i]);
+            if (window.currentBids.length) {
+                this.tl.call(this._showLabel, ['DONATION BIDS', '25px'], this);
+
+                // Figure out what bids to display in this batch
+                var bidsToDisplay = window.currentBids.slice(0, 3);
+                var lastBidSpeedrun = bidsToDisplay[bidsToDisplay.length - 1].speedrun;
+                var numBids = window.currentBids.length;
+                for (var i = 2; i < numBids; i++) {
+                    if (window.currentBids[i].speedrun !== lastBidSpeedrun) break;
+                    bidsToDisplay.push(window.currentBids[i]);
+                }
+
+                // Loop over each bid and queue it up on the timeline
+                bidsToDisplay.forEach(function (bid) {
+                    self.tl.to(self.$.body, 0.25, {
+                        opacity: 0,
+                        ease: Linear.easeNone,
+                        onComplete: function () {
+                            self.topText = 'BID FOR ' + bid.speedrun;
+                            self.bottomText = bid.name + ' - ' + bid.total;
+                        }
+                    });
+
+                    self.tl.to(self.$.body, 0.25, {
+                        opacity: 1,
+                        ease: Linear.easeNone
+                    });
+
+                    // Give the bid some time to show
+                    self.tl.to({}, self.displayDuration, {});
+                });
             }
 
-            // Loop over each bid and queue it up on the timeline
-            bidsToDisplay.forEach(function (bid) {
-                self.tl.to(self.$.body, 0.25, {
-                    opacity: 0,
-                    ease: Linear.easeNone,
-                    onComplete: function () {
-                        self.topText = 'BID FOR ' + bid.speedrun;
-                        self.bottomText = bid.name + ' - ' + bid.total;
-                    }
-                });
-
-                self.tl.to(self.$.body, 0.25, {
-                    opacity: 1,
-                    ease: Linear.easeNone
-                });
-
-                // Give the bid some time to show
-                self.tl.to({}, self.displayDuration, {});
-            });
-
-            this.tl.call(this.showPrizes, null, this);
+            this.tl.call(this.showPrizes, null, this, '+=0.01');
         },
 
         showPrizes: function (immediate) {
             var self = this;
             if (immediate) this.tl.clear();
-            this.tl.call(this._showLabel, ['RAFFLE PRIZES', '25px'], this);
 
-            // Figure out what grand prize to show in this batch.
-            var lastShownGrandPrizeIdx = window.currentGrandPrizes.indexOf(self.lastShownGrandPrize);
-            var nextGrandPrizeIdx = lastShownGrandPrizeIdx >= window.currentGrandPrizes.length - 1
-                    ? 0
-                    : lastShownGrandPrizeIdx + 1;
-            var nextGrandPrize = window.currentGrandPrizes[nextGrandPrizeIdx];
+            if (window.currentGrandPrizes.length || window.currentNormalPrizes.length) {
+                this.tl.call(this._showLabel, ['RAFFLE PRIZES', '25px'], this);
 
-            // Make a new array with our lone grand prize + all normal prizes
-            var prizesToDisplay = window.currentNormalPrizes.slice(0);
-            if (nextGrandPrize) prizesToDisplay.unshift(nextGrandPrize);
+                var prizesToDisplay = window.currentNormalPrizes.slice(0);
+                if (window.currentGrandPrizes.length) {
+                    // Figure out what grand prize to show in this batch.
+                    var lastShownGrandPrizeIdx = window.currentGrandPrizes.indexOf(self.lastShownGrandPrize);
+                    var nextGrandPrizeIdx = lastShownGrandPrizeIdx >= window.currentGrandPrizes.length - 1
+                            ? 0
+                            : lastShownGrandPrizeIdx + 1;
+                    var nextGrandPrize = window.currentGrandPrizes[nextGrandPrizeIdx];
+                    if (nextGrandPrize) prizesToDisplay.unshift(nextGrandPrize);
+                }
 
-            // Loop over each prize and queue it up on the timeline
-            prizesToDisplay.forEach(function (prize) {
-                self.tl.to(self.$.body, 0.25, {
-                    opacity: 0,
-                    ease: Linear.easeNone,
-                    onComplete: function () {
-                        self.topText = 'PROVIDED BY ' + prize.provided;
-                        if (prize.grand) {
-                            self.bottomText = 'Grand Prize: ' + prize.name + ' (Minimum Bid: '
-                                    + prize.minimumbid + ')';
-                        } else {
-                            self.bottomText = prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
+                // Loop over each prize and queue it up on the timeline
+                prizesToDisplay.forEach(function (prize) {
+                    self.tl.to(self.$.body, 0.25, {
+                        opacity: 0,
+                        ease: Linear.easeNone,
+                        onComplete: function () {
+                            self.topText = 'PROVIDED BY ' + prize.provided;
+                            if (prize.grand) {
+                                self.bottomText = 'Grand Prize: ' + prize.name + ' (Minimum Bid: '
+                                        + prize.minimumbid + ')';
+                            } else {
+                                self.bottomText = prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
+                            }
                         }
-                    }
+                    });
+
+                    self.tl.to(self.$.body, 0.25, {
+                        opacity: 1,
+                        ease: Linear.easeNone
+                    });
+
+                    // Give the prize some time to show
+                    self.tl.to({}, self.displayDuration, {});
                 });
+            }
 
-                self.tl.to(self.$.body, 0.25, {
-                    opacity: 1,
-                    ease: Linear.easeNone
-                });
-
-                // Give the prize some time to show
-                self.tl.to({}, self.displayDuration, {});
-            });
-
-            this.tl.call(this.showNext, null, this);
+            this.tl.call(this.showNext, null, this, '+=0.01');
         },
 
         showNext: function (immediate) {
@@ -389,7 +397,7 @@
                 // Give it some time to show
                 this.tl.to({}, this.displayDuration, {});
 
-                this.tl.call(this.showBids, null, this);
+                this.tl.call(this.showBids, null, this, '+=0.01');
             }
         },
 

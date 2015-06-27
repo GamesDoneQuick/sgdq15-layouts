@@ -2,7 +2,7 @@
 'use strict';
 
 // The list of currently active bids can be retrieved from this url
-var BIDS_URL = 'https://gamesdonequick.com/tracker/search/?type=bid&feed=current';
+var BIDS_URL = 'https://gamesdonequick.com/tracker/search/?type=bid&feed=current&event=16';
 var POLL_INTERVAL = 3 * 60 * 1000;
 
 var util = require('util');
