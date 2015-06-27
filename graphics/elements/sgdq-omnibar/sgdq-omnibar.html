@@ -9,6 +9,7 @@
             bottom: 0;
             left: 0;
             color: white;
+            font-family: "tablet-gothic";
             z-index: 10;
             align-items: flex-end;
         }
@@ -26,6 +27,7 @@
             display: inline-flex;
             align-items: flex-end;
             height: 100%;
+            flex-shrink: 0;
         }
 
         #logoContainer {
@@ -37,7 +39,8 @@
         }
 
         #logo {
-            width: 110px;
+            margin-left: 6px;
+            width: 92px;
             height: 100%;
             background: url("logo_gdq.png") no-repeat center;
         }
@@ -56,14 +59,35 @@
 
         #label {
             width: 100%;
+            font-weight: 400;
+            line-height: 22px;
+            margin-top: -3px;
         }
 
         #body {
             padding-left: 10px;
+            padding-right: 12px;
+            white-space: nowrap;
         }
 
-        #topline {
+        #topLine {
+            font-family: "tablet-gothic-narrow";
+            font-weight: 700;
+            font-size: 18px;
+            font-style: italic;
             text-transform: uppercase;
+            line-height: 0;
+            transform-origin: left;
+        }
+
+        #bottomLine {
+            font-weight: 600;
+            font-size: 26px;
+            transform-origin: left;
+        }
+
+        #totalContainer {
+            flex-shrink: 0;
         }
 
         #total {
@@ -91,14 +115,12 @@
                 </div>
             </div>
             <div id="body">
-                <div id="topline"></div>
-                <div id="bottomline"></div>
+                <div id="topLine">{{topText}}</div>
+                <div id="bottomLine">{{bottomText}}</div>
             </div>
         </div>
         <div id="totalContainer">
-            <div id="total">
-                Retrieving...
-            </div>
+            <div id="total">{{total}}</div>
         </div>
     </template>
 </dom-module>
@@ -133,6 +155,37 @@
                 type: Boolean,
                 value: false,
                 readOnly: true
+            },
+            topText: {
+                type: String,
+                observer: 'fitBodyText'
+            },
+            bottomText: {
+                type: String,
+                observer: 'fitBodyText'
+            },
+            total: {
+                type: String,
+                value: 'Retrieving…',
+                observer: 'fitBodyText'
+            }
+        },
+
+        fitBodyText: function() {
+            var bodyWidth = this._getElementContentWidth(this.$.body);
+
+            var bottomLineWidth = this.$.bottomLine.scrollWidth;
+            if (bottomLineWidth > bodyWidth) {
+                TweenLite.set(this.$.bottomLine, {scaleX: bodyWidth / bottomLineWidth});
+            } else {
+                TweenLite.set(this.$.bottomLine, {scaleX: 1});
+            }
+
+            var topLineWidth = this.$.topLine.scrollWidth;
+            if (topLineWidth > bodyWidth) {
+                TweenLite.set(this.$.topLine, {scaleX: bodyWidth / topLineWidth});
+            } else {
+                TweenLite.set(this.$.topLine, {scaleX: 1});
             }
         },
 
@@ -200,6 +253,11 @@
                             window.nextRun = window.schedule[newVal.index + 1];
                         }
                     });
+
+            nodecg.Replicant('total')
+                    .on('change', function (oldVal, newVal) {
+                        self.total = newVal;
+                    });
         },
 
         /*
@@ -225,14 +283,18 @@
                     opacity: 0,
                     ease: Linear.easeNone,
                     onComplete: function () {
-                        self.$.topline.innerHTML = 'BID FOR ' + bid.speedrun;
-                        self.$.bottomline.innerHTML = bid.name + ' - ' + bid.total;
+                        self.topText = 'BID FOR ' + bid.speedrun;
+                        //self.bottomText = bid.name + ' - ' + bid.total;
+                        self.bottomText = 'Bonus Game: Actraiser 2 Super Very Long Title Plus Edition Deluxe - $1,055';
                     }
                 });
 
                 self.tl.to(self.$.body, 0.25, {
                     opacity: 1,
-                    ease: Linear.easeNone
+                    ease: Linear.easeNone,
+                    onComplete: function () {
+                        self.tl.pause();
+                    }
                 });
 
                 // Give the bid some time to show
@@ -264,12 +326,12 @@
                     opacity: 0,
                     ease: Linear.easeNone,
                     onComplete: function () {
-                        self.$.topline.innerHTML = 'PROVIDED BY ' + prize.provided;
+                        self.topText = 'PROVIDED BY ' + prize.provided;
                         if (prize.grand) {
-                            self.$.bottomline.innerHTML = 'Grand Prize: ' + prize.name + ' (Minimum Bid: '
+                            self.bottomText = 'Grand Prize: ' + prize.name + ' (Minimum Bid: '
                                     + prize.minimumbid + ')';
                         } else {
-                            self.$.bottomline.innerHTML = prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
+                            self.bottomText = prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
                         }
                     }
                 });
@@ -301,8 +363,8 @@
                          * timeline and bail out to showing bids again.
                          */
                         if (window.nextRun) {
-                            self.$.topline.innerHTML = window.nextRun.runners.join(', ');
-                            self.$.bottomline.innerHTML = window.nextRun.game + ' - ' + window.nextRun.category;
+                            self.topText = window.nextRun.runners.join(', ');
+                            self.bottomText = window.nextRun.game + ' - ' + window.nextRun.category;
                         } else {
                             self.tl.clear();
                             self.tl.call(self.showBids, null, self);
@@ -367,6 +429,12 @@
 
         _padTimeline: function () {
             this.tl.to({}, this.padTime, {});
+        },
+
+        _getElementContentWidth: function (element) {
+            var styles = window.getComputedStyle(element);
+            var padding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+            return element.clientWidth - padding;
         }
     });
 </script>

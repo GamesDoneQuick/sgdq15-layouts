@@ -44,7 +44,7 @@ module.exports = function (nodecg) {
             }
 
             if (sheet.updated === lastUpdated) {
-                nodecg.log.info('Schedule has not changed, not updating');
+                nodecg.log.info('Schedule unchanged, not updating');
                 deferred.resolve(false);
                 return;
             }

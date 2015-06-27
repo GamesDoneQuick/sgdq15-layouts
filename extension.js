@@ -22,10 +22,10 @@ module.exports = function(nodecg) {
         process.exit(1);
     }
 
-    /*try {
+    try {
         require('./extension/total')(nodecg);
     } catch (e) {
         nodecg.log.error('Failed to load "total" lib:', e.stack);
         process.exit(1);
-    }*/
+    }
 };
