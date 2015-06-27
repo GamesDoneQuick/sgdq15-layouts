@@ -120,7 +120,7 @@
             </div>
         </div>
         <div id="totalContainer">
-            <div id="total">{{total}}</div>
+            <div id="total"></div>
         </div>
     </template>
 </dom-module>
@@ -167,8 +167,19 @@
             total: {
                 type: String,
                 value: 'Retrieving…',
-                observer: 'fitBodyText'
+                observer: 'totalChanged'
             }
+        },
+
+        totalChanged: function(newVal) {
+            var self = this;
+            TweenLite.to(this.$.total, 0.5, {
+                text: newVal,
+                ease: Linear.easeNone,
+                onUpdate: function() {
+                    self.fitBodyText();
+                }
+            });
         },
 
         fitBodyText: function() {
