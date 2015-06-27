@@ -1,0 +1,73 @@
+<link rel="import" href="../../components/polymer/polymer.html"/>
+
+<dom-module id="sgdq-corners">
+    <style>
+        .corner {
+            position: absolute;
+            overflow: hidden;
+            width: 11px;
+            height: 11px;
+        }
+
+        .corner::before {
+            content: '';
+            position: absolute;
+            border: 2px solid #6fccdd;
+            width: 11px;
+            height: 11px;
+        }
+
+        .corner-tl {
+            top: -2px;
+            left: -2px;
+        }
+
+        .corner-tl::before {
+            top: 0;
+            left: 0;
+        }
+
+        .corner-tr {
+            top: -2px;
+            right: -2px;
+        }
+
+        .corner-tr::before {
+            top: 0;
+            right: 0;
+        }
+
+        .corner-br {
+            bottom: -2px;
+            right: -2px;
+        }
+
+        .corner-br::before {
+            bottom: 0;
+            right: 0;
+        }
+
+        .corner-bl {
+            bottom: -2px;
+            left: -2px;
+        }
+
+        .corner-bl::before {
+            bottom: 0;
+            left: 0;
+        }
+    </style>
+
+    <template>
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-br"></div>
+        <div class="corner corner-bl"></div>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: 'sgdq-corners'
+    });
+</script>
