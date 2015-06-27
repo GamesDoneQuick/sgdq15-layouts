@@ -6,4 +6,5 @@
     height: 665px;
     overflow: hidden;
     background: url("../img/full_background.png") no-repeat top right;
+    padding: 7px;
 }

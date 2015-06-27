@@ -49,7 +49,7 @@ module.exports = function (nodecg) {
                         description: prize.fields.description,
                         image: prize.fields.image,
                         minimumbid: numeral(prize.fields.minimumbid).format('$0,0[.]00'),
-                        grand: prize.fields.category === 'Grand'
+                        grand: prize.fields.category__name === 'Grand'
                     };
                 });
 
