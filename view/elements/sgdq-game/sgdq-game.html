@@ -14,6 +14,7 @@
             flex-direction: column;
             position: relative;
             background-color: #01566f;
+            white-space: nowrap;
         }
 
         hr {
@@ -29,6 +30,7 @@
             font-family: "tablet-gothic-condensed";
             font-size: 1em;
             font-weight: 800;
+            transform-origin: left;
         }
 
         #categoryContainer {
@@ -47,9 +49,10 @@
             font-size: 0.696em;
             font-weight: 400;
             text-transform: uppercase;
-            margin-left: 0.391em;
-            margin-right: 0.391em;
+            margin-left: 0.4em;
+            margin-right: 0.4em;
             flex-shrink: 0;
+            transform-origin: left;
         }
 
         #estimateContainer {
@@ -100,6 +103,36 @@
                 value: new TimelineLite({autoRemoveChildren: true}),
                 readOnly: true
             }
+        },
+
+        ready: function() {
+            var self = this;
+            nodecg.Replicant('currentRun')
+                    .on('change', function(oldVal, newVal) {
+                        self.$.game.innerHTML = newVal.game;
+                        self.$.category.innerHTML = newVal.category;
+                        self.$.estimate.innerHTML = newVal.estimate;
+
+                        var hostWidth = self._getElementContentWidth(self);
+                        [self.$.game, self.$.category].forEach(function(el) {
+                            var elWidth = el.scrollWidth;
+                            console.log(el, elWidth, hostWidth);
+                            if (elWidth > hostWidth) {
+                                TweenLite.set(el, {scaleX: hostWidth / elWidth});
+                            } else {
+                                TweenLite.set(el, {scaleX: 1});
+                            }
+                        })
+                    })
+        },
+
+        /*
+         * Methods
+         */
+        _getElementContentWidth: function (element) {
+            var styles = window.getComputedStyle(element);
+            var padding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+            return element.clientWidth - padding;
         }
     });
 </script>
