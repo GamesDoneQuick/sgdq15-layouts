@@ -179,24 +179,20 @@
     });
 
     editModal.find('.js-save').click(function() {
-        var currentRun = currentRun.value;
-        currentRun.game = editModal.find('input[name="game"]').val();
-        currentRun.console = editModal.find('input[name="console"]').val();
-        currentRun.category = editModal.find('input[name="category"]').val();
+        currentRun.value.game = editModal.find('input[name="game"]').val();
+        currentRun.value.console = editModal.find('input[name="console"]').val();
+        currentRun.value.category = editModal.find('input[name="category"]').val();
+        currentRun.value.estimate = editModal.find('input[name="estimate"]').val();
 
-        var runners = editModal.find('input[name="runners"]').val().split(',');
-        runners.forEach(function(runner, index) {
-            runners[index] = runner.trim();
-        });
-        currentRun.runners = runners;
+        currentRun.value.runners = editModal.find('input[name="runners"]').val()
+            .split(',')
+            .map(function(runner) {
+                return runner.trim();
+            });
 
-        var streamlinks = editModal.find('input[name="streamlinks"]').val().split(',');
-        streamlinks.forEach(function(runner, index) {
-            streamlinks[index] = runner.trim();
-        });
-        currentRun.streamlinks = streamlinks;
-
-        currentRun.estimate = editModal.find('input[name="estimate"]').val();
-        currentRun.value = currentRun;
+        currentRun.value.streamlinks = editModal.find('input[name="streamlinks"]').val().split(',')
+            .map(function(streamlink) {
+                return streamlink.trim();
+            });
     });
 })();

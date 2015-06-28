@@ -2,9 +2,12 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 394px;
+    width: 380px;
     height: 665px;
     overflow: hidden;
-    background: url("../img/full_background.png") no-repeat top right;
     padding: 7px;
+}
+
+#container {
+    background: url("../img/4x3-1_background.png") no-repeat;
 }
