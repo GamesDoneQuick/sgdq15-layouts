@@ -68,6 +68,7 @@
             padding-left: 10px;
             padding-right: 12px;
             white-space: nowrap;
+            flex-grow: 1;
         }
 
         #topLine {
@@ -84,6 +85,29 @@
             font-weight: 600;
             font-size: 26px;
             transform-origin: left;
+        }
+
+        #fullLine {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            height: 53px;
+            font-size: 28px;
+            font-family: "tablet-gothic";
+            font-weight: 400;
+            text-align: center;
+            justify-content: center;
+        }
+
+        #fullLine b {
+            font-weight: 700;
+        }
+
+        #msf {
+            background: url("logo_msf.png") no-repeat;
+            width: 147px;
+            height: 47px;
+            margin-left: 18px;
         }
 
         #totalContainer {
@@ -117,8 +141,11 @@
                 </div>
             </div>
             <div id="body">
-                <div id="topLine">{{topText}}</div>
-                <div id="bottomLine">{{bottomText}}</div>
+                <div id="twoLines">
+                    <div id="topLine">{{topText}}</div>
+                    <div id="bottomLine">{{bottomText}}</div>
+                </div>
+                <div id="fullLine"></div>
             </div>
         </div>
         <div id="totalContainer">
@@ -152,11 +179,6 @@
             lastShownGrandPrizeIdx: {
                 type: Number,
                 value: -1
-            },
-            initialized: {
-                type: Boolean,
-                value: false,
-                readOnly: true
             },
             topText: {
                 type: String,
@@ -218,12 +240,6 @@
             nodecg.Replicant('currentBids')
                     .on('change', function (oldVal, newVal) {
                         window.currentBids = newVal;
-
-                        // Bids are the first thing we show, so we use this to start our loop
-                        if (!self.initialized) {
-                            self._setInitialized(true);
-                            self.showBids();
-                        }
                     });
 
             nodecg.Replicant('currentPrizes')
@@ -273,6 +289,9 @@
                     .on('change', function (oldVal, newVal) {
                         self.total = newVal;
                     });
+
+            // Bids are the first thing we show, so we use this to start our loop
+            self.showCTA();
         },
 
         /*
@@ -302,6 +321,8 @@
                         onComplete: function () {
                             self.topText = 'BID FOR ' + bid.speedrun;
                             self.bottomText = bid.name + ' - ' + bid.total;
+                            self.$.twoLines.style.display = 'block';
+                            self.$.fullLine.style.display = 'none';
                         }
                     });
 
@@ -349,6 +370,8 @@
                             } else {
                                 self.bottomText = prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
                             }
+                            self.$.twoLines.style.display = 'block';
+                            self.$.fullLine.style.display = 'none';
                         }
                     });
 
@@ -382,6 +405,7 @@
                         if (window.nextRun) {
                             self.topText = window.nextRun.runners.join(', ');
                             self.bottomText = window.nextRun.game + ' - ' + window.nextRun.category;
+                            self.$.fullLine.innerHTML = '';
                         } else {
                             self.tl.clear();
                             self.tl.call(self.showBids, null, self);
@@ -397,8 +421,62 @@
                 // Give it some time to show
                 this.tl.to({}, this.displayDuration, {});
 
-                this.tl.call(this.showBids, null, this, '+=0.01');
+                this.tl.call(this.showCTA, null, this, '+=0.01');
             }
+        },
+
+        showCTA: function(immediate) {
+            var self = this;
+            if (immediate) this.tl.clear();
+            this.tl.add('showCTA_start');
+            this.tl.add(this._hideLabel(), 'showCTA_start');
+            this.tl.to(this.$.body, 0.25, {
+                opacity: 0,
+                ease: Linear.easeNone,
+                onComplete: function () {
+                    self.$.twoLines.style.display = 'none';
+                    self.$.fullLine.style.display = 'flex';
+
+                    var span = document.createElement('span');
+                    var div = document.createElement('div');
+                    span.innerHTML = '<b>Summer Games Done Quick</b> benefits';
+                    div.id = 'msf';
+                    self.$.fullLine.innerHTML = '';
+                    Polymer.dom(self.$.fullLine).appendChild(span);
+                    Polymer.dom(self.$.fullLine).appendChild(div);
+                }
+            }, 'showCTA_start');
+
+            this.tl.to(this.$.body, 0.25, {
+                opacity: 1,
+                ease: Linear.easeNone
+            });
+
+            this.tl.to(this.$.body, 0.25, {
+                opacity: 0,
+                ease: Linear.easeNone,
+                onComplete: function () {
+                    var span = document.createElement('span');
+                    span.innerHTML = '<b>Donate at gamesdonequick.com</b>';
+                    self.$.fullLine.innerHTML = '';
+                    Polymer.dom(self.$.fullLine).appendChild(span);
+                }
+            }, '+=' + this.displayDuration);
+
+            this.tl.to(this.$.body, 0.25, {
+                opacity: 1,
+                ease: Linear.easeNone
+            });
+
+            // Give it some time to show
+            this.tl.to({}, this.displayDuration, {});
+
+            this.tl.to(this.$.body, 0.25, {
+                opacity: 0,
+                ease: Linear.easeNone
+            });
+
+            this.tl.call(this.showBids, null, this, '+=0.01');
         },
 
         _showLabel: function (text, size) {
@@ -421,6 +499,7 @@
                 tmpTL.to(this.$.labelContainer, 0.5, {
                     onStart: function () {
                         self.labelShowing = true;
+                        self.$.labelContainer.style.display = 'flex';
                         self.$.label.innerHTML = text;
                         self.$.label.style.fontSize = size;
                     },
@@ -433,15 +512,16 @@
 
         _hideLabel: function () {
             var self = this;
-            var tmpTL = new TimelineLite();
-            this.tl.to(this.$.labelContainer, 0.5, {
+            return TweenLite.to(this.$.labelContainer, 0.5, {
                 onStart: function () {
                     self.labelShowing = false;
                 },
                 x: '-100%',
-                ease: Power3.easeIn
+                ease: Power3.easeIn,
+                onComplete: function() {
+                    self.$.labelContainer.style.display = 'none';
+                }
             });
-            return tmpTL;
         },
 
         _padTimeline: function () {
