@@ -13,15 +13,16 @@
     <script>try{Typekit.load();}catch(e){}</script>
 
     <link rel="import" href="elements/sgdq-game/sgdq-game.html">
+    <link rel="import" href="elements/sgdq-runner/sgdq-runner.html">
     <link rel="import" href="elements/sgdq-omnibar/sgdq-omnibar.html">
 </head>
 <body>
 <div id="container">
     <div id="sidebar">
         <sgdq-game></sgdq-game>
-        <sgdq-camera></sgdq-camera>
-        <sgdq-runner></sgdq-runner>
-        <sgdq-runner></sgdq-runner>
+        <div id="cameraPlaceholder"></div>
+        <sgdq-runner index="0"></sgdq-runner>
+        <sgdq-runner index="1"></sgdq-runner>
     </div>
     <sgdq-omnibar></sgdq-omnibar>
 </div>

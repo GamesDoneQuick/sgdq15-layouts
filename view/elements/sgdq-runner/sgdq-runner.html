@@ -1,0 +1,146 @@
+<link rel="import" href="../../components/polymer/polymer.html"/>
+
+<dom-module id="sgdq-runner">
+    <style>
+        :host {
+            display: block;
+            position: relative;
+            width: 100%;
+            font-size: 18px;
+            text-align: center;
+            margin-top: 9px;
+            margin-bottom: 9px;
+        }
+
+        hr {
+            height: 2px;
+            margin: 0;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            background-color: #2496b8;
+        }
+
+        .bezel {
+            position: absolute;
+            width: 10px;
+            height: 100%;
+            background-color: #015670;
+            border: 1px solid black;
+            border-radius: 3px;
+            padding-top: 1px;
+            padding-bottom: 1px;
+        }
+
+        .bezel-left {
+            left: 0;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .bezel-right {
+            right: 0;
+            top: 50%;
+            transform: translate(50%, -50%);
+        }
+
+        #runnerInfo {
+            height: 1.444em;
+            background-color: #ade1f5;
+            color: black;
+            font-family: "tablet-gothic-wide";
+            font-weight: 700;
+        }
+
+        #handle,
+        #streamlink {
+            transform: translateY(-0.09em);
+        }
+
+        #timeContainer {
+            height: 1.444em;
+            background-color: #015670;
+        }
+
+        #time {
+            font-family: "gamegirl_classic";
+            font-size: 1.167em;
+            color: white;
+            line-height: 100%;
+        }
+    </style>
+
+    <template>
+        <div id="bezels">
+            <div class="bezel bezel-left"></div>
+            <div class="bezel bezel-right"></div>
+        </div>
+
+        <hr/>
+        <div id="runnerInfo">
+            <div id="handle">{{handle}}</div>
+            <div id="streamlink">{{streamlink}}</div>
+        </div>
+        <hr/>
+        <div id="timeContainer">
+            <span id="time">{{time}}</span>
+        </div>
+        <hr/>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: 'sgdq-runner',
+
+        properties: {
+            index: {
+                type: Number,
+                value: 0,
+                reflectToAttribute: true,
+                observer: 'indexChanged'
+            },
+            tl: {
+                type: Object,
+                value: new TimelineLite({autoRemoveChildren: true}),
+                readOnly: true
+            }
+        },
+
+        indexChanged: function(newVal) {
+
+        },
+
+        /*
+         * Lifecycle
+         */
+        ready: function() {
+            // Prep for animation
+            this.$.streamlink.style.display = 'none';
+
+            var self = this;
+            nodecg.Replicant('currentRun')
+                    .on('change', function(oldVal, newVal) {
+                        var runner = newVal.runners[self.index];
+                        self.handle = runner || '?';
+
+                        var streamlink = newVal.streamlinks[self.index];
+                        self.streamlink = streamlink || '?';
+                    });
+
+            nodecg.Replicant('times')
+                    .on('change', function(oldVal, newVal) {
+                        var time = newVal[self.index];
+                        self.time = time || '88:88:88';
+                    });
+        },
+
+        /*
+         * Methods
+         */
+        _getElementContentWidth: function (element) {
+            var styles = window.getComputedStyle(element);
+            var padding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+            return element.clientWidth - padding;
+        }
+    });
+</script>

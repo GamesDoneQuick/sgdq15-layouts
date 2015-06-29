@@ -4,7 +4,7 @@
     "title": "Schedule",
     "width": 4,
     "file": "schedule.jade",
-    "faIcon": "fa-clock-o"
+    "faIcon": "fa-calendar-o"
   },
   {
     "name": "prizes",
@@ -19,5 +19,12 @@
     "width": 2,
     "file": "total.jade",
     "faIcon": "fa-dollar"
+  },
+  {
+    "name": "stopwatches",
+    "title": "Stopwatches",
+    "width": 2,
+    "file": "stopwatches.jade",
+    "faIcon": "fa-clock-o"
   }
 ]

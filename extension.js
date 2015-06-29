@@ -28,4 +28,11 @@ module.exports = function(nodecg) {
         nodecg.log.error('Failed to load "total" lib:', e.stack);
         process.exit(1);
     }
+
+    try {
+        require('./extension/stopwatches')(nodecg);
+    } catch (e) {
+        nodecg.log.error('Failed to load "stopwatches" lib:', e.stack);
+        process.exit(1);
+    }
 };
