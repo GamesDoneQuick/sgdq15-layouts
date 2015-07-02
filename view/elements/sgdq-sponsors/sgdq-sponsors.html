@@ -1,0 +1,39 @@
+<link rel="import" href="../../components/polymer/polymer.html"/>
+<link rel="import" href="../sgdq-container/sgdq-container.html"/>
+
+<dom-module id="sgdq-sponsors">
+    <style>
+        :host {
+            display: flex;
+        }
+    </style>
+
+    <template>
+        <sgdq-container hide-tl="{{hideTl}}" hide-tr="{{hideTr}}" hide-bl="{{hideBl}}" hide-br="{{hideBr}}"></sgdq-container>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: 'sgdq-sponsors',
+
+        properties: {
+            hideTl: {
+                type: Boolean,
+                reflectToAttribute: true
+            },
+            hideTr: {
+                type: Boolean,
+                reflectToAttribute: true
+            },
+            hideBl: {
+                type: Boolean,
+                reflectToAttribute: true
+            },
+            hideBr: {
+                type: Boolean,
+                reflectToAttribute: true
+            }
+        }
+    });
+</script>

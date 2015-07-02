@@ -1,20 +1,10 @@
 <link rel="import" href="../../components/polymer/polymer.html"/>
-<link rel="import" href="../sgdq-corners/sgdq-corners.html"/>
+<link rel="import" href="../sgdq-container/sgdq-container.html"/>
 
 <dom-module id="sgdq-game">
     <style>
         :host {
             display: flex;
-            color: white;
-            border: 2px solid black;
-            font-size: 23px;
-            padding-right: 0.435em;
-            padding-left: 0.435em;
-            text-align: center;
-            flex-direction: column;
-            position: relative;
-            background-color: #01566f;
-            white-space: nowrap;
         }
 
         hr {
@@ -76,19 +66,19 @@
     </style>
 
     <template>
-        <sgdq-corners></sgdq-corners>
-
-        <div id="game">Tony Hawk's American Wasteland</div>
-        <div id="categoryContainer">
-            <div class="thickline"></div>
-            <div id="category">1 Player, 2 Controllers</div>
-            <div class="thickline"></div>
-        </div>
-        <hr>
-        <div id="estimateContainer">
-            <span id="estimateLabel">ESTIMATE:</span>
-            <span id="estimate">01:45:00</span>
-        </div>
+        <sgdq-container hide-tl="{{hideTl}}" hide-tr="{{hideTr}}" hide-bl="{{hideBl}}" hide-br="{{hideBr}}">
+            <div id="game">Tony Hawk's American Wasteland</div>
+            <div id="categoryContainer">
+                <div class="thickline"></div>
+                <div id="category">1 Player, 2 Controllers</div>
+                <div class="thickline"></div>
+            </div>
+            <hr>
+            <div id="estimateContainer">
+                <span id="estimateLabel">ESTIMATE:</span>
+                <span id="estimate">01:45:00</span>
+            </div>
+        </sgdq-container>
     </template>
 </dom-module>
 
@@ -101,6 +91,22 @@
                 type: Object,
                 value: new TimelineLite({autoRemoveChildren: true}),
                 readOnly: true
+            },
+            hideTl: {
+                type: Boolean,
+                reflectToAttribute: true
+            },
+            hideTr: {
+                type: Boolean,
+                reflectToAttribute: true
+            },
+            hideBl: {
+                type: Boolean,
+                reflectToAttribute: true
+            },
+            hideBr: {
+                type: Boolean,
+                reflectToAttribute: true
             }
         },
 

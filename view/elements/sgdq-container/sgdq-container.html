@@ -1,0 +1,110 @@
+<link rel="import" href="../../components/polymer/polymer.html"/>
+<link rel="import" href="../sgdq-corners/sgdq-corners.html"/>
+
+<dom-module id="sgdq-container">
+    <style>
+        :host {
+            display: flex;
+            color: white;
+            border: 2px solid black;
+            font-size: 23px;
+            padding-right: 0.435em;
+            padding-left: 0.435em;
+            text-align: center;
+            flex-direction: column;
+            position: relative;
+            background-color: #01566f;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .corner {
+            position: absolute;
+            overflow: hidden;
+            width: 9px;
+            height: 9px;
+        }
+
+        .corner::before {
+            content: '';
+            position: absolute;
+            border: 2px solid #6fccdd;
+            width: 11px;
+            height: 11px;
+        }
+
+        #tl {
+            top: -2px;
+            left: -2px;
+        }
+
+        #tl::before {
+            top: 0;
+            left: 0;
+        }
+
+        #tr {
+            top: -2px;
+            right: -2px;
+        }
+
+        #tr::before {
+            top: 0;
+            right: 0;
+        }
+
+        #br {
+            bottom: -2px;
+            right: -2px;
+        }
+
+        #br::before {
+            bottom: 0;
+            right: 0;
+        }
+
+        #bl {
+            bottom: -2px;
+            left: -2px;
+        }
+
+        #bl::before {
+            bottom: 0;
+            left: 0;
+        }
+    </style>
+
+    <template>
+        <div class="corner" id="tl" hidden="{{hideTl}}"></div>
+        <div class="corner" id="tr" hidden="{{hideTr}}"></div>
+        <div class="corner" id="br" hidden="{{hideBl}}"></div>
+        <div class="corner" id="bl" hidden="{{hideBr}}"></div>
+
+        <content></content>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: 'sgdq-container',
+
+        properties: {
+            hideTl: {
+                type: Boolean,
+                reflectToAttribute: true
+            },
+            hideTr: {
+                type: Boolean,
+                reflectToAttribute: true
+            },
+            hideBl: {
+                type: Boolean,
+                reflectToAttribute: true
+            },
+            hideBr: {
+                type: Boolean,
+                reflectToAttribute: true
+            }
+        }
+    });
+</script>
