@@ -1,0 +1,32 @@
+#container {
+    background: url("../img/16x9-1_background.png") no-repeat;
+}
+
+#sidebar {
+    position: absolute;
+    top: 229px;
+    right: 0;
+    width: 325px;
+    height: 200px;
+    overflow: hidden;
+}
+
+#bottombar {
+    position: absolute;
+    top: 540px;
+    left: 0;
+    width: 962px;
+    height: 127px;
+    overflow: hidden;
+    display: flex;
+}
+
+sgdq-game {
+    margin: 7px 0;
+    width: 546px;
+}
+
+sgdq-sponsors {
+    margin: 7px 10px 7px 8px;
+    width: 390px;
+}
