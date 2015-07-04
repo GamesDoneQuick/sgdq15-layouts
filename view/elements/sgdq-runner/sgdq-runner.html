@@ -13,9 +13,22 @@
         hr {
             height: 2px;
             margin: 0;
-            border-top: 1px solid black;
-            border-bottom: 1px solid black;
+            border: 1px solid black;
+            border-radius: 2px;
             background-color: #2496b8;
+        }
+
+        hr.hideLeftCap {
+            margin-left: 42%;
+        }
+
+        hr.hideRightCap {
+            margin-right: 42%;
+        }
+
+        hr.hideLeftCap.hideRightCap {
+            margin-left: 16%;
+            margin-right: 16%;
         }
 
         .bezel {
@@ -35,17 +48,35 @@
             transform: translate(-50%, 0%);
         }
 
+        .bezel-left.hideLeftCap {
+            display: none;
+        }
+
         .bezel-right {
             right: 0;
             transform: translate(50%, 0%);
         }
 
+        .bezel-right.hideRightCap {
+            display: none;
+        }
+
         #runnerInfo {
             height: 1.444em;
             background-color: #ade1f5;
+            border-left: 1px solid black;
+            border-right: 1px solid black;
             color: black;
             font-family: "tablet-gothic-wide";
             font-weight: 700;
+        }
+
+        #runnerInfo.hideLeftCap {
+            margin-left: 1%;
+        }
+
+        #runnerInfo.hideRightCap {
+            margin-right: 1%;
         }
 
         #handle,
@@ -56,6 +87,21 @@
         #timeContainer {
             height: 1.444em;
             background-color: #015670;
+            border-left: 1px solid black;
+            border-right: 1px solid black;
+        }
+
+        #timeContainer.hideLeftCap {
+            margin-left: 43%;
+        }
+
+        #timeContainer.hideRightCap {
+            margin-right: 43%;
+        }
+
+        #timeContainer.hideLeftCap.hideRightCap {
+            margin-left: 17%;
+            margin-right: 17%;
         }
 
         #time {
@@ -68,20 +114,20 @@
 
     <template>
         <div id="bezels">
-            <div class="bezel bezel-left"></div>
-            <div class="bezel bezel-right"></div>
+            <div class$="{{hideCaps(hideLeftCap, hideRightCap, 'bezel bezel-left')}}"></div>
+            <div class$="{{hideCaps(hideLeftCap, hideRightCap, 'bezel bezel-right')}}"></div>
         </div>
 
         <hr/>
-        <div id="runnerInfo">
+        <div id="runnerInfo" class$="{{hideCaps(hideLeftCap, hideRightCap, '')}}">
             <div id="handle">{{handle}}</div>
             <div id="streamlink">{{streamlink}}</div>
         </div>
         <hr/>
-        <div id="timeContainer">
+        <div id="timeContainer" class$="{{hideCaps(hideLeftCap, hideRightCap, '')}}">
             <span id="time">{{time}}</span>
         </div>
-        <hr/>
+        <hr class$="{{hideCaps(hideLeftCap, hideRightCap, '')}}"/>
     </template>
 </dom-module>
 
@@ -100,6 +146,16 @@
                 type: Object,
                 value: new TimelineLite({autoRemoveChildren: true}),
                 readOnly: true
+            },
+            hideLeftCap: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
+            hideRightCap: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
             }
         },
 
@@ -138,6 +194,12 @@
             var styles = window.getComputedStyle(element);
             var padding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
             return element.clientWidth - padding;
+        },
+
+        // this is dumb zzz
+        // http://stackoverflow.com/a/30607783
+        hideCaps: function(hideLeft, hideRight, classes) {
+            return classes + (hideLeft ? ' hideLeftCap ' : '') + (hideRight ? ' hideRightCap' : '');
         }
     });
 </script>

@@ -9,6 +9,10 @@
     width: 397px;
     height: 205px;
     overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
 #right {
@@ -22,6 +26,7 @@
 
 sgdq-sponsors {
     height: 120px;
+    width: 100%;
 }
 
 sgdq-game {
@@ -37,6 +42,7 @@ sgdq-game /deep/ sgdq-container {
 }
 
 sgdq-runner {
-    margin-top: 4px;
-    margin-bottom: 4px;
+    width: 311px;
+    margin-top: 7px;
+    margin-bottom: 7px;
 }
