@@ -55,7 +55,22 @@
 
     var currentRun = nodecg.Replicant('currentRun')
         .on('change', function(oldVal, newVal) {
-            updateRunInfo(newVal);
+            if (!newVal) return;
+
+            runInfoGame.find('.form-control-static').text(newVal.game);
+            runInfoConsole.find('.form-control-static').text(newVal.console);
+            runInfoRunners.find('.form-control-static').text(newVal.runners.join(', '));
+            runInfoStreamlinks.find('.form-control-static').text(newVal.streamlinks.join(', '));
+            runInfoEstimate.find('.form-control-static').text(newVal.estimate);
+            runInfoCategory.find('.form-control-static').text(newVal.category);
+            runInfoComments.find('.form-control-static').text(newVal.comments);
+            runInfoIndex.find('.form-control-static').text(newVal.index);
+
+            if (schedule.value && (newVal.index+1 < schedule.value.length)) {
+                nextRun.html(schedule.value[newVal.index+1].game);
+            } else {
+                nextRun.html('None');
+            }
 
             // Disable "prev" button if at start of schedule
             prevBtn.prop('disabled', newVal.index <= 0);
@@ -63,25 +78,6 @@
             // Disable "next" button if at end of schedule
             nextBtn.prop('disabled', newVal.index >= schedule.value.length-1);
         });
-
-    function updateRunInfo(currentRun) {
-        if (Object.keys(currentRun).length) {
-            runInfoGame.find('.form-control-static').text(currentRun.game);
-            runInfoConsole.find('.form-control-static').text(currentRun.console);
-            runInfoRunners.find('.form-control-static').text(currentRun.runners.join(', '));
-            runInfoStreamlinks.find('.form-control-static').text(currentRun.streamlinks.join(', '));
-            runInfoEstimate.find('.form-control-static').text(currentRun.estimate);
-            runInfoCategory.find('.form-control-static').text(currentRun.category);
-            runInfoComments.find('.form-control-static').text(currentRun.comments);
-            runInfoIndex.find('.form-control-static').text(currentRun.index);
-
-            if (schedule.value && (currentRun.index+1 < schedule.value.length)) {
-                nextRun.html(schedule.value[currentRun.index+1].game);
-            } else {
-                nextRun.html('None');
-            }
-        }
-    }
 
     nextBtn.click(function () {
         var nextIndex = currentRun.value.index + 1;

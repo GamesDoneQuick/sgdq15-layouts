@@ -1,7 +1,24 @@
 mixin stopwatch
-    p I'm a stopwatch.
+    .stopwatch
+        .stopwatch-status
+            span.stopwatch-status-time 00:01:25
+            span.stopwatch-status-runner Runnerguy2489
+        .stopwatch-ctrls
+            i.fa.fa-play.stopwatch-ctrls-playpause
+            i.fa.fa-undo
 
 +stopwatch
 +stopwatch
 +stopwatch
 +stopwatch
+
+.ncg-btn-group
+    .btn-group.btn-group-justified
+        .btn-group
+            button.js-automaticOn.btn.btn-xs.btn-success(type='button')
+                i.fa.fa-play
+                | &ensp;Start All
+        .btn-group
+            button.js-automaticOff.btn.btn-xs.btn-danger(type='button')
+                i.fa.fa-undo
+                | &ensp;Reset All

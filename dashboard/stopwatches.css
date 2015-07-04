@@ -1,0 +1,41 @@
+.stopwatch {
+    display: flex;
+    align-items: center;
+}
+
+.stopwatch-status {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-bottom: 0.5em;
+    font-size: 1.1em;
+}
+
+.stopwatch-status-time {
+    font-weight: bold;
+    margin-bottom: -0.25em;
+}
+
+.stopwatch-status-runner {
+    font-size: smaller;
+}
+
+.stopwatch-ctrls {
+    display: flex;
+    flex-shrink: 0;
+}
+
+.stopwatch-ctrls i:first-child {
+    margin-left: 0;
+    margin-right: 0.25em;
+}
+
+.stopwatch-ctrls i {
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+    cursor: pointer;
+}
+
+.stopwatch-ctrls i:last-child {
+    margin-left: 0.25em;
+}
