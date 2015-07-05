@@ -1,0 +1,49 @@
+#container {
+    background: url("../img/4x3-3_background.png") no-repeat;
+}
+
+#bar {
+    position: absolute;
+    top: 323px;
+    left: 0;
+    width: 100%;
+    height: 80px;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+#left {
+    position: absolute;
+    top: 478px;
+    left: 22px;
+    width: 396px;
+    height: 117px;
+}
+
+#right {
+    position: absolute;
+    top: 478px;
+    right: 22px;
+    width: 396px;
+    height: 117px;
+}
+
+sgdq-sponsors, sgdq-game {
+    height: 100%;
+    width: 100%;
+}
+
+sgdq-sponsors /deep/ sgdq-container {
+    border-right: none;
+}
+
+sgdq-game /deep/ sgdq-container {
+    border-left: none;
+}
+
+sgdq-runner {
+    width: 364px;
+    height: 80px;
+}
