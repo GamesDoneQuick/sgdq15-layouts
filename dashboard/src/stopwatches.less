@@ -1,0 +1,65 @@
+.stopwatch {
+    display: flex;
+    align-items: center;
+}
+
+.stopwatch-status {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-bottom: 0.5em;
+    font-size: 1.1em;
+}
+
+.stopwatch-status-time {
+    font-weight: bold;
+    margin-bottom: -0.25em;
+}
+
+.stopwatch-status-runner {
+    font-size: smaller;
+}
+
+.stopwatch-ctrls {
+    display: flex;
+    flex-shrink: 0;
+
+    i {
+        margin-left: 0.25em;
+        margin-right: 0.25em;
+        cursor: pointer;
+
+        &:first-child {
+            margin-left: 0;
+            margin-right: 0.25em;
+        }
+
+        &:last-child {
+            margin-left: 0.25em;
+        }
+    }
+
+    .fa-play {
+        color: #43ac6a;
+
+        &:hover {
+            color: #358753;
+        }
+    }
+
+    .fa-pause {
+        color: #e99002;
+
+        &:hover {
+            color: #b67102;
+        }
+    }
+
+    .fa-undo {
+        color: #f04124;
+
+        &:hover {
+            color: #d32a0e;
+        }
+    }
+}

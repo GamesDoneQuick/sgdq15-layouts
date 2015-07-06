@@ -1,41 +1,52 @@
 .stopwatch {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
-
 .stopwatch-status {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    margin-bottom: 0.5em;
-    font-size: 1.1em;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin-bottom: 0.5em;
+  font-size: 1.1em;
 }
-
 .stopwatch-status-time {
-    font-weight: bold;
-    margin-bottom: -0.25em;
+  font-weight: bold;
+  margin-bottom: -0.25em;
 }
-
 .stopwatch-status-runner {
-    font-size: smaller;
+  font-size: smaller;
 }
-
 .stopwatch-ctrls {
-    display: flex;
-    flex-shrink: 0;
+  display: flex;
+  flex-shrink: 0;
 }
-
-.stopwatch-ctrls i:first-child {
-    margin-left: 0;
-    margin-right: 0.25em;
-}
-
 .stopwatch-ctrls i {
-    margin-left: 0.25em;
-    margin-right: 0.25em;
-    cursor: pointer;
+  margin-left: 0.25em;
+  margin-right: 0.25em;
+  cursor: pointer;
 }
-
+.stopwatch-ctrls i:first-child {
+  margin-left: 0;
+  margin-right: 0.25em;
+}
 .stopwatch-ctrls i:last-child {
-    margin-left: 0.25em;
+  margin-left: 0.25em;
+}
+.stopwatch-ctrls .fa-play {
+  color: #43ac6a;
+}
+.stopwatch-ctrls .fa-play:hover {
+  color: #358753;
+}
+.stopwatch-ctrls .fa-pause {
+  color: #e99002;
+}
+.stopwatch-ctrls .fa-pause:hover {
+  color: #b67102;
+}
+.stopwatch-ctrls .fa-undo {
+  color: #f04124;
+}
+.stopwatch-ctrls .fa-undo:hover {
+  color: #d32a0e;
 }
