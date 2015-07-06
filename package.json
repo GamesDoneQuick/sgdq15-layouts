@@ -3,10 +3,9 @@
   "dependencies": {
     "deep-equal": "^1.0.0",
     "google-spreadsheet": "~0.3.1",
-    "moment": "^2.10.3",
     "numeral": "^1.5.3",
     "request": "^2.58.0",
-    "rieussec": "0.0.1"
+    "rieussec": "~0.2.1"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

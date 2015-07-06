@@ -1,11 +1,11 @@
 mixin stopwatch
     .stopwatch
         .stopwatch-status
-            span.stopwatch-status-time 00:01:25
-            span.stopwatch-status-runner Runnerguy2489
+            span.stopwatch-status-time 88:88:88
+            span.stopwatch-status-runner ?
         .stopwatch-ctrls
             i.fa.fa-play.stopwatch-ctrls-playpause
-            i.fa.fa-undo
+            i.fa.fa-undo.stopwatch-ctrls-reset
 
 +stopwatch
 +stopwatch
@@ -15,10 +15,14 @@ mixin stopwatch
 .ncg-btn-group
     .btn-group.btn-group-justified
         .btn-group
-            button.js-automaticOn.btn.btn-xs.btn-success(type='button')
+            button.btn.btn-xs.btn-success(type="button" name="playAll")
                 i.fa.fa-play
                 | &ensp;Start All
         .btn-group
-            button.js-automaticOff.btn.btn-xs.btn-danger(type='button')
+            button.btn.btn-xs.btn-warning(type="button" name="pauseAll")
+                i.fa.fa-pause
+                | &ensp;Pause All
+        .btn-group
+            button.js-automaticOff.btn.btn-xs.btn-danger(type="button" name="resetAll")
                 i.fa.fa-undo
                 | &ensp;Reset All

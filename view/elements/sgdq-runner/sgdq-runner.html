@@ -180,9 +180,9 @@
                         self.streamlink = streamlink || '?';
                     });
 
-            nodecg.Replicant('times')
+            nodecg.Replicant('stopwatches')
                     .on('change', function(oldVal, newVal) {
-                        var time = newVal[self.index];
+                        var time = newVal[self.index].time;
                         self.time = time || '88:88:88';
                     });
         },
