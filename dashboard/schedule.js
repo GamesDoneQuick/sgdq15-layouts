@@ -27,7 +27,7 @@
     var schedule = nodecg.Replicant('schedule')
         .on('change', function(oldVal, newVal) {
             if (currentRun.value && (currentRun.value.index+1 < newVal.length)) {
-                nextRun.html(newVal[currentRun.index+1].game);
+                nextRun.html(newVal[currentRun.value.index+1].game);
             } else {
                 nextRun.html('None');
             }
@@ -76,7 +76,7 @@
             prevBtn.prop('disabled', newVal.index <= 0);
 
             // Disable "next" button if at end of schedule
-            nextBtn.prop('disabled', newVal.index >= schedule.value.length-1);
+            nextBtn.prop('disabled', schedule.value && newVal.index >= schedule.value.length-1);
         });
 
     nextBtn.click(function () {
