@@ -54,3 +54,6 @@
 .stopwatch-ctrls .fa-undo:hover {
   color: #d32a0e;
 }
+.stopwatch-master-ctrls .btn {
+  font-size: 11px;
+}

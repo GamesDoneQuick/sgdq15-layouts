@@ -4,15 +4,16 @@ mixin stopwatch
             span.stopwatch-status-time 88:88:88
             span.stopwatch-status-runner ?
         .stopwatch-ctrls
-            i.fa.fa-play.stopwatch-ctrls-playpause
-            i.fa.fa-undo.stopwatch-ctrls-reset
+            i.fa.fa-play.stopwatch-ctrls-playpause(title="Start/Resume")
+            i.fa.fa-pencil-square-o.stopwatch-ctrls-edit(title="Edit")
+            i.fa.fa-undo.stopwatch-ctrls-reset(title="Reset")
 
 +stopwatch
 +stopwatch
 +stopwatch
 +stopwatch
 
-.ncg-btn-group
+.ncg-btn-group.stopwatch-master-ctrls
     .btn-group.btn-group-justified
         .btn-group
             button.btn.btn-xs.btn-success(type="button" name="playAll")
@@ -23,6 +24,6 @@ mixin stopwatch
                 i.fa.fa-pause
                 | &ensp;Pause All
         .btn-group
-            button.js-automaticOff.btn.btn-xs.btn-danger(type="button" name="resetAll")
+            button.btn.btn-xs.btn-danger(type="button" name="resetAll")
                 i.fa.fa-undo
                 | &ensp;Reset All

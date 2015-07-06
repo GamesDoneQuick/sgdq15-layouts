@@ -33,9 +33,9 @@
 
                 var $playPause = $stopwatch.find('.stopwatch-ctrls-playpause');
                 if (sw.state === 'running') {
-                    $playPause.removeClass('fa-play').addClass('fa-pause');
+                    $playPause.removeClass('fa-play').addClass('fa-pause').attr('title', 'Pause');
                 } else {
-                    $playPause.removeClass('fa-pause').addClass('fa-play');
+                    $playPause.removeClass('fa-pause').addClass('fa-play').attr('title', 'Start/Resume');
                 }
             });
         });
