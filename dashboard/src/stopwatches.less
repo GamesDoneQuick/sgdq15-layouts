@@ -9,6 +9,7 @@
     flex-grow: 1;
     margin-bottom: 0.5em;
     font-size: 1.1em;
+    padding-right: 0.5em;
 }
 
 .stopwatch-status-time {
@@ -18,6 +19,9 @@
 
 .stopwatch-status-runner {
     font-size: smaller;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .stopwatch-ctrls {
@@ -25,17 +29,17 @@
     flex-shrink: 0;
 
     i {
-        margin-left: 0.25em;
-        margin-right: 0.25em;
+        margin-left: 0.3em;
+        margin-right: 0.3em;
         cursor: pointer;
 
         &:first-child {
             margin-left: 0;
-            margin-right: 0.25em;
+            margin-right: 0.3em;
         }
 
         &:last-child {
-            margin-left: 0.25em;
+            margin-left: 0.3em;
         }
     }
 

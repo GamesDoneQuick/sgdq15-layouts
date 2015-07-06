@@ -8,6 +8,7 @@
   flex-grow: 1;
   margin-bottom: 0.5em;
   font-size: 1.1em;
+  padding-right: 0.5em;
 }
 .stopwatch-status-time {
   font-weight: bold;
@@ -15,22 +16,25 @@
 }
 .stopwatch-status-runner {
   font-size: smaller;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .stopwatch-ctrls {
   display: flex;
   flex-shrink: 0;
 }
 .stopwatch-ctrls i {
-  margin-left: 0.25em;
-  margin-right: 0.25em;
+  margin-left: 0.3em;
+  margin-right: 0.3em;
   cursor: pointer;
 }
 .stopwatch-ctrls i:first-child {
   margin-left: 0;
-  margin-right: 0.25em;
+  margin-right: 0.3em;
 }
 .stopwatch-ctrls i:last-child {
-  margin-left: 0.25em;
+  margin-left: 0.3em;
 }
 .stopwatch-ctrls .fa-play {
   color: #43ac6a;

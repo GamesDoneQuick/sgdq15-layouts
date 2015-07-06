@@ -47,7 +47,9 @@
             newVal.runners.forEach(function(runner, idx) {
                 var $stopwatch = $($stopwatches[idx]);
                 $stopwatch.show();
-                $stopwatch.find('.stopwatch-status-runner').html(runner);
+                $stopwatch.find('.stopwatch-status-runner')
+                    .html(runner)
+                    .attr('title', runner);
             });
         });
 
