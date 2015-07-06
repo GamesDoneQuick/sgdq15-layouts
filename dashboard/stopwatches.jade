@@ -1,17 +1,9 @@
-mixin stopwatch
-    .stopwatch
-        .stopwatch-status
-            span.stopwatch-status-time 88:88:88
-            span.stopwatch-status-runner ?
-        .stopwatch-ctrls
-            i.fa.fa-play.stopwatch-ctrls-playpause(title="Start/Resume")
-            i.fa.fa-pencil-square-o.stopwatch-ctrls-edit(title="Edit")
-            i.fa.fa-undo.stopwatch-ctrls-reset(title="Reset")
+link(rel="import" href="/view/sgdq15-layouts/elements/sgdq-stopwatch-control/sgdq-stopwatch-control.html")
 
-+stopwatch
-+stopwatch
-+stopwatch
-+stopwatch
+sgdq-stopwatch-control(index=0)
+sgdq-stopwatch-control(index=1)
+sgdq-stopwatch-control(index=2)
+sgdq-stopwatch-control(index=3)
 
 .ncg-btn-group.stopwatch-master-ctrls
     .btn-group.btn-group-justified

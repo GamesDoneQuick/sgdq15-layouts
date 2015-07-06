@@ -182,6 +182,7 @@
 
             nodecg.Replicant('stopwatches')
                     .on('change', function(oldVal, newVal) {
+                        if (!newVal) return;
                         var time = newVal[self.index].time;
                         self.time = time || '88:88:88';
                     });
