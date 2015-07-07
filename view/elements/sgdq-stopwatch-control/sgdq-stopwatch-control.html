@@ -115,13 +115,9 @@
 
             var self = this;
 
-            // This is a travesty. We need to provide static methods on the NodeCG object.
-            this.nodecg = new NodeCG({
-                name: 'sgdq15-layouts',
-                config: {}
-            }, window.socket);
+            var socket = window.socket;
 
-            this.nodecg.Replicant('stopwatches')
+            NodeCG.Replicant('stopwatches', 'sgdq15-layouts', socket)
                     .on('change', function(oldVal, newVal) {
                         if (!newVal) {
                             return;
@@ -134,9 +130,9 @@
                         self.running = newVal[self.index].state === 'running';
                     });
 
-            var schedule = this.nodecg.Replicant('stopwatches');
+            var schedule = NodeCG.Replicant('stopwatches', 'sgdq15-layouts', socket);
 
-            this.nodecg.Replicant('currentRun')
+            NodeCG.Replicant('currentRun', 'sgdq15-layouts', socket)
                     .on('change', function(oldVal, newVal) {
                         if (!newVal) return;
 
