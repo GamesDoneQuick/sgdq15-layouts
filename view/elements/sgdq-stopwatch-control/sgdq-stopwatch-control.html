@@ -127,7 +127,7 @@
                         }
 
                         self.$.time.innerHTML = newVal[self.index].time;
-                        self.running = newVal[self.index].state === 'running';
+                        self._setRunning(newVal[self.index].state === 'running');
                     });
 
             var schedule = NodeCG.Replicant('stopwatches', 'sgdq15-layouts', socket);
@@ -147,7 +147,6 @@
         /*
          * Events
          */
-
         tapPlay: function() {
             this.nodecg.sendMessage('startTime', this.index);
         },
