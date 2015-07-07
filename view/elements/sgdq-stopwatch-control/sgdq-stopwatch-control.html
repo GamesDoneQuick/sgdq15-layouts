@@ -1,3 +1,23 @@
+<link rel="import" href="/components/polymer/polymer.html">
+<link rel="import" href="/components/iron-validator-behavior/iron-validator-behavior.html">
+<link rel="import" href="/components/paper-dialog/paper-dialog.html">
+<link rel="import" href="/components/paper-input/paper-input.html">
+<link rel="import" href="/components/paper-button/paper-button.html">
+
+<script>
+    // Create a "time" validator to be used in the "editDialog" modal
+    Polymer({
+        is: 'time-only',
+        behaviors: [
+            Polymer.IronValidatorBehavior
+        ],
+        validate: function(value) {
+            if (typeof value !== 'string') return false;
+            return valid = /^\d{2}:\d{2}:\d{2}$/.test(value);
+        }
+    });
+</script>
+
 <dom-module id="sgdq-stopwatch-control">
     <style>
         :host {
@@ -26,9 +46,7 @@
             white-space: nowrap;
         }
 
-        .btn {
-            font-size: 11px;
-        }
+        .btn {font-size: 11px;}
 
         #controls {
             display: flex;
@@ -46,38 +64,26 @@
             margin-right: 0.3em;
         }
 
-        #controls i:last-child {
-            margin-left: 0.3em;
-        }
+        #controls i:last-child {margin-left: 0.3em;}
 
-        #play {
-            color: #43ac6a;
-        }
+        #play {color: #43ac6a;}
 
-        #play:hover {
-            color: #358753;
-        }
+        #play:hover {color: #358753;}
 
-        #pause {
-            color: #e99002;
-        }
+        #pause {color: #e99002; }
 
-        #pause:hover {
-            color: #b67102;
-        }
+        #pause:hover {color: #b67102;}
 
-        #reset {
-            color: #f04124;
-        }
+        #reset {color: #f04124;}
 
-        #reset:hover {
-            color: #d32a0e;
-        }
+        #reset:hover {color: #d32a0e;}
+
+        time-only {display: none;}
     </style>
 
     <template>
         <div id="status">
-            <span id="time">88:88:88</span>
+            <span id="time">{{time}}</span>
             <span id="runner">?</span>
         </div>
         <div id="controls">
@@ -86,6 +92,21 @@
             <i id="pause" class="fa fa-pause" title="Pause" on-tap="tapPause"></i>
             <i id="reset" class="fa fa-undo" title="Reset" on-tap="tapReset"></i>
         </div>
+
+        <paper-dialog id="editDialog" with-backdrop>
+            <h2>Edit Stopwatch</h2>
+
+            <!-- Initialize the "time-only" validator so that we may use it -->
+            <time-only></time-only>
+
+            <paper-input id="editInput" label="Time" validator="time-only" on-iron-input-validate="editInputValidate"
+                         auto-validate error-message="Should be formatted as HH:MM:SS"></paper-input>
+
+            <div class="buttons">
+                <paper-button dialog-dismiss autofocus>Close</paper-button>
+                <paper-button id="saveEdit" on-tap="tapSave">Save</paper-button>
+            </div>
+        </paper-dialog>
     </template>
 </dom-module>
 
@@ -100,7 +121,8 @@
                 value: false,
                 readOnly: true,
                 observer: 'runningChanged'
-            }
+            },
+            time: String
         },
 
         runningChanged: function(newVal) {
@@ -123,7 +145,7 @@
                                     self.index, newVal.length);
                         }
 
-                        self.$.time.innerHTML = newVal[self.index].time;
+                        self.time = newVal[self.index].time;
                         self._setRunning(newVal[self.index].state === 'running');
                     });
 
@@ -143,6 +165,20 @@
         /*
          * Events
          */
+        tapEdit: function() {
+            this.$.editInput.value = this.time;
+            this.$.editDialog.open();
+        },
+
+        tapSave: function() {
+            if (this.$.editInput.validate()) {
+                var ts = this.$.editInput.value.split(':');
+                var ms = Date.UTC(1970, 0, 1, ts[0], ts[1], ts[2]);
+                NodeCG.sendMessageToBundle('setTime', 'sgdq15-layouts', {index: this.index, ms: ms});
+                this.$.editDialog.close();
+            }
+        },
+
         tapPlay: function() {
             NodeCG.sendMessageToBundle('startTime', 'sgdq15-layouts', this.index);
         },
@@ -153,6 +189,14 @@
 
         tapReset: function() {
             NodeCG.sendMessageToBundle('resetTime', 'sgdq15-layouts', this.index);
+        },
+
+        editInputValidate: function(e) {
+            if (e.target.validity.valid) {
+                this.$.saveEdit.removeAttribute('disabled');
+            } else {
+                this.$.saveEdit.setAttribute('disabled', true);
+            }
         }
     });
 </script>

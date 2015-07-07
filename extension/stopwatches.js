@@ -61,6 +61,15 @@ module.exports = function (nodecg) {
         }
     });
 
+    nodecg.listenFor('setTime', function(data) {
+        var index = data.index;
+        if (index >= 0 && index < NUM_STOPWATCHES) {
+            rieussecs[index].setMilliseconds(data.ms);
+        } else {
+            nodecg.log.error('index "%d" sent to "setTime" is out of bounds', index);
+        }
+    });
+
     function msToTime(duration) {
         var milliseconds = parseInt((duration%1000)/100),
             seconds = parseInt((duration/1000)%60),
