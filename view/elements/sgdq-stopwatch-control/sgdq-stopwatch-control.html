@@ -112,12 +112,9 @@
          * Lifecycle
          */
         ready: function() {
-
             var self = this;
 
-            var socket = window.socket;
-
-            NodeCG.Replicant('stopwatches', 'sgdq15-layouts', socket)
+            NodeCG.Replicant('stopwatches', 'sgdq15-layouts')
                     .on('change', function(oldVal, newVal) {
                         if (!newVal) {
                             return;
@@ -130,17 +127,16 @@
                         self._setRunning(newVal[self.index].state === 'running');
                     });
 
-            var schedule = NodeCG.Replicant('stopwatches', 'sgdq15-layouts', socket);
-
-            NodeCG.Replicant('currentRun', 'sgdq15-layouts', socket)
+            NodeCG.Replicant('currentRun', 'sgdq15-layouts')
                     .on('change', function(oldVal, newVal) {
                         if (!newVal) return;
 
                         // Hide the entire element if there is no runner at this index.
-                        self.style.display = (schedule.value && schedule.value[self.index]) ? 'flex' : 'none';
+                        self.style.display = (newVal && newVal.runners[self.index]) ? 'flex' : 'none';
 
-                        self.$.runner.innerHTML = newVal.runners[self.index];
-                        //self.$.runner.title = runner;
+                        var runner = newVal.runners[self.index] || '?';
+                        self.$.runner.innerHTML = runner;
+                        self.$.runner.setAttribute('title', runner);
                     });
         },
 
@@ -148,15 +144,15 @@
          * Events
          */
         tapPlay: function() {
-            this.nodecg.sendMessage('startTime', this.index);
+            NodeCG.sendMessageToBundle('startTime', 'sgdq15-layouts', this.index);
         },
 
         tapPause: function() {
-            this.nodecg.sendMessage('pauseTime', this.index);
+            NodeCG.sendMessageToBundle('pauseTime', 'sgdq15-layouts', this.index);
         },
 
         tapReset: function() {
-            this.nodecg.sendMessage('resetTime', this.index);
+            NodeCG.sendMessageToBundle('resetTime', 'sgdq15-layouts', this.index);
         }
     });
 </script>
