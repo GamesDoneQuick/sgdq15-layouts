@@ -183,8 +183,18 @@
             nodecg.Replicant('stopwatches')
                     .on('change', function(oldVal, newVal) {
                         if (!newVal) return;
-                        var time = newVal[self.index].time;
-                        self.time = time || '88:88:88';
+                        self.time = newVal[self.index].time || '88:88:88';
+
+                        switch (newVal[self.index].state) {
+                            case 'paused':
+                                self.$.timeContainer.style.backgroundColor = '#6b8b95';
+                                break;
+                            case 'finished':
+                                self.$.timeContainer.style.backgroundColor = '#29813f';
+                                break;
+                            default:
+                                self.$.timeContainer.style.backgroundColor = '#015670';
+                        }
                     });
         },
 

@@ -90,6 +90,7 @@
             <i id="edit" class="fa fa-pencil-square-o" title="Edit" on-tap="tapEdit"></i>
             <i id="play" class="fa fa-play" title="Start/Resume" on-tap="tapPlay"></i>
             <i id="pause" class="fa fa-pause" title="Pause" on-tap="tapPause"></i>
+            <i id="finish" class="fa fa-flag-checkered" title="Finish" on-tap="tapFinish"></i>
             <i id="reset" class="fa fa-undo" title="Reset" on-tap="tapReset"></i>
         </div>
 
@@ -195,6 +196,10 @@
 
         tapPause: function() {
             NodeCG.sendMessageToBundle('pauseTime', 'sgdq15-layouts', this.index);
+        },
+
+        tapFinish: function() {
+            NodeCG.sendMessageToBundle('finishTime', 'sgdq15-layouts', this.index);
         },
 
         tapReset: function() {

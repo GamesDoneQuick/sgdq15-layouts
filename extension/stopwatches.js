@@ -56,6 +56,17 @@ module.exports = function (nodecg) {
         }
     });
 
+    nodecg.listenFor('finishTime', function(index) {
+        if (index === 'all') {
+            rieussecs.forEach(function(sw) { sw.pause(); });
+        } else if (index >= 0 && index < NUM_STOPWATCHES) {
+            rieussecs[index].pause();
+            stopwatches.value[index].state = 'finished';
+        } else {
+            nodecg.log.error('index "%d" sent to "finishTime" is out of bounds', index);
+        }
+    });
+
     nodecg.listenFor('resetTime', function(index) {
         if (index === 'all') {
             rieussecs.forEach(function(sw) { sw.reset(); });
