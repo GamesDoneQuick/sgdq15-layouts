@@ -8,6 +8,11 @@ module.exports = function (nodecg) {
     var defaultStopwatches = [defaultStopwatch, defaultStopwatch, defaultStopwatch, defaultStopwatch];
     var stopwatches = nodecg.Replicant('stopwatches', {defaultValue: defaultStopwatches});
 
+    // Make sure all timers are set to "paused"
+    stopwatches.value.forEach(function(stopwatch) {
+        stopwatch.state = stopwatch.time === '00:00:00' ? 'stopped' : 'paused';
+    });
+
     // Make an array of 4 Rieussec rieussecs
     var rieussecs = [null, null, null, null].map(function(val, index) {
         // Load the existing time and start the stopwatch at that.
