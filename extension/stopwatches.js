@@ -71,7 +71,10 @@ module.exports = function (nodecg) {
         if (index >= 0 && index < NUM_STOPWATCHES) {
             // Pause all timers while we do our work.
             // Best way to ensure that all the tick cycles stay in sync.
-            rieussecs.forEach(function(rieussec){ rieussec.pause(); });
+            rieussecs.forEach(function(rieussec){
+                rieussec._cachedState = rieussec._state;
+                rieussec.pause();
+            });
 
             rieussecs[index].setMilliseconds(data.ms, true);
             var decimal = rieussecs[index]._milliseconds % 1;
@@ -83,7 +86,11 @@ module.exports = function (nodecg) {
                 rieussec.setMilliseconds(ms);
             });
 
-            rieussecs.forEach(function(rieussec){ rieussec.start(); });
+            rieussecs.forEach(function(rieussec){
+                if (rieussec._cachedState === 'running') {
+                    rieussec.start();
+                }
+            });
         } else {
             nodecg.log.error('index "%d" sent to "setTime" is out of bounds', index);
         }
