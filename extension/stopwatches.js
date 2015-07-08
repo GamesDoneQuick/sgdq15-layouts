@@ -64,15 +64,28 @@ module.exports = function (nodecg) {
     nodecg.listenFor('setTime', function(data) {
         var index = data.index;
         if (index >= 0 && index < NUM_STOPWATCHES) {
-            rieussecs[index].setMilliseconds(data.ms);
+            // Pause all timers while we do our work.
+            // Best way to ensure that all the tick cycles stay in sync.
+            rieussecs.forEach(function(rieussec){ rieussec.pause(); });
+
+            rieussecs[index].setMilliseconds(data.ms, true);
+            var decimal = rieussecs[index]._milliseconds % 1;
+
+            // This is a silly hack, but set the decimal of all the Rieussec's millisecond counters to the same value.
+            // This too helps ensure that the tick cycles remain in sync.
+            rieussecs.forEach(function(rieussec){
+                var ms = Math.floor(rieussec._milliseconds) + decimal;
+                rieussec.setMilliseconds(ms);
+            });
+
+            rieussecs.forEach(function(rieussec){ rieussec.start(); });
         } else {
             nodecg.log.error('index "%d" sent to "setTime" is out of bounds', index);
         }
     });
 
     function msToTime(duration) {
-        var milliseconds = parseInt((duration%1000)/100),
-            seconds = parseInt((duration/1000)%60),
+        var seconds = parseInt((duration/1000)%60),
             minutes = parseInt((duration/(1000*60))%60),
             hours = parseInt((duration/(1000*60*60))%24);
 
