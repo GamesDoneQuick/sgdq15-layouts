@@ -24,13 +24,9 @@
     overflow: hidden;
 }
 
-sgdq-sponsors {
+sgdq-sponsors, sgdq-game {
     height: 120px;
     width: 100%;
-}
-
-sgdq-game {
-    height: 120px;
 }
 
 sgdq-sponsors /deep/ sgdq-container {
