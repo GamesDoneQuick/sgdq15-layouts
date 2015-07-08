@@ -84,7 +84,7 @@
     <template>
         <div id="status">
             <span id="time">{{time}}</span>
-            <span id="runner">?</span>
+            <span id="runner" title="{{runner}}">{{runner}}</span>
         </div>
         <div id="controls">
             <i id="edit" class="fa fa-pencil-square-o" title="Edit" on-tap="tapEdit"></i>
@@ -107,6 +107,17 @@
                 <paper-button id="saveEdit" on-tap="tapSave">Save</paper-button>
             </div>
         </paper-dialog>
+
+        <paper-dialog id="resetDialog" with-backdrop>
+            <h2>Reset Stopwatch</h2>
+
+            <p>Are you sure you wish to reset <b>{{runner}}</b>'s stopwatch to 00:00:00?</p>
+
+            <div class="buttons">
+                <paper-button dialog-dismiss autofocus>Cancel</paper-button>
+                <paper-button on-tap="tapConfirmReset">Reset</paper-button>
+            </div>
+        </paper-dialog>
     </template>
 </dom-module>
 
@@ -122,7 +133,8 @@
                 readOnly: true,
                 observer: 'runningChanged'
             },
-            time: String
+            time: String,
+            runner: String
         },
 
         runningChanged: function(newVal) {
@@ -156,9 +168,7 @@
                         // Hide the entire element if there is no runner at this index.
                         self.style.display = (newVal && newVal.runners[self.index]) ? 'flex' : 'none';
 
-                        var runner = newVal.runners[self.index] || '?';
-                        self.$.runner.innerHTML = runner;
-                        self.$.runner.setAttribute('title', runner);
+                        self.runner = newVal.runners[self.index] || '?';
                     });
         },
 
@@ -188,7 +198,12 @@
         },
 
         tapReset: function() {
+            this.$.resetDialog.open();
+        },
+
+        tapConfirmReset: function() {
             NodeCG.sendMessageToBundle('resetTime', 'sgdq15-layouts', this.index);
+            this.$.resetDialog.close();
         },
 
         editInputValidate: function(e) {
