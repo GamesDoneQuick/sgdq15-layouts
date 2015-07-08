@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>4:3, 4 Player</title>
+    <link rel="stylesheet" href="font/gamegirl_classic.css">
+    <link rel="stylesheet" href="style/layouts.css">
+    <link rel="stylesheet" href="style/4x3_4.css">
+
+    <script src="components/gsap/src/minified/TweenMax.min.js"></script>
+    <script src="components/gsap/src/minified/plugins/TextPlugin.min.js"></script>
+    <script src="//use.typekit.net/mvu5oqo.js"></script>
+    <script>try{Typekit.load();}catch(e){}</script>
+
+    <link rel="import" href="elements/sgdq-game/sgdq-game.html">
+    <link rel="import" href="elements/sgdq-sponsors/sgdq-sponsors.html">
+    <link rel="import" href="elements/sgdq-runner/sgdq-runner.html">
+    <link rel="import" href="elements/sgdq-omnibar/sgdq-omnibar.html">
+</head>
+<body>
+<div id="container">
+    <div id="bar">
+        <sgdq-runner hide-right-cap index="0"></sgdq-runner>
+        <sgdq-runner hide-left-cap index="1"></sgdq-runner>
+        <div id="cameraPlaceholder"></div>
+        <sgdq-game></sgdq-game>
+        <sgdq-runner hide-right-cap index="2"></sgdq-runner>
+        <sgdq-runner hide-left-cap index="3"></sgdq-runner>
+    </div>
+    <sgdq-omnibar></sgdq-omnibar>
+</div>
+</body>
+</html>

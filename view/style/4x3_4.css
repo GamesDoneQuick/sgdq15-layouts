@@ -1,0 +1,36 @@
+#container {
+    background: url("../img/4x3-4_background.png") no-repeat;
+}
+
+#bar {
+    position: absolute;
+    top: 0;
+    left: 442px;
+    width: 396px;
+    height: 720px;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#cameraPlaceholder {
+    height: 209px;
+    margin-top: 12px;
+}
+
+sgdq-game {
+    height: 104px;
+    width: 378px;
+    margin: 8px 9px 15px;
+}
+
+sgdq-runner {
+    width: 311px;
+    margin-top: 9px;
+    margin-bottom: 4px;
+}
+
+sgdq-runner:nth-of-type(even) {
+    align-self: flex-end;
+}
