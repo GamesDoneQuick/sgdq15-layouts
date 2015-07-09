@@ -1,46 +1,75 @@
 .sgdq15-layouts {
-  .updateResult {
-    position: absolute;
-    left: 1px;
-    top: 100%;
-    transition: top 750ms ease;
-    z-index: 2;
-    pointer-events: none;
-    cursor: default;
-  }
-  .updateResult-show {
-    -webkit-animation: updateResult-show 4s;
-    -moz-animation:    updateResult-show 4s;
-    -o-animation:      updateResult-show 4s;
-    animation:         updateResult-show 4s;
-  }
-  .returnsResult {
-    overflow: hidden;
-  }
+    .control-label {
+        text-transform: capitalize;
+        flex-basis: 68px;
+    }
+
+    .form-control-static {
+        flex-basis: 192px;
+    }
+
+    .column {
+        width: 100%;
+        margin: 0 4px;
+
+        &:first-of-type {
+            margin-right: 4px;
+            margin-left: 0;
+        }
+
+        &:last-of-type {
+            margin-right: 0;
+            margin-left: 4px;
+        }
+    }
+
+    .updateResult {
+        position: absolute;
+        left: 1px;
+        top: 100%;
+        transition: top 750ms ease;
+        z-index: 2;
+        pointer-events: none;
+        cursor: default;
+    }
+
+    .updateResult-show {
+        -webkit-animation: updateResult-show 4s;
+        -moz-animation: updateResult-show 4s;
+        -o-animation: updateResult-show 4s;
+        animation: updateResult-show 4s;
+    }
+
+    .returnsResult {
+        overflow: hidden;
+    }
 }
 
 @-webkit-keyframes updateResult-show {
-  0%   { top: 100%; }
-  5%   { top: 0%; }
-  95%  { top: 0%; }
-  100% { top: 100%; }
+    0% {top: 100%;}
+    5% {top: 0;}
+    95% {top: 0;}
+    100% {top: 100%;}
 }
+
 @-moz-keyframes updateResult-show {
-  0%   { top: 100%; }
-  5%   { top: 0%; }
-  95%  { top: 0%; }
-  100% { top: 100%; }
+    0% {top: 100%;}
+    5% {top: 0;}
+    95% {top: 0;}
+    100% {top: 100%;}
 }
+
 @-o-keyframes updateResult-show {
-  0%   { top: 100%; }
-  5%   { top: 0%; }
-  95%  { top: 0%; }
-  100% { top: 100%; }
+    0% {top: 100%;}
+    5% {top: 0;}
+    95% {top: 0;}
+    100% {top: 100%;}
 }
+
 @keyframes updateResult-show {
-  0%   { top: 100%; }
-  5%   { top: 0%; }
-  95%  { top: 0%; }
-  100% { top: 100%; }
+    0% {top: 100%;}
+    5% {top: 0;}
+    95% {top: 0;}
+    100% {top: 100%;}
 }
 

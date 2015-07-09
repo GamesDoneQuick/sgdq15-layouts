@@ -2,6 +2,7 @@
   "name": "sgdq15-layouts",
   "dependencies": {
     "gsap": "~1.17.0",
-    "polymer": "~1.0.4"
+    "polymer": "~1.0.4",
+    "typeahead.js": "~0.11.1"
   }
 }

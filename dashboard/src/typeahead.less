@@ -1,0 +1,42 @@
+.sgdq15-layouts {
+    .tt-dataset,
+    .tt-suggestion {
+        width: 100%;
+    }
+
+    .tt-suggestion {
+        padding: 8px 20px;
+        font-size: 14px;
+        line-height: 18px;
+
+        &:hover {
+            cursor: pointer;
+            color: #fff;
+            background-color: #0097cf;
+        }
+
+        &.tt-cursor {
+            color: #fff;
+            background-color: #0097cf;
+        }
+
+        + .tt-suggestion {
+            font-size: 14px;
+            border-top: 1px solid #ccc;
+        }
+
+        .run-console {
+            float: right;
+            font-style: italic;
+        }
+
+        .run-game {
+            font-size: 14px;
+            font-weight: bold;
+        }
+    }
+
+    .tt-suggestion-topline {
+        margin-bottom: 4px;
+    }
+}

@@ -1,3 +1,22 @@
+.sgdq15-layouts .control-label {
+  text-transform: capitalize;
+  flex-basis: 68px;
+}
+.sgdq15-layouts .form-control-static {
+  flex-basis: 192px;
+}
+.sgdq15-layouts .column {
+  width: 100%;
+  margin: 0 4px;
+}
+.sgdq15-layouts .column:first-of-type {
+  margin-right: 4px;
+  margin-left: 0;
+}
+.sgdq15-layouts .column:last-of-type {
+  margin-right: 0;
+  margin-left: 4px;
+}
 .sgdq15-layouts .updateResult {
   position: absolute;
   left: 1px;
@@ -21,10 +40,10 @@
     top: 100%;
   }
   5% {
-    top: 0%;
+    top: 0;
   }
   95% {
-    top: 0%;
+    top: 0;
   }
   100% {
     top: 100%;
@@ -35,10 +54,10 @@
     top: 100%;
   }
   5% {
-    top: 0%;
+    top: 0;
   }
   95% {
-    top: 0%;
+    top: 0;
   }
   100% {
     top: 100%;
@@ -49,10 +68,10 @@
     top: 100%;
   }
   5% {
-    top: 0%;
+    top: 0;
   }
   95% {
-    top: 0%;
+    top: 0;
   }
   100% {
     top: 100%;
@@ -63,10 +82,10 @@
     top: 100%;
   }
   5% {
-    top: 0%;
+    top: 0;
   }
   95% {
-    top: 0%;
+    top: 0;
   }
   100% {
     top: 100%;

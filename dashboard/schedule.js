@@ -41,13 +41,20 @@
                 },
                 {
                     name: 'schedule',
+                    limit: 10,
                     displayKey: 'game',
-                    source: substringMatcher(schedule.value),
+                    source: substringMatcher(newVal),
                     templates: {
                         suggestion: function (result) {
-                            return '<p class="run-console">' + (result.console || '') + '</p>' +
-                                '<p class="run-game">' + result.game + '</p>' +
-                                '<p class="run-runners">' + result.runners.join(', ') + '</p>';
+                            return [
+                                '<div>',
+                                    '<div class="tt-suggestion-topline">',
+                                        '<span class="run-console">' + (result.console || '') + '</span>',
+                                        '<span class="run-game">' + result.game + '</span>',
+                                    '</div>',
+                                    '<span class="run-runners">' + result.runners.join(', ') + '</span>',
+                                '</div>'
+                            ].join('\n');
                         }
                     }
                 });
