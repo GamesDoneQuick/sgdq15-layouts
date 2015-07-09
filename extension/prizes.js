@@ -1,11 +1,11 @@
 /* jshint -W106 */
 'use strict';
 
-// The list of currently active prizes can be retrieved from this url
-var PRIZES_URL = 'https://gamesdonequick.com/tracker/search/?type=prize&feed=current';
+var PRIZES_URL = 'https://gamesdonequick.com/tracker/search/?type=prize&event=16';
+var CURRENT_PRIZES_URL = 'https://gamesdonequick.com/tracker/search/?type=prize&feed=current&event=16';
 var POLL_INTERVAL = 3 * 60 * 1000;
 
-var util = require('util');
+var format = require('util').format;
 var Q = require('q');
 var request = require('request');
 var equal = require('deep-equal');
@@ -13,6 +13,7 @@ var numeral = require('numeral');
 
 module.exports = function (nodecg) {
     var currentPrizes = nodecg.Replicant('currentPrizes', {defaultValue: []});
+    var allPrizes = nodecg.Replicant('allPrizes', {defaultValue: []});
 
     // Get initial data
     update();
@@ -35,38 +36,57 @@ module.exports = function (nodecg) {
     });
 
     function update() {
-        var deferred = Q.defer();
-        request(PRIZES_URL, function (error, response, body) {
-            if (!error && response.statusCode === 200) {
-                // The response we get has a tremendous amount of cruft that we just don't need. We filter that out.
-                var prizes = JSON.parse(body);
-                var relevantData = prizes.map(function(prize) {
-                    return {
-                        name: prize.fields.name,
-                        provided: prize.fields.provided,
-                        description: prize.fields.description,
-                        image: prize.fields.image,
-                        minimumbid: numeral(prize.fields.minimumbid).format('$0,0[.]00'),
-                        grand: prize.fields.category__name === 'Grand'
-                    };
-                });
-
-                if (equal(relevantData, currentPrizes.value)) {
-                    nodecg.log.info('Prizes unchanged, %d active', relevantData.length);
-                    deferred.resolve(false);
-                } else {
-                    currentPrizes.value = relevantData;
-                    nodecg.log.info('Updated prizes, %d active', relevantData.length);
-                    deferred.resolve(true);
-                }
-            } else {
-                var msg = 'Could not get prizes, unknown error';
-                if (error) msg = util.format('Could not get prizes:', error.message);
-                else if (response) msg = util.format('Could not get prizes, response code %d', response.statusCode);
-                nodecg.log.error(msg);
-                deferred.reject(msg);
-            }
+        var currentPromise = Q.defer();
+        request(CURRENT_PRIZES_URL, function(err, res, body) {
+            handleResponse(err, res, body, currentPromise, {
+                label: 'current prizes',
+                replicant: currentPrizes
+            });
         });
-        return deferred.promise;
+
+        var allPromise = Q.defer();
+        request(PRIZES_URL, function(err, res, body) {
+            handleResponse(err, res, body, allPromise, {
+                label: 'all prizes',
+                replicant: allPrizes
+            });
+        });
+
+        return Q.all([
+            currentPromise,
+            allPromise
+        ]);
+    }
+
+    function handleResponse(error, response, body, deferred, opts) {
+        if (!error && response.statusCode === 200) {
+            // The response we get has a tremendous amount of cruft that we just don't need. We filter that out.
+            var prizes = JSON.parse(body);
+            var relevantData = prizes.map(formatPrize);
+
+            if (equal(relevantData, opts.replicant.value)) {
+                deferred.resolve(false);
+            } else {
+                opts.replicant.value = relevantData;
+                deferred.resolve(true);
+            }
+        } else {
+            var msg = format('Could not get %s, unknown error', opts.label);
+            if (error) msg = format('Could not get %s:', opts.label, error.message);
+            else if (response) msg = format('Could not get %s, response code %d', opts.label, response.statusCode);
+            nodecg.log.error(msg);
+            deferred.reject(msg);
+        }
+    }
+
+    function formatPrize(prize) {
+        return {
+            name: prize.fields.name,
+            provided: prize.fields.provided,
+            description: prize.fields.description,
+            image: prize.fields.image,
+            minimumbid: numeral(prize.fields.minimumbid).format('$0,0[.]00'),
+            grand: prize.fields.category__name === 'Grand'
+        };
     }
 };

@@ -20,11 +20,11 @@
   font-size: 14px;
   border-top: 1px solid #ccc;
 }
-.sgdq15-layouts .tt-suggestion .run-console {
+.sgdq15-layouts .tt-suggestion .result-aux {
   float: right;
   font-style: italic;
 }
-.sgdq15-layouts .tt-suggestion .run-game {
+.sgdq15-layouts .tt-suggestion .result-main {
   font-size: 14px;
   font-weight: bold;
 }

@@ -216,3 +216,8 @@ fieldset[disabled] .twitter-typeahead .tt-input {
 .tt-menu .tt-suggestion.tt-cursor a {
     color: #262626;
 }
+
+.tt-category-name {
+    padding-left: 10px;
+    padding-right: 10px;
+}

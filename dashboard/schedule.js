@@ -32,7 +32,6 @@
                 nextRun.html('None');
             }
 
-            // TODO: I'm, unsure if re-making the typeahead each time is necessary
             if (manualTypeahead.typeahead) manualTypeahead.typeahead('destroy');
             manualTypeahead.typeahead({
                     hint: true,
@@ -41,18 +40,17 @@
                 },
                 {
                     name: 'schedule',
-                    limit: 10,
                     displayKey: 'game',
-                    source: substringMatcher(newVal),
+                    source: window.scheduleMatcher(newVal),
                     templates: {
                         suggestion: function (result) {
                             return [
                                 '<div>',
                                     '<div class="tt-suggestion-topline">',
-                                        '<span class="run-console">' + (result.console || '') + '</span>',
-                                        '<span class="run-game">' + result.game + '</span>',
+                                        '<span class="result-main">' + result.game + '</span>',
+                                        '<span class="result-aux">' + (result.console || '') + '</span>',
                                     '</div>',
-                                    '<span class="run-runners">' + result.runners.join(', ') + '</span>',
+                                    '<span class="result-sub">' + result.runners.join(', ') + '</span>',
                                 '</div>'
                             ].join('\n');
                         }
@@ -131,7 +129,7 @@
     }
 
     /* Typeahead */
-    var substringMatcher = function (schedule) {
+    window.scheduleMatcher = function (schedule) {
         return function findMatches(q, cb) {
             var matches, substrRegex;
 
