@@ -160,6 +160,17 @@
 
                         self.time = newVal[self.index].time;
                         self._setRunning(newVal[self.index].state === 'running');
+
+                        switch (newVal[self.index].state) {
+                            case 'paused':
+                                self.$.time.style.color = '#6b8b95';
+                                break;
+                            case 'finished':
+                                self.$.time.style.color = '#29813f';
+                                break;
+                            default:
+                                self.$.time.style.color = 'black';
+                        }
                     });
 
             NodeCG.Replicant('currentRun', 'sgdq15-layouts')
