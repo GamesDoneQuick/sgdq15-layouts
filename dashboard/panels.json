@@ -26,5 +26,12 @@
     "width": 2,
     "file": "stopwatches.jade",
     "faIcon": "fa-clock-o"
+  },
+  {
+    "name": "omnibar",
+    "title": "Omnibar",
+    "width": 2,
+    "file": "omnibar.jade",
+    "faIcon": "fa-clock-o"
   }
 ]
