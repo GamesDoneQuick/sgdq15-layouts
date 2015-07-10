@@ -45,5 +45,5 @@ sgdq-game /deep/ sgdq-container {
 
 sgdq-runner {
     width: 364px;
-    height: 80px;
+    font-size: 23px;
 }

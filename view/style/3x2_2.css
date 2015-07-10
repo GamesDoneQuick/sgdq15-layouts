@@ -29,17 +29,17 @@ sgdq-sponsors, sgdq-game {
     width: 100%;
 }
 
-sgdq-sponsors /deep/ sgdq-container {
+sgdq-sponsors sgdq-container {
     border-right: none;
 }
 
-sgdq-game /deep/ sgdq-container {
+sgdq-game sgdq-container {
     border-left: none;
 }
 
 sgdq-runner {
     width: 376px;
-    height: 78px;
+    font-size: 22px;
     margin-top: 9px;
     margin-bottom: 10px;
 }

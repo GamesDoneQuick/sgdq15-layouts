@@ -30,3 +30,8 @@ sgdq-sponsors {
     margin: 7px 10px 7px 8px;
     width: 390px;
 }
+
+sgdq-runner {
+    margin-top: 3px;
+    margin-bottom: 12px;
+}
