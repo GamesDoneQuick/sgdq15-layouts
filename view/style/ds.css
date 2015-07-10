@@ -1,0 +1,21 @@
+#container {
+    background: url("../img/ds_background.png") no-repeat;
+}
+
+#bar {
+    position: absolute;
+    top: 293px;
+    right: 0;
+    width: 394px;
+    overflow: hidden;
+}
+
+sgdq-game {
+    margin-right: 7px;
+    margin-left: 7px;
+}
+
+sgdq-runner {
+    margin-top: 187px;
+    height: 64px;
+}
