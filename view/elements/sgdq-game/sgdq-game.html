@@ -119,11 +119,11 @@
                         self.$.category.innerHTML = newVal.category;
                         self.$.estimate.innerHTML = newVal.estimate;
 
-                        var hostWidth = self._getElementContentWidth(self);
+                        var containerWidth = self._getElementContentWidth(self.$$('sgdq-container'));
                         [self.$.game, self.$.category].forEach(function(el) {
                             var elWidth = el.scrollWidth;
-                            if (elWidth > hostWidth) {
-                                TweenLite.set(el, {scaleX: hostWidth / elWidth});
+                            if (elWidth > containerWidth) {
+                                TweenLite.set(el, {scaleX: containerWidth / elWidth});
                             } else {
                                 TweenLite.set(el, {scaleX: 1});
                             }
