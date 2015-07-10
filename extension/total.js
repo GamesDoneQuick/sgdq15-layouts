@@ -56,10 +56,8 @@ module.exports = function (nodecg) {
 
                 if (freshTotal !== total.value) {
                     total.value = freshTotal;
-                    nodecg.log.info('Updated total:', total.value);
                     deferred.resolve(true);
                 } else {
-                    nodecg.log.info('Total unchanged:', total.value);
                     deferred.resolve(false);
                 }
             } else {

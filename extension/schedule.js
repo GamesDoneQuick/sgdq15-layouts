@@ -44,7 +44,6 @@ module.exports = function (nodecg) {
             }
 
             if (sheet.updated === lastUpdated) {
-                nodecg.log.info('Schedule unchanged, not updating');
                 deferred.resolve(false);
                 return;
             }
@@ -93,7 +92,6 @@ module.exports = function (nodecg) {
                 }
 
                 schedule.value = relevantData;
-                nodecg.log.info('Updated schedule, timestamp', lastUpdated);
                 deferred.resolve(true);
             });
         });

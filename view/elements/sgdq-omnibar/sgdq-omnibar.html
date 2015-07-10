@@ -290,6 +290,33 @@
                         self.total = newVal;
                     });
 
+            nodecg.listenFor('barDemand', function(data) {
+                switch (data.type) {
+                    case 'bid':
+                        self.showBid(data, true);
+                        break;
+                    case 'prize':
+                        self.showPrize(data, true);
+                        break;
+                }
+            });
+
+            nodecg.listenFor('barCurrentBids', function() {
+                self.showBids(true);
+            });
+
+            nodecg.listenFor('barCurrentPrizes', function() {
+                self.showPrizes(true);
+            });
+
+            nodecg.listenFor('barUpNext', function() {
+                self.showNext(true);
+            });
+
+            nodecg.listenFor('barCTA', function() {
+                self.showCTA(true);
+            });
+
             // Bids are the first thing we show, so we use this to start our loop
             self.showCTA();
         },
@@ -298,7 +325,6 @@
          * Methods
          */
         showBids: function (immediate) {
-            var self = this;
             if (immediate) this.tl.clear();
 
             if (window.currentBids.length) {
@@ -314,33 +340,43 @@
                 }
 
                 // Loop over each bid and queue it up on the timeline
-                bidsToDisplay.forEach(function (bid) {
-                    self.tl.to(self.$.body, 0.25, {
-                        opacity: 0,
-                        ease: Linear.easeNone,
-                        onComplete: function () {
-                            self.topText = 'BID FOR ' + bid.speedrun;
-                            self.bottomText = bid.name + ' - ' + bid.total;
-                            self.$.twoLines.style.display = 'block';
-                            self.$.fullLine.style.display = 'none';
-                        }
-                    });
-
-                    self.tl.to(self.$.body, 0.25, {
-                        opacity: 1,
-                        ease: Linear.easeNone
-                    });
-
-                    // Give the bid some time to show
-                    self.tl.to({}, self.displayDuration, {});
-                });
+                bidsToDisplay.forEach(this.showBid.bind(this));
             }
 
             this.tl.call(this.showPrizes, null, this, '+=0.01');
         },
 
-        showPrizes: function (immediate) {
+        showBid: function (bid, immediate) {
             var self = this;
+            if (immediate) {
+                this.tl.clear();
+                this.tl.call(this._showLabel, ['DONATION BIDS', '25px'], this);
+            }
+
+            this.tl.to(this.$.body, 0.25, {
+                opacity: 0,
+                ease: Linear.easeNone,
+                onComplete: function () {
+                    self.topText = 'BID FOR ' + bid.speedrun;
+                    self.bottomText = bid.name + ' - ' + bid.total;
+                    self.$.twoLines.style.display = 'block';
+                    self.$.fullLine.style.display = 'none';
+                }
+            });
+
+            this.tl.to(this.$.body, 0.25, {
+                opacity: 1,
+                ease: Linear.easeNone
+            });
+
+            // Give the bid some time to show
+            this.tl.to({}, this.displayDuration, {});
+
+            // If we're just showing this one bid on-demand, show "Prizes" next.
+            if (immediate) this.tl.call(this.showPrizes, null, this, '+=0.01');
+        },
+
+        showPrizes: function (immediate) {
             if (immediate) this.tl.clear();
 
             if (window.currentGrandPrizes.length || window.currentNormalPrizes.length) {
@@ -349,7 +385,7 @@
                 var prizesToDisplay = window.currentNormalPrizes.slice(0);
                 if (window.currentGrandPrizes.length) {
                     // Figure out what grand prize to show in this batch.
-                    var lastShownGrandPrizeIdx = window.currentGrandPrizes.indexOf(self.lastShownGrandPrize);
+                    var lastShownGrandPrizeIdx = window.currentGrandPrizes.indexOf(this.lastShownGrandPrize);
                     var nextGrandPrizeIdx = lastShownGrandPrizeIdx >= window.currentGrandPrizes.length - 1
                             ? 0
                             : lastShownGrandPrizeIdx + 1;
@@ -358,34 +394,44 @@
                 }
 
                 // Loop over each prize and queue it up on the timeline
-                prizesToDisplay.forEach(function (prize) {
-                    self.tl.to(self.$.body, 0.25, {
-                        opacity: 0,
-                        ease: Linear.easeNone,
-                        onComplete: function () {
-                            self.topText = 'PROVIDED BY ' + prize.provided;
-                            if (prize.grand) {
-                                self.bottomText = 'Grand Prize: ' + prize.name + ' (Minimum Bid: '
-                                        + prize.minimumbid + ')';
-                            } else {
-                                self.bottomText = prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
-                            }
-                            self.$.twoLines.style.display = 'block';
-                            self.$.fullLine.style.display = 'none';
-                        }
-                    });
-
-                    self.tl.to(self.$.body, 0.25, {
-                        opacity: 1,
-                        ease: Linear.easeNone
-                    });
-
-                    // Give the prize some time to show
-                    self.tl.to({}, self.displayDuration, {});
-                });
+                prizesToDisplay.forEach(this.showPrize.bind(this));
             }
 
             this.tl.call(this.showNext, null, this, '+=0.01');
+        },
+
+        showPrize: function (prize, immediate) {
+            var self = this;
+            if (immediate) {
+                this.tl.clear();
+                this.tl.call(this._showLabel, ['RAFFLE PRIZES', '25px'], this);
+            }
+
+            this.tl.to(this.$.body, 0.25, {
+                opacity: 0,
+                ease: Linear.easeNone,
+                onComplete: function () {
+                    self.topText = 'PROVIDED BY ' + prize.provided;
+                    if (prize.grand) {
+                        self.bottomText = 'Grand Prize: ' + prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
+                    } else {
+                        self.bottomText = prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
+                    }
+                    self.$.twoLines.style.display = 'block';
+                    self.$.fullLine.style.display = 'none';
+                }
+            });
+
+            this.tl.to(this.$.body, 0.25, {
+                opacity: 1,
+                ease: Linear.easeNone
+            });
+
+            // Give the prize some time to show
+            this.tl.to({}, this.displayDuration, {});
+
+            // If we're just showing this one prize on-demand, show "Up Next" next.
+            if (immediate) this.tl.call(this.showNext, null, this, '+=0.01');
         },
 
         showNext: function (immediate) {

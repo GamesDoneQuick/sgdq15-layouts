@@ -8,7 +8,7 @@
   },
   {
     "name": "prizes",
-    "title": "Prizes",
+    "title": "Current Prizes",
     "width": 4,
     "file": "prizes.jade",
     "faIcon": "fa-gift"
@@ -32,6 +32,6 @@
     "title": "Omnibar",
     "width": 2,
     "file": "omnibar.jade",
-    "faIcon": "fa-clock-o"
+    "faIcon": "fa-minus"
   }
 ]

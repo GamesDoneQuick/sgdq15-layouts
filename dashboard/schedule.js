@@ -41,7 +41,7 @@
                 {
                     name: 'schedule',
                     displayKey: 'game',
-                    source: window.scheduleMatcher(newVal),
+                    source: scheduleMatcher(newVal),
                     templates: {
                         suggestion: function (result) {
                             return [
@@ -129,7 +129,7 @@
     }
 
     /* Typeahead */
-    window.scheduleMatcher = function (schedule) {
+    var scheduleMatcher = function (schedule) {
         return function findMatches(q, cb) {
             var matches, substrRegex;
 
@@ -145,7 +145,13 @@
                 if (substrRegex.test(run.game) || substrRegex.test(run.runners)) {
                     // the typeahead jQuery plugin expects suggestions to a
                     // JavaScript object, refer to typeahead docs for more info
-                    matches.push({game: run.game, runners: run.runners, console: run.console, index: run.index});
+                    matches.push({
+                        type: 'run',
+                        game: run.game,
+                        runners: run.runners,
+                        console: run.console,
+                        index: run.index
+                    });
                 }
             });
 
