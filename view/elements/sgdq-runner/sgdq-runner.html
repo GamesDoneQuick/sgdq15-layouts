@@ -69,6 +69,8 @@
             color: black;
             font-family: "tablet-gothic-wide";
             font-weight: 700;
+            margin-left: 5px;
+            margin-right: 5px;
         }
 
         #runnerInfo.hideLeftCap {
@@ -90,6 +92,8 @@
             background-color: #015670;
             border-left: 1px solid black;
             border-right: 1px solid black;
+            margin-left: 5px;
+            margin-right: 5px;
         }
 
         #timeContainer.hideLeftCap {
@@ -126,7 +130,7 @@
         </div>
         <hr/>
         <div id="timeContainer" class$="{{hideCaps(hideLeftCap, hideRightCap, '')}}">
-            <span id="time">{{time}}</span>
+            <div id="time">{{time}}</div>
         </div>
         <hr class$="{{hideCaps(hideLeftCap, hideRightCap, '')}}"/>
     </template>
@@ -179,12 +183,17 @@
 
                         var streamlink = newVal.streamlinks[self.index];
                         self.streamlink = streamlink || '?';
+
+
+                        self._scaleTextElements(self.$.runnerInfo, [self.$.handle, self.$.streamlink]);
                     });
 
             nodecg.Replicant('stopwatches')
                     .on('change', function(oldVal, newVal) {
                         if (!newVal) return;
                         self.time = newVal[self.index].time || '88:88:88';
+
+                        self._scaleTextElements(self.$.timeContainer, [self.$.time]);
 
                         switch (newVal[self.index].state) {
                             case 'paused':
@@ -205,7 +214,25 @@
         _getElementContentWidth: function (element) {
             var styles = window.getComputedStyle(element);
             var padding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
-            return element.clientWidth - padding;
+            var border = parseFloat(styles.borderLeft) + parseFloat(styles.borderRight);
+            return element.clientWidth - padding - border;
+        },
+
+        _scaleTextElements: function (container, elements) {
+            var containerWidth = this._getElementContentWidth(container);
+
+            elements.forEach(function(el) {
+                var elWidth = el.scrollWidth;
+                if (elWidth > containerWidth) {
+                    TweenLite.set(el, {
+                        scaleX: containerWidth / elWidth,
+                        marginLeft: '-100%',
+                        marginRight: '-100%' // hack to re-center timer when left/right aligned
+                    });
+                } else {
+                    TweenLite.set(el, {scaleX: 1});
+                }
+            });
         },
 
         // this is dumb zzz
