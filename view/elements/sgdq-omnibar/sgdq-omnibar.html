@@ -1,4 +1,5 @@
 <link rel="import" href="../../components/polymer/polymer.html"/>
+<link rel="import" href="../sgdq-qplate/sgdq-qplate.html"/>
 
 <dom-module id="sgdq-omnibar">
     <style>
@@ -69,22 +70,57 @@
             padding-right: 12px;
             white-space: nowrap;
             flex-grow: 1;
+            perspective: 2000px;
+        }
+
+        #twoLines {
+            transform: translate(0px, -39.5px);
         }
 
         #topLine {
+            position: absolute;
+            top: -1px;
             font-family: "tablet-gothic-narrow";
             font-weight: 700;
             font-size: 18px;
             font-style: italic;
             text-transform: uppercase;
-            line-height: 0;
             transform-origin: left;
         }
 
+        #topLine-display {
+            transform: rotateY(0deg) translateZ(5px);
+        }
+
+        #topLine-next {
+            transform: rotateX(180deg) translateZ(5px);
+        }
+
         #bottomLine {
+            position: absolute;
+            top: 20px;
             font-weight: 600;
             font-size: 26px;
             transform-origin: left;
+        }
+
+        #bottomLine-display {
+            transform: rotateY(0deg) translateZ(7px);
+        }
+
+        #bottomLine-next {
+            transform: rotateX(180deg) translateZ(7px);
+        }
+
+        .qPlate {
+            line-height: 0;
+            transform-style: preserve-3d;
+            transition: transform 500ms ease;
+        }
+
+        .qPlate-face {
+            position: absolute;
+            backface-visibility: hidden;
         }
 
         #fullLine {
@@ -142,8 +178,8 @@
             </div>
             <div id="body">
                 <div id="twoLines">
-                    <div id="topLine">{{topText}}</div>
-                    <div id="bottomLine">{{bottomText}}</div>
+                    <sgdq-qplate id="topLine"></sgdq-qplate>
+                    <sgdq-qplate id="bottomLine" direction="up"></sgdq-qplate>
                 </div>
                 <div id="fullLine"></div>
             </div>
@@ -155,8 +191,6 @@
 </dom-module>
 
 <script>
-    // TODO: up next, prizes, arbitrary
-
     Polymer({
         is: 'sgdq-omnibar',
 
@@ -173,7 +207,7 @@
             },
             displayDuration: {
                 type: Number,
-                value: 4,
+                value: 3,
                 readOnly: true
             },
             lastShownGrandPrizeIdx: {
@@ -182,11 +216,11 @@
             },
             topText: {
                 type: String,
-                observer: 'fitBodyText'
+                observer: 'topTextChanged'
             },
             bottomText: {
                 type: String,
-                observer: 'fitBodyText'
+                observer: 'bottomTextChanged'
             },
             total: {
                 type: String,
@@ -201,27 +235,18 @@
                 text: newVal,
                 ease: Linear.easeNone,
                 onUpdate: function() {
-                    self.fitBodyText();
+                    self.$.topLine.fit();
+                    self.$.bottomLine.fit();
                 }
             });
         },
 
-        fitBodyText: function() {
-            var bodyWidth = this._getElementContentWidth(this.$.body);
+        topTextChanged: function(newVal) {
+            this.$.topLine.flipTo(newVal);
+        },
 
-            var bottomLineWidth = this.$.bottomLine.scrollWidth;
-            if (bottomLineWidth > bodyWidth) {
-                TweenLite.set(this.$.bottomLine, {scaleX: bodyWidth / bottomLineWidth});
-            } else {
-                TweenLite.set(this.$.bottomLine, {scaleX: 1});
-            }
-
-            var topLineWidth = this.$.topLine.scrollWidth;
-            if (topLineWidth > bodyWidth) {
-                TweenLite.set(this.$.topLine, {scaleX: bodyWidth / topLineWidth});
-            } else {
-                TweenLite.set(this.$.topLine, {scaleX: 1});
-            }
+        bottomTextChanged: function(newVal) {
+            this.$.bottomLine.flipTo(newVal);
         },
 
         /*
@@ -350,24 +375,25 @@
             var self = this;
             if (immediate) {
                 this.tl.clear();
+
+                // Silly, should do this in a more reliable fashion.
+                //if (this.$.fullText)
+
                 this.tl.call(this._showLabel, ['DONATION BIDS', '25px'], this);
             }
 
-            this.tl.to(this.$.body, 0.25, {
-                opacity: 0,
-                ease: Linear.easeNone,
-                onComplete: function () {
+            // GSAP is dumb with `call` sometimes. Putting this in a near-zero duration tween seems to be more reliable.
+            this.tl.to({}, 0.01, {
+                onComplete: function() {
                     self.topText = 'BID FOR ' + bid.speedrun;
-                    self.bottomText = bid.name + ' - ' + bid.total;
                     self.$.twoLines.style.display = 'block';
                     self.$.fullLine.style.display = 'none';
                 }
             });
 
-            this.tl.to(this.$.body, 0.25, {
-                opacity: 1,
-                ease: Linear.easeNone
-            });
+            this.tl.call(function() {
+                self.bottomText = bid.name + ' - ' + bid.total;
+            }, null, null, '+=0.08');
 
             // Give the bid some time to show
             this.tl.to({}, this.displayDuration, {});
@@ -407,25 +433,22 @@
                 this.tl.call(this._showLabel, ['RAFFLE PRIZES', '25px'], this);
             }
 
-            this.tl.to(this.$.body, 0.25, {
-                opacity: 0,
-                ease: Linear.easeNone,
-                onComplete: function () {
+            // GSAP is dumb with `call` sometimes. Putting this in a near-zero duration tween seems to be more reliable.
+            this.tl.to({}, 0.01, {
+                onComplete: function() {
                     self.topText = 'PROVIDED BY ' + prize.provided;
-                    if (prize.grand) {
-                        self.bottomText = 'Grand Prize: ' + prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
-                    } else {
-                        self.bottomText = prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
-                    }
                     self.$.twoLines.style.display = 'block';
                     self.$.fullLine.style.display = 'none';
                 }
             });
 
-            this.tl.to(this.$.body, 0.25, {
-                opacity: 1,
-                ease: Linear.easeNone
-            });
+            this.tl.call(function() {
+                if (prize.grand) {
+                    self.bottomText = 'Grand Prize: ' + prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
+                } else {
+                    self.bottomText = prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
+                }
+            }, null, null, '+=0.08');
 
             // Give the prize some time to show
             this.tl.to({}, this.displayDuration, {});
@@ -440,17 +463,16 @@
                 if (immediate) this.tl.clear();
                 this.tl.call(this._showLabel, ['UP NEXT', '31px'], this);
 
-                this.tl.to(this.$.body, 0.25, {
-                    opacity: 0,
-                    ease: Linear.easeNone,
-                    onComplete: function () {
+                // GSAP is dumb with `call` sometimes. Putting this in a near-zero duration tween seems to be more reliable.
+                this.tl.to({}, 0.01, {
+                    onComplete: function() {
                         /* Depending on how we enter the very end of the schedule, we might end up in this func
                          * after window.nextRun has been set to null. In that case, we immediately clear the
                          * timeline and bail out to showing bids again.
                          */
                         if (window.nextRun) {
                             self.topText = window.nextRun.runners.join(', ');
-                            self.bottomText = window.nextRun.game + ' - ' + window.nextRun.category;
+
                             self.$.fullLine.innerHTML = '';
                         } else {
                             self.tl.clear();
@@ -459,10 +481,9 @@
                     }
                 });
 
-                this.tl.to(this.$.body, 0.25, {
-                    opacity: 1,
-                    ease: Linear.easeNone
-                });
+                this.tl.call(function() {
+                    self.bottomText = window.nextRun.game + ' - ' + window.nextRun.category;
+                }, null, null, '+=0.08');
 
                 // Give it some time to show
                 this.tl.to({}, this.displayDuration, {});
@@ -476,7 +497,7 @@
             if (immediate) this.tl.clear();
             this.tl.add('showCTA_start');
             this.tl.add(this._hideLabel(), 'showCTA_start');
-            this.tl.to(this.$.body, 0.25, {
+            this.tl.to(this.$.fullLine, 0.65, {
                 opacity: 0,
                 ease: Linear.easeNone,
                 onComplete: function () {
@@ -493,12 +514,12 @@
                 }
             }, 'showCTA_start');
 
-            this.tl.to(this.$.body, 0.25, {
+            this.tl.to(this.$.fullLine, 0.25, {
                 opacity: 1,
                 ease: Linear.easeNone
             });
 
-            this.tl.to(this.$.body, 0.25, {
+            this.tl.to(this.$.fullLine, 0.25, {
                 opacity: 0,
                 ease: Linear.easeNone,
                 onComplete: function () {
@@ -509,7 +530,7 @@
                 }
             }, '+=' + this.displayDuration);
 
-            this.tl.to(this.$.body, 0.25, {
+            this.tl.to(this.$.fullLine, 0.25, {
                 opacity: 1,
                 ease: Linear.easeNone
             });
@@ -517,7 +538,7 @@
             // Give it some time to show
             this.tl.to({}, this.displayDuration, {});
 
-            this.tl.to(this.$.body, 0.25, {
+            this.tl.to(this.$.fullLine, 0.25, {
                 opacity: 0,
                 ease: Linear.easeNone
             });
@@ -558,9 +579,11 @@
 
         _hideLabel: function () {
             var self = this;
-            return TweenLite.to(this.$.labelContainer, 0.5, {
+            return TweenLite.to(this.$.labelContainer, 0.65, {
                 onStart: function () {
                     self.labelShowing = false;
+                    self.topText = '';
+                    self.bottomText = '';
                 },
                 x: '-100%',
                 ease: Power3.easeIn,
@@ -568,16 +591,6 @@
                     self.$.labelContainer.style.display = 'none';
                 }
             });
-        },
-
-        _padTimeline: function () {
-            this.tl.to({}, this.padTime, {});
-        },
-
-        _getElementContentWidth: function (element) {
-            var styles = window.getComputedStyle(element);
-            var padding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
-            return element.clientWidth - padding;
         }
     });
 </script>

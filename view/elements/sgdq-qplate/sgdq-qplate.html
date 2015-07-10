@@ -1,0 +1,122 @@
+<link rel="import" href="../../components/polymer/polymer.html">
+
+<dom-module id="sgdq-qplate">
+    <style is="custom-style">
+        :host {
+            line-height: 0;
+            transform-style: preserve-3d;
+        }
+
+        .face {
+            position: absolute;
+            backface-visibility: hidden;
+        }
+
+        #display {
+            transform: rotateY(0deg) translateZ(var(--sgdq-qplate-plate-height, 7px));
+        }
+
+        #next {
+            transform: rotateX(180deg) translateZ(var(--sgdq-qplate-plate-height, 7px));
+        }
+
+        #yardstick {
+            opacity: 0;
+        }
+    </style>
+
+    <template>
+        <div id="display" class="face"></div>
+        <div id="next" class="face"></div>
+        <div id="yardstick" class="face"></div>
+    </template>
+</dom-module>
+
+<script>
+    Polymer({
+        is: 'sgdq-qplate',
+
+        properties: {
+            direction: {
+                type: String,
+                value: 'down'
+            },
+            duration: {
+                type: Number,
+                value: 0.65
+            },
+            ease: {
+                type: Object,
+                value: Back.easeInOut.config(2)
+            },
+            autoFit: {
+                type: Boolean,
+                value: true
+            }
+        },
+
+        /*
+         * Methods
+         */
+        flipTo: function(str) {
+            var self = this;
+            this.$.next.innerHTML = str;
+            var tl = new TimelineLite();
+
+            var fitted = false;
+            tl.to(this, this.duration, {
+                rotationX: this.direction === 'down' ? '-180deg' : '180deg',
+                ease: this.ease,
+                onUpdate: function(tween) {
+                    if (self.autoFit && !fitted && tween.progress() >= 0.5) {
+                        fitted = true;
+                        self.fit(str);
+                    }
+                },
+                onUpdateParams: ['{self}'],
+                onComplete: function() {
+                    // Reset, get ready for next animation cycle.
+                    self.$.display.innerHTML = self.$.next.innerHTML;
+                    self.$.next.innerHTML = '';
+                    TweenLite.set([self], {rotationX: '0deg'});
+                }
+            });
+        },
+
+        fit: function(containerEl, str) {
+            // Make containerEl param optional.
+            if (typeof str === 'undefined' && typeof containerEl === 'string') {
+                str = containerEl;
+                containerEl = null;
+            }
+
+            // Default containerEl to the parent node.
+            containerEl = containerEl || this.parentNode;
+            var containerWidth = this._getElementContentWidth(containerEl);
+
+            // If the str argument was provided, use the measured width of that string for further calculations.
+            // Otherwise, use the actual current width of the element.
+            var width;
+            if (str) {
+                this.$.yardstick.innerHTML = str;
+                width = this.$.yardstick.scrollWidth;
+            } else {
+                width = this.scrollWidth;
+            }
+
+            // If the element is wider than the container, scale it down the minimum amount required to make it fit.
+            // Otherwise, scale it back to normal.
+            if (width > containerWidth) {
+                TweenLite.set(this, {scaleX: containerWidth / width});
+            } else {
+                TweenLite.set(this, {scaleX: 1});
+            }
+        },
+
+        _getElementContentWidth: function (element) {
+            var styles = window.getComputedStyle(element);
+            var padding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+            return element.clientWidth - padding;
+        }
+    });
+</script>
