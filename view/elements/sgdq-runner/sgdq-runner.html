@@ -3,7 +3,8 @@
 <dom-module id="sgdq-runner">
     <style>
         :host {
-            display: block;
+            display: flex;
+            flex-direction: column;
             position: relative;
             width: 100%;
             font-size: 18px;
@@ -71,6 +72,7 @@
             font-weight: 700;
             margin-left: 5px;
             margin-right: 5px;
+            flex: 1
         }
 
         #runnerInfo.hideLeftCap {
@@ -94,6 +96,7 @@
             border-right: 1px solid black;
             margin-left: 5px;
             margin-right: 5px;
+            flex: 1;
         }
 
         #timeContainer.hideLeftCap {
