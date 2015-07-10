@@ -1,0 +1,34 @@
+#container {
+    background: url("../img/3ds_background.png") no-repeat;
+}
+
+#bar {
+    position: absolute;
+    top: 541px;
+    left: 6px;
+    width: 888px;
+    height: 117px;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+sgdq-game {
+    position: absolute;
+    top: 293px;
+    right: 7px;
+    width: 380px;
+    height: 107px;
+}
+
+sgdq-runner {
+    align-self: center;
+    width: 508px;
+    height: 93px;
+}
+
+sgdq-sponsors {
+    width: 380px;
+    height: 100%;
+}
