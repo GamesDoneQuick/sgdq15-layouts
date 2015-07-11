@@ -71,6 +71,8 @@
             font-weight: 700;
             margin-left: 5px;
             margin-right: 5px;
+            padding-left: 0.4em;
+            padding-right: 0.4em;
         }
 
         #runnerInfo.hideLeftCap {
@@ -85,6 +87,7 @@
         #streamlink {
             transform: translateY(-0.09em);
             white-space: nowrap;
+            transform-origin: left;
         }
 
         #timeContainer {
@@ -114,6 +117,7 @@
             font-size: 1.167em;
             color: white;
             line-height: 100%;
+            transform-origin: left;
         }
     </style>
 
@@ -224,11 +228,7 @@
             elements.forEach(function(el) {
                 var elWidth = el.scrollWidth;
                 if (elWidth > containerWidth) {
-                    TweenLite.set(el, {
-                        scaleX: containerWidth / elWidth,
-                        marginLeft: '-100%',
-                        marginRight: '-100%' // hack to re-center timer when left/right aligned
-                    });
+                    TweenLite.set(el, {scaleX: containerWidth / elWidth});
                 } else {
                     TweenLite.set(el, {scaleX: 1});
                 }
