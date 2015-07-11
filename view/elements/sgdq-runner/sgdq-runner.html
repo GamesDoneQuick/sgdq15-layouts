@@ -3,7 +3,8 @@
 <dom-module id="sgdq-runner">
     <style>
         :host {
-            display: block;
+            display: flex;
+            flex-direction: column;
             position: relative;
             width: 100%;
             font-size: 18px;
@@ -12,18 +13,10 @@
 
         hr {
             height: 2px;
-            margin: 0;
+            margin: 0 calc(-0.4em - 5px);;
             border: 1px solid black;
             border-radius: 2px;
             background-color: #2496b8;
-        }
-
-        hr.hideLeftCap {
-            margin-left: 42%;
-        }
-
-        hr.hideRightCap {
-            margin-right: 42%;
         }
 
         hr.hideLeftCap.hideRightCap {
@@ -62,7 +55,6 @@
         }
 
         #runnerInfo {
-            height: 1.444em;
             background-color: #ade1f5;
             border-left: 1px solid black;
             border-right: 1px solid black;
@@ -71,27 +63,23 @@
             font-weight: 700;
             margin-left: 5px;
             margin-right: 5px;
-            padding-left: 0.4em;
-            padding-right: 0.4em;
-        }
-
-        #runnerInfo.hideLeftCap {
-            margin-left: 1%;
-        }
-
-        #runnerInfo.hideRightCap {
-            margin-right: 1%;
         }
 
         #handle,
         #streamlink {
+            height: 1.444em;
             transform: translateY(-0.09em);
             white-space: nowrap;
             transform-origin: left;
         }
 
+        #runnerInfo,
         #timeContainer {
-            height: 1.444em;
+            padding-left: 0.4em;
+            padding-right: 0.4em;
+        }
+
+        #timeContainer {
             background-color: #015670;
             border-left: 1px solid black;
             border-right: 1px solid black;
@@ -100,11 +88,11 @@
         }
 
         #timeContainer.hideLeftCap {
-            margin-left: 43%;
+            align-self: flex-end;
         }
 
         #timeContainer.hideRightCap {
-            margin-right: 43%;
+            align-self: flex-start;
         }
 
         #timeContainer.hideLeftCap.hideRightCap {
@@ -113,6 +101,7 @@
         }
 
         #time {
+            height: 1.237em;
             font-family: "gamegirl_classic";
             font-size: 1.167em;
             color: white;
@@ -127,16 +116,16 @@
             <div class$="{{hideCaps(hideLeftCap, hideRightCap, 'bezel bezel-right')}}"></div>
         </div>
 
-        <hr/>
-        <div id="runnerInfo" class$="{{hideCaps(hideLeftCap, hideRightCap, '')}}">
+        <div id="runnerInfo">
+            <hr/>
             <div id="handle">{{handle}}</div>
             <div id="streamlink">{{streamlink}}</div>
+            <hr/>
         </div>
-        <hr/>
         <div id="timeContainer" class$="{{hideCaps(hideLeftCap, hideRightCap, '')}}">
             <div id="time">{{time}}</div>
+            <hr/>
         </div>
-        <hr class$="{{hideCaps(hideLeftCap, hideRightCap, '')}}"/>
     </template>
 </dom-module>
 
