@@ -10,14 +10,7 @@
         .face {
             position: absolute;
             backface-visibility: hidden;
-        }
-
-        #display {
-            transform: rotateY(0deg) translateZ(var(--sgdq-qplate-plate-height, 7px));
-        }
-
-        #next {
-            transform: rotateX(180deg) translateZ(var(--sgdq-qplate-plate-height, 7px));
+            @apply(--sgdq-qplate-face-style);
         }
 
         #yardstick {
@@ -43,7 +36,7 @@
             },
             duration: {
                 type: Number,
-                value: 0.65
+                value: 0.7
             },
             ease: {
                 type: Object,
@@ -52,7 +45,41 @@
             autoFit: {
                 type: Boolean,
                 value: true
+            },
+            center: {
+                type: Boolean,
+                reflectToAttribute: true,
+                value: false,
+                observer: 'onCenterChanged'
+            },
+            faceHeight: {
+                type: Number,
+                value: '7',
+                observer: 'onFaceHeightChanged'
             }
+        },
+
+        onCenterChanged: function(newVal) {
+            if (newVal) {
+                TweenLite.set(this.querySelectorAll('.face'), {
+                    left: '50%',
+                    top: '50%',
+                    x: '-50%',
+                    y: '-50%'
+                })
+            } else {
+                TweenLite.set(this.querySelectorAll('.face'), {
+                    clearProps: 'left, top, x, y'
+                })
+            }
+        },
+
+        onFaceHeightChanged: function(newVal) {
+            newVal = newVal + 'px';
+            TweenLite.set(this, {z: '-' + newVal});
+            TweenLite.set(this.$.display, {rotationY: '0deg', z: newVal});
+            TweenLite.set(this.$.next, {z: '-' + newVal});
+            TweenLite.set(this.$.next, {rotationX: '180deg'});
         },
 
         /*
@@ -78,7 +105,7 @@
                     // Reset, get ready for next animation cycle.
                     self.$.display.innerHTML = self.$.next.innerHTML;
                     self.$.next.innerHTML = '';
-                    TweenLite.set([self], {rotationX: '0deg'});
+                    TweenLite.set(self, {rotationX: '0deg'});
                 }
             });
         },

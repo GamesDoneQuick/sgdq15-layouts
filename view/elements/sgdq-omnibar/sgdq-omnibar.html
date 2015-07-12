@@ -112,27 +112,19 @@
             transform: rotateX(180deg) translateZ(7px);
         }
 
-        .qPlate {
-            line-height: 0;
-            transform-style: preserve-3d;
-            transition: transform 500ms ease;
-        }
-
-        .qPlate-face {
-            position: absolute;
-            backface-visibility: hidden;
-        }
-
         #fullLine {
-            display: flex;
-            align-items: center;
             width: 100%;
             height: 53px;
             font-size: 28px;
             font-family: "tablet-gothic";
             font-weight: 400;
             text-align: center;
-            justify-content: center;
+
+            --sgdq-qplate-face-style: {
+                 display: flex;
+                 align-items: center;
+                 justify-content: center;
+            };
         }
 
         #fullLine b {
@@ -179,9 +171,9 @@
             <div id="body">
                 <div id="twoLines">
                     <sgdq-qplate id="topLine"></sgdq-qplate>
-                    <sgdq-qplate id="bottomLine" direction="up"></sgdq-qplate>
+                    <sgdq-qplate id="bottomLine" direction="up" faceHeight="7"></sgdq-qplate>
                 </div>
-                <div id="fullLine"></div>
+                <sgdq-qplate id="fullLine" center faceHeight="12px"></sgdq-qplate>
             </div>
         </div>
         <div id="totalContainer">
@@ -350,6 +342,7 @@
          * Methods
          */
         showBids: function (immediate) {
+            var self = this;
             if (immediate) this.tl.clear();
 
             if (window.currentBids.length) {
@@ -365,7 +358,9 @@
                 }
 
                 // Loop over each bid and queue it up on the timeline
-                bidsToDisplay.forEach(this.showBid.bind(this));
+                bidsToDisplay.forEach(function(bid) {
+                    self.showBid(bid);
+                });
             }
 
             this.tl.call(this.showPrizes, null, this, '+=0.01');
@@ -386,8 +381,6 @@
             this.tl.to({}, 0.01, {
                 onComplete: function() {
                     self.topText = 'BID FOR ' + bid.speedrun;
-                    self.$.twoLines.style.display = 'block';
-                    self.$.fullLine.style.display = 'none';
                 }
             });
 
@@ -403,6 +396,7 @@
         },
 
         showPrizes: function (immediate) {
+            var self = this;
             if (immediate) this.tl.clear();
 
             if (window.currentGrandPrizes.length || window.currentNormalPrizes.length) {
@@ -420,7 +414,9 @@
                 }
 
                 // Loop over each prize and queue it up on the timeline
-                prizesToDisplay.forEach(this.showPrize.bind(this));
+                prizesToDisplay.forEach(function(prize) {
+                    self.showPrize(prize);
+                });
             }
 
             this.tl.call(this.showNext, null, this, '+=0.01');
@@ -437,8 +433,6 @@
             this.tl.to({}, 0.01, {
                 onComplete: function() {
                     self.topText = 'PROVIDED BY ' + prize.provided;
-                    self.$.twoLines.style.display = 'block';
-                    self.$.fullLine.style.display = 'none';
                 }
             });
 
@@ -472,8 +466,6 @@
                          */
                         if (window.nextRun) {
                             self.topText = window.nextRun.runners.join(', ');
-
-                            self.$.fullLine.innerHTML = '';
                         } else {
                             self.tl.clear();
                             self.tl.call(self.showBids, null, self);
@@ -497,58 +489,77 @@
             if (immediate) this.tl.clear();
             this.tl.add('showCTA_start');
             this.tl.add(this._hideLabel(), 'showCTA_start');
-            this.tl.to(this.$.fullLine, 0.65, {
-                opacity: 0,
-                ease: Linear.easeNone,
-                onComplete: function () {
-                    self.$.twoLines.style.display = 'none';
-                    self.$.fullLine.style.display = 'flex';
 
+            // This is all very silly and I am sorry.
+            this.tl.to({}, 0.01, {
+                onStart: function () {
+                    self.$.fullLine.style.display = 'block';
+
+                    // Create a "wrapper" div. This is what will actually get put in our qPlate.
+                    var wrapper = document.createElement('div');
+
+                    // Make the content that will go inside the wrapper.
                     var span = document.createElement('span');
                     var div = document.createElement('div');
                     span.innerHTML = '<b>Summer Games Done Quick</b> benefits';
                     div.id = 'msf';
-                    self.$.fullLine.innerHTML = '';
-                    Polymer.dom(self.$.fullLine).appendChild(span);
-                    Polymer.dom(self.$.fullLine).appendChild(div);
+                    wrapper.appendChild(span);
+                    wrapper.appendChild(div);
+
+                    // Using Polymer.dom, append the wrapper so that all the appropriate style scoping
+                    // calculations are applied. Then, cache the outerHTML, and remove the element from the DOM again.
+                    Polymer.dom(self.$.fullLine).appendChild(wrapper);
+                    var html = wrapper.innerHTML;
+                    Polymer.dom(self.$.fullLine).removeChild(wrapper);
+
+                    // Flip the qPlate to the cached outerHTML.
+                    self.$.fullLine.flipTo(html);
                 }
-            }, 'showCTA_start');
+            }, 'showCTA_start+=' + (self.$.bottomLine.duration / 2 + 0.01));
 
-            this.tl.to(this.$.fullLine, 0.25, {
-                opacity: 1,
-                ease: Linear.easeNone
-            });
+            this.tl.call(function() {
+                var span = document.createElement('span');
+                span.innerHTML = '<b>Donate at gamesdonequick.com</b>';
+                Polymer.dom(self.$.fullLine).appendChild(span);
+                var html = span.innerHTML;
+                Polymer.dom(self.$.fullLine).removeChild(span);
 
-            this.tl.to(this.$.fullLine, 0.25, {
-                opacity: 0,
-                ease: Linear.easeNone,
-                onComplete: function () {
-                    var span = document.createElement('span');
-                    span.innerHTML = '<b>Donate at gamesdonequick.com</b>';
-                    self.$.fullLine.innerHTML = '';
-                    Polymer.dom(self.$.fullLine).appendChild(span);
-                }
-            }, '+=' + this.displayDuration);
-
-            this.tl.to(this.$.fullLine, 0.25, {
-                opacity: 1,
-                ease: Linear.easeNone
-            });
+                // Flip the qPlate to the cached innerHTML.
+                self.$.fullLine.flipTo(html);
+            }, null, null, '+=' + this.displayDuration);
 
             // Give it some time to show
             this.tl.to({}, this.displayDuration, {});
 
-            this.tl.to(this.$.fullLine, 0.25, {
-                opacity: 0,
-                ease: Linear.easeNone
-            });
-
-            this.tl.call(this.showBids, null, this, '+=0.01');
+            // Hide, then show bids
+            this.tl.to({}, this.$.fullLine.duration / 2, {
+                onStart: function() {
+                    self.$.fullLine.flipTo('');
+                },
+                onComplete: function() {
+                    self.$.fullLine.style.display = 'none';
+                    self.showBids();
+                }
+            })
         },
 
         _showLabel: function (text, size) {
             var self = this;
             var tmpTL = new TimelineLite();
+
+            // Silly, hacky code. This shouldn't be part of this func, and this should be done in a better fashion.
+            if (this.$.fullLine.$.display.innerHTML !== '') {
+                tmpTL.to(this.$.fullLine, this.$.fullLine.duration / 2 + 0.01, {
+                    onStart: function () {
+                        self.$.fullLine.flipTo('');
+                    },
+                    onComplete: function () {
+                        self.$.twoLines.style.display = 'block';
+                        self.$.fullLine.style.display = 'none';
+                    }
+                })
+            }
+
             if (this.labelShowing) {
                 tmpTL.to(this.$.label, 0.25, {
                     opacity: 0,
@@ -579,7 +590,7 @@
 
         _hideLabel: function () {
             var self = this;
-            return TweenLite.to(this.$.labelContainer, 0.65, {
+            return TweenLite.to(this.$.labelContainer, this.$.topLine.duration / 2 + 0.01, {
                 onStart: function () {
                     self.labelShowing = false;
                     self.topText = '';
@@ -589,6 +600,7 @@
                 ease: Power3.easeIn,
                 onComplete: function() {
                     self.$.labelContainer.style.display = 'none';
+                    self.$.twoLines.style.display = 'none';
                 }
             });
         }
