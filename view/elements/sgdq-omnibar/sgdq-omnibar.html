@@ -156,6 +156,11 @@
             font-weight: 700;
             font-size: 45px;
         }
+
+        #totalDollarSign {
+            font-size: 30px;
+            margin-right: -7px;
+        }
     </style>
 
     <template>
@@ -177,7 +182,10 @@
             </div>
         </div>
         <div id="totalContainer">
-            <div id="total"></div>
+            <div id="total">
+                <span id="totalDollarSign">$</span>
+                <span id="totalCash"></span>
+            </div>
         </div>
     </template>
 </dom-module>
@@ -216,15 +224,15 @@
             },
             total: {
                 type: String,
-                value: 'Retrieving…',
+                value: '$0',
                 observer: 'totalChanged'
             }
         },
 
         totalChanged: function(newVal) {
             var self = this;
-            TweenLite.to(this.$.total, 0.5, {
-                text: newVal,
+            TweenLite.to(this.$.totalCash, 0.5, {
+                text: newVal.replace('$', ''),
                 ease: Linear.easeNone,
                 onUpdate: function() {
                     self.$.topLine.fit();
