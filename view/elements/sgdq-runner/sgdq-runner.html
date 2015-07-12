@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="/components/fontawesome/css/font-awesome.min.css"/>
 <link rel="import" href="../../components/polymer/polymer.html"/>
 
 <dom-module id="sgdq-runner">
@@ -57,7 +58,7 @@
             display: none;
         }
 
-        #runnerInfo {
+        #runnerInfoContainer {
             background-color: #ade1f5;
             border-left: 1px solid black;
             border-right: 1px solid black;
@@ -66,17 +67,14 @@
             font-weight: 700;
             margin-left: 5px;
             margin-right: 5px;
+            perspective: 2000px;
         }
 
-        #handle,
-        #streamlink {
+        #runnerInfo {
             height: 1.444em;
-            transform: translateY(-0.09em);
-            white-space: nowrap;
-            transform-origin: left;
         }
 
-        #runnerInfo,
+        #runnerInfoContainer,
         #timeContainer {
             padding-left: 0.4em;
             padding-right: 0.4em;
@@ -111,6 +109,15 @@
             line-height: 108%;
             transform-origin: left;
         }
+
+        sgdq-qplate /deep/ .fa {
+            margin-right: 0.3em;
+            margin-top: 0.3em;
+        }
+
+        sgdq-qplate /deep/ .face {
+            margin-top: -0.06em;
+        }
     </style>
 
     <template>
@@ -119,10 +126,9 @@
             <div class$="{{hideCaps(hideLeftCap, hideRightCap, 'bezel bezel-right')}}"></div>
         </div>
 
-        <div id="runnerInfo">
+        <div id="runnerInfoContainer">
             <hr/>
-            <div id="handle">{{handle}}</div>
-            <div id="streamlink">{{streamlink}}</div>
+            <sgdq-qplate id="runnerInfo" center></sgdq-qplate>
             <hr/>
         </div>
         <div id="timeContainer" class$="{{hideCaps(hideLeftCap, hideRightCap, '')}}">
@@ -140,8 +146,7 @@
             index: {
                 type: Number,
                 value: 0,
-                reflectToAttribute: true,
-                observer: 'indexChanged'
+                reflectToAttribute: true
             },
             tl: {
                 type: Object,
@@ -160,28 +165,28 @@
             }
         },
 
-        indexChanged: function(newVal) {
-
-        },
-
         /*
          * Lifecycle
          */
         ready: function() {
-            // Prep for animation
-            this.$.streamlink.style.display = 'none';
-
             var self = this;
+
             nodecg.Replicant('currentRun')
                     .on('change', function(oldVal, newVal) {
-                        var runner = newVal.runners[self.index];
-                        self.handle = runner || '?';
+                        var runner = newVal.runners[self.index] || '?';
+                        self.handle = runner;
 
-                        var streamlink = newVal.streamlinks[self.index];
-                        self.streamlink = streamlink || '?';
+                        var streamlink = newVal.streamlinks[self.index] || '?';
+                        self.streamlink = '<i class="fa fa-twitch"></i><span>' + streamlink + '</span>';
 
-
-                        self._scaleTextElements(self.$.runnerInfo, [self.$.handle, self.$.streamlink]);
+                        // If their handle and streamlink are identical, just show the streamlink and pause the timeline.
+                        // Else, restart the runInfo timeline so changes are shown immediately.
+                        if (runner.toLowerCase() === streamlink.toLowerCase()) {
+                            self.runnerInfoTl.pause();
+                            self.$.runnerInfo.flipTo(self.streamlink);
+                        } else {
+                            self.runnerInfoTl.restart();
+                        }
                     });
 
             nodecg.Replicant('stopwatches')
@@ -202,6 +207,21 @@
                                 self.$.timeContainer.style.backgroundColor = '#015670';
                         }
                     });
+
+            // Create repeating timeline to alternate between showing the runner's display name and
+            // their stream link.
+            var RUN_INFO_DISPLAY_DURATION = 4;
+            self.runnerInfoTl = new TimelineMax({repeat: -1});
+            self.runnerInfoTl.to({}, 0.01, {
+                onComplete: function() {
+                    self.$.runnerInfo.flipTo(self.handle);
+                }
+            });
+            self.runnerInfoTl.to({}, RUN_INFO_DISPLAY_DURATION, {
+                onStart: function() {
+                    self.$.runnerInfo.flipTo(self.streamlink);
+                }
+            }, '+=' + RUN_INFO_DISPLAY_DURATION);
         },
 
         /*

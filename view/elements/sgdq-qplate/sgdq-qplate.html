@@ -3,13 +3,16 @@
 <dom-module id="sgdq-qplate">
     <style is="custom-style">
         :host {
+            display: block;
             line-height: 0;
             transform-style: preserve-3d;
         }
 
         .face {
+            display: flex;
             position: absolute;
             backface-visibility: hidden;
+            align-items: center;
             @apply(--sgdq-qplate-face-style);
         }
 
