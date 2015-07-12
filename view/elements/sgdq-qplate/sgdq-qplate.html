@@ -89,6 +89,8 @@
          * Methods
          */
         flipTo: function(str) {
+            if (typeof str === 'undefined') return;
+
             var self = this;
             this.$.next.innerHTML = str;
             var tl = new TimelineLite();
@@ -103,13 +105,14 @@
                         self.fit(str);
                     }
                 },
-                onUpdateParams: ['{self}'],
-                onComplete: function() {
-                    // Reset, get ready for next animation cycle.
-                    self.$.display.innerHTML = self.$.next.innerHTML;
-                    self.$.next.innerHTML = '';
-                    TweenLite.set(self, {rotationX: '0deg'});
-                }
+                onUpdateParams: ['{self}']
+            });
+
+            tl.call(function() {
+                // Reset, get ready for next animation cycle.
+                self.$.display.innerHTML = str;
+                TweenLite.set(self, {rotationX: '0deg'});
+                self.$.next.innerHTML = '';
             });
         },
 
