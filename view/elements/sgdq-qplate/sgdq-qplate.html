@@ -86,6 +86,17 @@
         },
 
         /*
+         * Lifecycle
+         */
+        attached: function() {
+            var self = this;
+            setTimeout(function() {
+                self.style.height = self.clientHeight + 'px';
+                self.style.width = self.clientWidth + 'px';
+            }, 1)
+        },
+
+        /*
          * Methods
          */
         flipTo: function(str) {
