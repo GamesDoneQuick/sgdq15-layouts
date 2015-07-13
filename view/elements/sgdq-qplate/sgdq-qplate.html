@@ -16,6 +16,14 @@
             @apply(--sgdq-qplate-face-style);
         }
 
+        #display, #yardstick {
+            margin-top: -0.06em;
+        }
+
+        #next {
+            margin-top: 0.06em;
+        }
+
         #yardstick {
             opacity: 0;
         }
@@ -106,14 +114,9 @@
                     }
                 },
                 onUpdateParams: ['{self}']
-            });
-
-            tl.call(function() {
-                // Reset, get ready for next animation cycle.
+            }).call(function() {
                 self.$.display.innerHTML = str;
-                TweenLite.set(self, {rotationX: '0deg'});
-                self.$.next.innerHTML = '';
-            });
+            }).set(self, {rotationX: '0deg'}, '+=0.1');
         },
 
         fit: function(containerEl, str) {
