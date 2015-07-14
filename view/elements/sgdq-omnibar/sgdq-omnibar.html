@@ -112,6 +112,12 @@
             font-size: 28px;
             font-family: "tablet-gothic";
             font-weight: 400;
+            line-height: 0; /* This appears to help reduce the half-pixel blurriness for some reason */
+        }
+
+        /* Hilarious hack to get the text to appear more vertically centered */
+        #fullLine span {
+            transform: translateY(-2px);
         }
 
         #fullLine b {
@@ -516,7 +522,7 @@
                 var span = document.createElement('span');
                 span.innerHTML = '<b>Donate at gamesdonequick.com</b>';
                 Polymer.dom(self.$.fullLine).appendChild(span);
-                var html = span.innerHTML;
+                var html = span.outerHTML;
                 Polymer.dom(self.$.fullLine).removeChild(span);
 
                 // Flip the qPlate to the cached innerHTML.
