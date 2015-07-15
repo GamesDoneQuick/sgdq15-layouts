@@ -39,15 +39,8 @@
             // contains the substring `q`, add it to the `matches` array
             $.each(bids, function (i, bid) {
                 if (substrRegex.test(bid.speedrun) || substrRegex.test(bid.name)) {
-                    // the typeahead jQuery plugin expects suggestions to a
-                    // JavaScript object, refer to typeahead docs for more info
-                    matches.push({
-                        type: 'bid',
-                        speedrun: bid.speedrun,
-                        name: bid.name,
-                        total: bid.total,
-                        goal: bid.goal
-                    });
+                    bid.type = 'bid';
+                    matches.push(bid);
                 }
             });
 
@@ -69,14 +62,8 @@
             // contains the substring `q`, add it to the `matches` array
             $.each(prizes, function (i, prize) {
                 if (substrRegex.test(prize.name) || substrRegex.test(prize.provided)) {
-                    // the typeahead jQuery plugin expects suggestions to a
-                    // JavaScript object, refer to typeahead docs for more info
-                    matches.push({
-                        type: 'prize',
-                        provided: prize.provided,
-                        name: prize.name,
-                        minimumbid: prize.minimumbid
-                    });
+                    prize.type = 'prize';
+                    matches.push(prize);
                 }
             });
 

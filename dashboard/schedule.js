@@ -145,13 +145,8 @@
                 if (substrRegex.test(run.game) || substrRegex.test(run.runners)) {
                     // the typeahead jQuery plugin expects suggestions to a
                     // JavaScript object, refer to typeahead docs for more info
-                    matches.push({
-                        type: 'run',
-                        game: run.game,
-                        runners: run.runners,
-                        console: run.console,
-                        index: run.index
-                    });
+                    run.type = 'run';
+                    matches.push(run);
                 }
             });
 
