@@ -366,10 +366,6 @@
             var self = this;
             if (immediate) {
                 this.tl.clear();
-
-                // Silly, should do this in a more reliable fashion.
-                //if (this.$.fullText)
-
                 this.tl.call(this._showLabel, ['DONATION BIDS', '25px'], this);
             }
 
@@ -377,13 +373,26 @@
             this.tl.to({}, 0.01, {
                 onComplete: function() {
                     self.$.twoLines.style.display = 'block';
-                    self.topText = 'BID FOR ' + bid.speedrun;
+                    self.topText = bid.description;
                 }
             });
 
-            this.tl.call(function() {
-                self.bottomText = bid.name + ' - ' + bid.total;
-            }, null, null, '+=0.08');
+            // If this is a donation war, up to three options for it.
+            // Else, it must be a normal incentive, so show its total amount raised and its goal.
+            if (bid.options) {
+                bid.options.forEach(function(option, index) {
+                    if (index > 2) return;
+                    self.tl.call(function() {
+                        self.bottomText = (index + 1) + '. ' + option.description + ' - ' + option.total;
+                    }, null, null, '+=' + (0.08 + (index * self.displayDuration)));
+                })
+            } else {
+                this.tl.call(function() {
+                    self.bottomText = bid.total + ' / ' + bid.goal;
+                }, null, null, '+=0.08');
+            }
+
+
 
             // Give the bid some time to show
             this.tl.to({}, this.displayDuration, {});
