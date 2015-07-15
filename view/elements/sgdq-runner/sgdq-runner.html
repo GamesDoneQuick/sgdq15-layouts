@@ -167,7 +167,39 @@
                 type: Boolean,
                 value: false,
                 reflectToAttribute: true
+            },
+            handle: String,
+            handleElement: {
+                type: Object,
+                observer: 'handleChange'
+            },
+            streamlink: String,
+            streamlinkElement: {
+                type: Object,
+                observer: 'handleChange',
+                computed: 'computeStreamlinkElement(streamlink)'
             }
+        },
+
+        handleChange: function() {
+            // If the handle and streamlink are identical, just show the streamlink.
+            if (this.handle === this.streamlink) {
+                this.runnerInfoTl.pause();
+                this.$.runnerInfo.fillHopper(this.streamlinkElement);
+            } else {
+                this.runnerInfoTl.restart();
+            }
+        },
+
+        computeStreamlinkElement: function(streamlink) {
+            var span = document.createElement('span');
+            var twitchIcon = document.createElement('i');
+            var channelName = document.createElement('span');
+            twitchIcon.classList.add('fa', 'fa-twitch');
+            channelName.innerText = streamlink;
+            span.appendChild(twitchIcon);
+            span.appendChild(channelName);
+            return span;
         },
 
         /*
@@ -178,20 +210,8 @@
 
             nodecg.Replicant('currentRun')
                     .on('change', function(oldVal, newVal) {
-                        var runner = newVal.runners[self.index] || '?';
-                        self.handle = runner;
-
-                        var streamlink = newVal.streamlinks[self.index] || '?';
-                        self.streamlink = '<i class="fa fa-twitch"></i><span>' + streamlink + '</span>';
-
-                        // If their handle and streamlink are identical, just show the streamlink and pause the timeline.
-                        // Else, restart the runInfo timeline so changes are shown immediately.
-                        if (runner.toLowerCase() === streamlink.toLowerCase()) {
-                            self.runnerInfoTl.pause();
-                            self.$.runnerInfo.flipTo(self.streamlink);
-                        } else {
-                            self.runnerInfoTl.restart();
-                        }
+                        self.handle = newVal.runners[self.index] || '?';
+                        self.streamlink = newVal.streamlinks[self.index] || '?';
                     });
 
             nodecg.Replicant('stopwatches')
@@ -219,12 +239,12 @@
             self.runnerInfoTl = new TimelineMax({repeat: -1});
             self.runnerInfoTl.to({}, 0.01, {
                 onComplete: function() {
-                    self.$.runnerInfo.flipTo(self.handle);
+                    self.$.runnerInfo.fillHopperText(self.handle);
                 }
             });
             self.runnerInfoTl.to({}, RUN_INFO_DISPLAY_DURATION, {
                 onStart: function() {
-                    self.$.runnerInfo.flipTo(self.streamlink);
+                    self.$.runnerInfo.fillHopper(self.streamlinkElement);
                 }
             }, '+=' + RUN_INFO_DISPLAY_DURATION);
         },

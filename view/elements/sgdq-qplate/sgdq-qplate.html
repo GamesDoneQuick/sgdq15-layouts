@@ -8,15 +8,13 @@
         }
 
         #display,
-        #yardstick {
-            display: flex;
+        #hopper {
             backface-visibility: hidden;
-            align-items: center;
             white-space: nowrap;
             @apply(--sgdq-qplate-face-style);
         }
 
-        #yardstick {
+        #hopper {
             position: absolute;
             opacity: 0;
         }
@@ -24,6 +22,9 @@
 
     <template>
         <div id="display" class="face"></div>
+        <div id="hopper">
+            <content></content>
+        </div>
         <div id="yardstick" class="face"></div>
     </template>
 </dom-module>
@@ -65,21 +66,66 @@
         },
 
         /*
+         * Lifecycle
+         */
+        ready: function () {
+            // Watch #hopper for changes. Upon a change, flip #display to the contents of #hopper.
+            var self = this, observer = new MutationObserver(function (mutations) {
+                self.debounce('flip', self._flipToHopperContent, 10);
+            }).observe(this.$.hopper, {childList: true, subtree: true, characterData: true});
+        },
+
+        /*
          * Methods
          */
-        flipTo: function(str) {
-            if (typeof str === 'undefined') return;
+        fillHopper: function(el) {
+            this._emptyLightDom();
 
+            // Place the new element in the light DOM (aka, the <content> tag in #hopper).
+            Polymer.dom(this).appendChild(el);
+        },
+
+        fillHopperText: function(text) {
+            this._emptyLightDom();
+
+            // Place the new text in the light DOM (aka, the <content> tag in #hopper).
+            Polymer.dom(this).innerHTML = text;
+        },
+
+
+        _emptyLightDom: function() {
+            while (Polymer.dom(this).firstChild) {
+                Polymer.dom(this).removeChild(Polymer.dom(this).firstChild);
+            }
+        },
+
+        _flipToHopperContent: function() {
             var self = this;
             var tl = new TimelineLite();
+
+            // Get the <content> nodes from within #hopper. Because we only have one <content> tag,
+            // we can kinda cheat and use the "this.$$" selector to easily reference it.
+            var distributedNodes = Polymer.dom(this.$$('content')).getDistributedNodes();
 
             tl.to(this.$.display, this.duration / 2, {
                 rotationX: this.direction === 'down' ? '-90deg' : '90deg',
                 ease: this.easeIn,
                 onComplete: function() {
-                    self.$.display.innerHTML = str;
+                    // Empty #display.
+                    while (self.$.display.firstChild) {
+                        self.$.display.removeChild(self.$.display.firstChild);
+                    }
+
+                    // Then, clone the distributedNodes into it. We clone because otherwise we'd be triggering
+                    // the mutationObserver that is watching #hopper over and over again.
+                    distributedNodes.forEach(function(node) {
+                        self.$.display.appendChild(node.cloneNode(true));
+                    });
+
+                    // Automatically horizontally scale this qplate to fit in its
+                    // parent based on this new content, if desired.
                     if (self.autoFit) {
-                        self.fit(str);
+                        self.fit();
                     }
                 }
             }).set(this.$.display, {
@@ -91,6 +137,8 @@
         },
 
         fit: function(containerEl, str) {
+            return;
+
             // Make containerEl param optional.
             if (typeof str === 'undefined' && typeof containerEl === 'string') {
                 str = containerEl;

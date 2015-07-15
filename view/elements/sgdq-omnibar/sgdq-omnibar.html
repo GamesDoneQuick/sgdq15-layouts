@@ -105,6 +105,11 @@
             font-weight: 400;
         }
 
+        #fullLine .flexCenter {
+            display: flex;
+            align-items: center;
+        }
+
         /* Hilarious hack to get the text to appear more vertically centered */
         #fullLine span {
             transform: translateY(-2px);
@@ -225,11 +230,11 @@
         },
 
         topTextChanged: function(newVal) {
-            this.$.topLine.flipTo(newVal);
+            this.$.topLine.fillHopperText(newVal);
         },
 
         bottomTextChanged: function(newVal) {
-            this.$.bottomLine.flipTo(newVal);
+            this.$.bottomLine.fillHopperText(newVal);
         },
 
         /*
@@ -492,6 +497,7 @@
 
                     // Create a "wrapper" div. This is what will actually get put in our qPlate.
                     var wrapper = document.createElement('div');
+                    wrapper.classList.add('flexCenter');
 
                     // Make the content that will go inside the wrapper.
                     var span = document.createElement('span');
@@ -501,26 +507,17 @@
                     wrapper.appendChild(span);
                     wrapper.appendChild(div);
 
-                    // Using Polymer.dom, append the wrapper so that all the appropriate style scoping
-                    // calculations are applied. Then, cache the outerHTML, and remove the element from the DOM again.
-                    Polymer.dom(self.$.fullLine).appendChild(wrapper);
-                    var html = wrapper.innerHTML;
-                    Polymer.dom(self.$.fullLine).removeChild(wrapper);
-
-                    // Flip the qPlate to the cached outerHTML.
-                    self.$.fullLine.flipTo(html);
+                    // Put it in the qPlate hopper.
+                    self.$.fullLine.fillHopper(wrapper);
                 }
             }, 'showCTA_start+=' + (self.$.bottomLine.duration / 2 + 0.01));
 
             this.tl.call(function() {
-                var span = document.createElement('span');
-                span.innerHTML = '<b>Donate at gamesdonequick.com</b>';
-                Polymer.dom(self.$.fullLine).appendChild(span);
-                var html = span.outerHTML;
-                Polymer.dom(self.$.fullLine).removeChild(span);
+                var b = document.createElement('b');
+                b.textContent = 'Donate at gamesdonequick.com';
 
-                // Flip the qPlate to the cached innerHTML.
-                self.$.fullLine.flipTo(html);
+                // Put it in the qPlate hopper.
+                self.$.fullLine.fillHopper(b);
             }, null, null, '+=' + this.displayDuration);
 
             // Give it some time to show
@@ -529,7 +526,7 @@
             // Hide, then show bids
             this.tl.to({}, this.$.fullLine.duration / 2, {
                 onStart: function() {
-                    self.$.fullLine.flipTo('');
+                    self.$.fullLine.fillHopperText('');
                 },
                 onComplete: function() {
                     self.$.fullLine.style.display = 'none';
@@ -546,7 +543,7 @@
             if (this.$.fullLine.$.display.innerHTML !== '') {
                 tmpTL.to(this.$.fullLine, this.$.fullLine.duration / 2 + 0.01, {
                     onStart: function () {
-                        self.$.fullLine.flipTo('');
+                        self.$.fullLine.fillHopperText('');
                     },
                     onComplete: function () {
                         self.$.twoLines.style.display = 'block';

@@ -21,9 +21,9 @@
         <div id="image"></div>
         <div id="top" class="bar"><span>DONATE AND WIN PRIZES!</span></div>
         <div id="bottom" class="bar">
-            <sgdq-qplate id="description"></sgdq-qplate>
+            <sgdq-qplate id="description" origin-dist=12></sgdq-qplate>
             <div id="bidBar" class="bar">
-                <sgdq-qplate center id="bid"></sgdq-qplate>
+                <sgdq-qplate id="bid" origin-dist=8></sgdq-qplate>
             </div>
         </div>
         <div id="minBid"><span>MIN BID</span></div>
@@ -35,8 +35,8 @@
     var description = document.querySelector('#description');
     var bid = document.querySelector('#bid');
 
-    description.flipTo('Prize Description that takes<br>up two lines maximum');
-    bid.flipTo('$5');
+    description.fillHopperText('Prize Description that takes<br>up two lines maximum');
+    bid.fillHopperText('$5');
 </script>
 
 </body>
