@@ -398,24 +398,32 @@
             // If this is a donation war, up to three options for it.
             // Else, it must be a normal incentive, so show its total amount raised and its goal.
             if (bid.options) {
-                bid.options.forEach(function(option, index) {
-                    if (index > 2) return;
-                    self.tl.call(function() {
-                        // If this bid is closed, add .closed-green to the first (winning) option.
-                        // Add .closed-red to the others.
-                        if (bid.state.toLowerCase() === 'closed') {
-                            if (index === 0) {
-                                bottomSpan.classList.add('closed-green');
-                            } else {
-                                bottomSpan.classList.remove('closed-green');
-                                bottomSpan.classList.add('closed-red');
-                            }
-                        }
-
-                        bottomSpan.innerHTML = (index + 1) + '. ' + option.description + ' - ' + option.total;
+                // If there are no options yet, display a message.
+                if (bid.options.length === 0) {
+                    this.tl.call(function() {
+                        bottomSpan.innerHTML = 'Be the first to bid!';
                         self.$.bottomLine.fillHopper(bottomSpan);
-                    }, null, null, '+=' + (0.08 + (index * self.displayDuration)));
-                })
+                    }, null, null, '+=0.08');
+                } else {
+                    bid.options.forEach(function(option, index) {
+                        if (index > 2) return;
+                        self.tl.call(function() {
+                            // If this bid is closed, add .closed-green to the first (winning) option.
+                            // Add .closed-red to the others.
+                            if (bid.state.toLowerCase() === 'closed') {
+                                if (index === 0) {
+                                    bottomSpan.classList.add('closed-green');
+                                } else {
+                                    bottomSpan.classList.remove('closed-green');
+                                    bottomSpan.classList.add('closed-red');
+                                }
+                            }
+
+                            bottomSpan.innerHTML = (index + 1) + '. ' + option.description + ' - ' + option.total;
+                            self.$.bottomLine.fillHopper(bottomSpan);
+                        }, null, null, '+=' + (0.08 + (index * self.displayDuration)));
+                    })
+                }
             } else {
                 this.tl.call(function() {
                     bottomSpan.innerHTML = bid.total + ' / ' + bid.goal;
