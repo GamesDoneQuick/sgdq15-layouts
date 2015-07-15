@@ -84,7 +84,7 @@ module.exports = function (nodecg) {
             name: prize.fields.name,
             provided: prize.fields.provided,
             description: prize.fields.shortdescription,
-            image: prize.fields.image,
+            image: prize.fields.altimage,
             minimumbid: numeral(prize.fields.minimumbid).format('$0,0[.]00'),
             grand: prize.fields.category__name === 'Grand'
         };
