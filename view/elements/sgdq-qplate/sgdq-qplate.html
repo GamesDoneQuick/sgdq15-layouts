@@ -7,27 +7,23 @@
             transform-style: preserve-3d;
         }
 
-        .face {
+        #display,
+        #yardstick {
             display: flex;
-            position: absolute;
             backface-visibility: hidden;
             align-items: center;
             white-space: nowrap;
             @apply(--sgdq-qplate-face-style);
         }
 
-        #next {
-            bottom: 0;
-        }
-
         #yardstick {
+            position: absolute;
             opacity: 0;
         }
     </style>
 
     <template>
         <div id="display" class="face"></div>
-        <div id="next" class="face"></div>
         <div id="yardstick" class="face"></div>
     </template>
 </dom-module>
@@ -45,48 +41,27 @@
                 type: Number,
                 value: 0.7
             },
-            ease: {
+            easeIn: {
                 type: Object,
-                value: Back.easeInOut.config(2)
+                value: Back.easeIn.config(2)
+            },
+            easeOut: {
+                type: Object,
+                value: Back.easeOut.config(2)
             },
             autoFit: {
                 type: Boolean,
                 value: true
             },
-            center: {
-                type: Boolean,
-                reflectToAttribute: true,
-                value: false,
-                observer: 'onCenterChanged'
-            },
-            faceHeight: {
+            originDist: {
                 type: Number,
                 value: '7',
-                observer: 'onFaceHeightChanged'
+                observer: 'onOriginDistChanged'
             }
         },
 
-        onCenterChanged: function(newVal) {
-            if (newVal) {
-                TweenLite.set(this.querySelectorAll('.face'), {
-                    left: '50%',
-                    top: '50%',
-                    x: '-50%',
-                    y: '-50%'
-                })
-            } else {
-                TweenLite.set(this.querySelectorAll('.face'), {
-                    clearProps: 'left, top, x, y'
-                })
-            }
-        },
-
-        onFaceHeightChanged: function(newVal) {
-            newVal = newVal + 'px';
-            TweenLite.set(this, {z: '-' + newVal});
-            TweenLite.set(this.$.display, {rotationY: '0deg', z: newVal});
-            TweenLite.set(this.$.next, {z: '-' + newVal});
-            TweenLite.set(this.$.next, {rotationX: '180deg'});
+        onOriginDistChanged: function(newVal) {
+            TweenLite.set(this.$.display, {transformOrigin: 'left center -' + newVal + 'px'});
         },
 
         /*
@@ -96,23 +71,23 @@
             if (typeof str === 'undefined') return;
 
             var self = this;
-            this.$.next.innerHTML = str;
             var tl = new TimelineLite();
 
-            var fitted = false;
-            tl.to(this, this.duration, {
-                rotationX: this.direction === 'down' ? '-180deg' : '180deg',
-                ease: this.ease,
-                onUpdate: function(tween) {
-                    if (self.autoFit && !fitted && tween.progress() >= 0.5) {
-                        fitted = true;
+            tl.to(this.$.display, this.duration / 2, {
+                rotationX: this.direction === 'down' ? '-90deg' : '90deg',
+                ease: this.easeIn,
+                onComplete: function() {
+                    self.$.display.innerHTML = str;
+                    if (self.autoFit) {
                         self.fit(str);
                     }
-                },
-                onUpdateParams: ['{self}']
-            }).call(function() {
-                self.$.display.innerHTML = str;
-            }).set(self, {rotationX: '0deg'}, '+=0.1');
+                }
+            }).set(this.$.display, {
+                rotationX: this.direction === 'down' ? '90deg' : '-90deg'
+            }).to(this.$.display, this.duration / 2, {
+                rotationX: 0,
+                ease: this.easeOut
+            })
         },
 
         fit: function(containerEl, str) {

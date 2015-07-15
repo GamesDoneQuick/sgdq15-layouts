@@ -66,53 +66,43 @@
         }
 
         #body {
+            display: flex;
+            height: 100%;
             padding-left: 10px;
             padding-right: 12px;
             white-space: nowrap;
             flex-grow: 1;
+            align-items: center;
+            justify-content: center;
             perspective: 2000px;
         }
 
         #twoLines {
-            transform: translate(0px, -39px);
+            display: block;
+            width: 100%;
+            height: 100%;
         }
 
         #topLine {
-            position: absolute;
-            top: -1px;
             font-family: "tablet-gothic-narrow";
             font-weight: 700;
             font-size: 18px;
             font-style: italic;
             text-transform: uppercase;
             transform-origin: left;
-            line-height: 0;
+            margin-bottom: -13px; /* easiest way to position both this and #bottomLine properly */
         }
 
         #bottomLine {
-            position: absolute;
-            top: 20px;
             font-weight: 600;
             font-size: 26px;
             transform-origin: left;
-            line-height: 0;
-        }
-
-        #bottomLine-display {
-            transform: rotateY(0deg) translateZ(7px);
-        }
-
-        #bottomLine-next {
-            transform: rotateX(180deg) translateZ(7px);
         }
 
         #fullLine {
-            width: 100%;
-            height: 54px;
             font-size: 28px;
             font-family: "tablet-gothic";
             font-weight: 400;
-            line-height: 0; /* This appears to help reduce the half-pixel blurriness for some reason */
         }
 
         /* Hilarious hack to get the text to appear more vertically centered */
@@ -168,10 +158,10 @@
             </div>
             <div id="body">
                 <div id="twoLines">
-                    <sgdq-qplate id="topLine"></sgdq-qplate>
-                    <sgdq-qplate id="bottomLine" direction="up" faceHeight="7"></sgdq-qplate>
+                    <sgdq-qplate id="topLine" origin-dist="5"></sgdq-qplate>
+                    <sgdq-qplate id="bottomLine" direction="up" origin-dist="7"></sgdq-qplate>
                 </div>
-                <sgdq-qplate id="fullLine" center faceHeight="12"></sgdq-qplate>
+                <sgdq-qplate id="fullLine" center origin-dist="12"></sgdq-qplate>
             </div>
         </div>
         <div id="totalContainer">
@@ -381,6 +371,7 @@
             // GSAP is dumb with `call` sometimes. Putting this in a near-zero duration tween seems to be more reliable.
             this.tl.to({}, 0.01, {
                 onComplete: function() {
+                    self.$.twoLines.style.display = 'block';
                     self.topText = 'BID FOR ' + bid.speedrun;
                 }
             });
@@ -433,6 +424,7 @@
             // GSAP is dumb with `call` sometimes. Putting this in a near-zero duration tween seems to be more reliable.
             this.tl.to({}, 0.01, {
                 onComplete: function() {
+                    self.$.twoLines.style.display = 'block';
                     self.topText = 'PROVIDED BY ' + prize.provided;
                 }
             });
@@ -461,6 +453,8 @@
                 // GSAP is dumb with `call` sometimes. Putting this in a near-zero duration tween seems to be more reliable.
                 this.tl.to({}, 0.01, {
                     onComplete: function() {
+                        self.$.twoLines.style.display = 'block';
+
                         /* Depending on how we enter the very end of the schedule, we might end up in this func
                          * after window.nextRun has been set to null. In that case, we immediately clear the
                          * timeline and bail out to showing bids again.
@@ -548,7 +542,7 @@
             var self = this;
             var tmpTL = new TimelineLite();
 
-            // Silly, hacky code. This shouldn't be part of this func, and this should be done in a better fashion.
+            // TODO: Silly, hacky code. This shouldn't be part of this func, and this should be done in a better fashion.
             if (this.$.fullLine.$.display.innerHTML !== '') {
                 tmpTL.to(this.$.fullLine, this.$.fullLine.duration / 2 + 0.01, {
                     onStart: function () {
