@@ -1,8 +1,8 @@
 /* jshint -W106 */
 'use strict';
 
-var BIDS_URL = 'https://gamesdonequick.com/tracker/search/?type=bid&event=16';
-var CURRENT_BIDS_URL = 'https://gamesdonequick.com/tracker/search/?type=bid&feed=current&event=16';
+var BIDS_URL = 'https://gamesdonequick.com/tracker/search/?type=allbids&event=16';
+var CURRENT_BIDS_URL = 'https://gamesdonequick.com/tracker/search/?type=allbids&feed=current&event=16';
 var POLL_INTERVAL = 3 * 60 * 1000;
 
 var format = require('util').format;
@@ -60,14 +60,60 @@ module.exports = function (nodecg) {
 
     function handleResponse(error, response, body, deferred, opts) {
         if (!error && response.statusCode === 200) {
-            // The response we get has a tremendous amount of cruft that we just don't need. We filter that out.
             var bids = JSON.parse(body);
-            var relevantData = bids.map(formatBid);
 
-            if (equal(relevantData, opts.replicant.value)) {
+            // The response from the tracker is flat. This is okay for donation incentives, but it requires
+            // us to do some extra work to figure out what the options are for donation wars that have multiple
+            // options.
+            var parentBidsById = {};
+            var childBids = [];
+            bids.forEach(function(bid) {
+                // If this bid is an option for a donation war, don't add it to childBids array.
+                // Else, add it to the parentBidsById object.
+                if (bid.fields.parent) {
+                    childBids.push(bid);
+                } else {
+                    // Format the bid to clean up unneeded cruft.
+                    var formattedParentBid = {
+                        id: bid.pk,
+                        name: bid.fields.name,
+                        description: bid.fields.shortdescription || 'No shortdescription for bid #' + bid.pk,
+                        total: numeral(bid.fields.total).format('$0,0[.]00')
+                    };
+
+                    // If this parent bid is not a target, that means it is a donation war that has options.
+                    // So, we should add an options property that is an empty array,
+                    // which we will fill in the next step.
+                    // Else, add the "target" field to the formattedParentBid.
+                    if (bid.fields.istarget === false) {
+                        formattedParentBid.options = [];
+                    } else {
+                        formattedParentBid.goal = numeral(bid.fields.goal).format('$0,0[.]00');
+                    }
+
+                    parentBidsById[bid.pk] = formattedParentBid;
+                }
+            });
+
+            // Now that we have a big array of all child bids (i.e., donation war options), we need
+            // to assign them to their parents in the parentBidsById object.
+            childBids.forEach(function(bid) {
+                var formattedChildBid = {
+                    id: bid.pk,
+                    parent: bid.fields.parent,
+                    name: bid.fields.name,
+                    description: bid.fields.shortdescription,
+                    total: numeral(bid.fields.total).format('$0,0[.]00')
+                };
+                parentBidsById[bid.fields.parent].options.push(formattedChildBid);
+            });
+
+            // After all that, deep-compare our newly-calculated parentBidsById object against the existing value.
+            // Only assign the replicant if it's actually different.
+            if (equal(parentBidsById, opts.replicant.value)) {
                 deferred.resolve(false);
             } else {
-                opts.replicant.value = relevantData;
+                opts.replicant.value = parentBidsById;
                 deferred.resolve(true);
             }
         } else {
@@ -77,15 +123,5 @@ module.exports = function (nodecg) {
             nodecg.log.error(msg);
             deferred.reject(msg);
         }
-    }
-
-    function formatBid(bid) {
-        return {
-            name: bid.fields.name,
-            description: bid.fields.description,
-            speedrun: bid.fields.speedrun__name || 'No speedgame defined', // TODO: this should not need a default
-            total: numeral(bid.fields.total).format('$0,0[.]00'),
-            goal: numeral(bid.fields.goal).format('$0,0[.]00')
-        };
     }
 };
