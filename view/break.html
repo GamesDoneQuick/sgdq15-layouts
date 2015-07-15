@@ -36,9 +36,7 @@
     var description = document.querySelector('#descriptionText');
     var bid = document.querySelector('#bid');
     var image = document.querySelector('#image');
-    var timeline = new TimelineLite({onComplete: function() {
-        this.restart();
-    }});
+    var timeline = new TimelineMax({repeat: -1});
 
     var prizes = [];
     var grandPrizes = [];
