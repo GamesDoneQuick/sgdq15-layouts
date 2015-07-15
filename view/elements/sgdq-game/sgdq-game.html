@@ -50,7 +50,6 @@
             font-size: 0.696em;
             font-weight: 400;
             text-transform: uppercase;
-            transform-origin: left;
         }
 
         #estimateContainer {
@@ -136,15 +135,29 @@
                                 onComplete: function() {
                                     self.$.category.innerHTML = newVal.category;
 
-                                    /* To figure out how wide we need to make #categoryWrapper, we have to briefly
-                                     * remove the margins from #category, measure it, then re-add the margins */
+                                    /* To figure out how wide we need to make #categoryWrapper, and if we need to
+                                     * shrink the category to make it fit, we have to briefly remove the margins
+                                     * from #category, measure it, do our thing, then re-add the margins */
                                     var cachedMargin = self.$.category.style.marginLeft;
                                     self.$.category.style.marginLeft = 0;
                                     self.$.category.style.marginRight = 0;
-                                    var categoryWidth = self.$.category.scrollWidth
+
+                                    // Cache the category width, and fit the text if needs be.
+                                    var categoryWidth = self.$.category.scrollWidth;
+                                    var categoryContainerWidth = self.$.categoryContainer.clientWidth - 40;
+                                    if (categoryWidth > categoryContainerWidth) {
+                                        var scale = categoryContainerWidth / categoryWidth;
+                                        TweenLite.set(self.$.category, {scaleX: scale});
+                                        categoryWidth = categoryWidth * scale;
+                                    } else {
+                                        TweenLite.set(self.$.category, {scaleX: 1});
+                                    }
+
+                                    // Set the margins back.
                                     self.$.category.style.marginLeft = cachedMargin;
                                     self.$.category.style.marginRight = cachedMargin;
 
+                                    // Animate back in.
                                     TweenLite.to(self.$.categoryWrapper, 0.5, {
                                         width:  categoryWidth + 20 + 'px',
                                         ease: Elastic.easeOut,
