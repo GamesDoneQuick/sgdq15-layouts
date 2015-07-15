@@ -35,14 +35,21 @@
             transform: translateY(0.05em);
         }
 
+        #categoryWrapper {
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
         #category {
+            /* I shit you not, these two rules solves all my centering problems. */
+            /* http://stackoverflow.com/a/16642842/3903335 */
+            margin-left: -150px;
+            margin-right: -150px;
+
             font-family: "tablet-gothic";
             font-size: 0.696em;
             font-weight: 400;
             text-transform: uppercase;
-            margin-left: 0.4em;
-            margin-right: 0.4em;
-            flex-shrink: 0;
             transform-origin: left;
         }
 
@@ -68,10 +75,12 @@
 
     <template>
         <sgdq-container hide-tl="{{hideTl}}" hide-tr="{{hideTr}}" hide-bl="{{hideBl}}" hide-br="{{hideBr}}">
-            <div id="game">Tony Hawk's American Wasteland</div>
+            <div id="game"></div>
             <div id="categoryContainer">
                 <div class="thickline"></div>
-                <div id="category">1 Player, 2 Controllers</div>
+                <div id="categoryWrapper">
+                    <div id="category">Category</div>
+                </div>
                 <div class="thickline"></div>
             </div>
             <hr>
@@ -113,14 +122,40 @@
 
         ready: function() {
             var self = this;
+
             nodecg.Replicant('currentRun')
                     .on('change', function(oldVal, newVal) {
                         self.$.game.innerHTML = newVal.game;
-                        self.$.category.innerHTML = newVal.category;
                         self.$.estimate.innerHTML = newVal.estimate;
 
+                        // If the category text changed, animate it
+                        if (self.$.category.innerText.toLowerCase() !== newVal.category.toLowerCase()) {
+                            TweenLite.to(self.$.categoryWrapper, 0.3, {
+                                width: '0px',
+                                ease: Back.easeIn,
+                                onComplete: function() {
+                                    self.$.category.innerHTML = newVal.category;
+
+                                    /* To figure out how wide we need to make #categoryWrapper, we have to briefly
+                                     * remove the margins from #category, measure it, then re-add the margins */
+                                    var cachedMargin = self.$.category.style.marginLeft;
+                                    self.$.category.style.marginLeft = 0;
+                                    self.$.category.style.marginRight = 0;
+                                    var categoryWidth = self.$.category.scrollWidth
+                                    self.$.category.style.marginLeft = cachedMargin;
+                                    self.$.category.style.marginRight = cachedMargin;
+
+                                    TweenLite.to(self.$.categoryWrapper, 0.5, {
+                                        width:  categoryWidth + 20 + 'px',
+                                        ease: Elastic.easeOut,
+                                        delay: 0.01
+                                    });
+                                }
+                            });
+                        }
+
                         var containerWidth = self._getElementContentWidth(self.$$('sgdq-container'));
-                        [self.$.game, self.$.category].forEach(function(el) {
+                        [self.$.game].forEach(function(el) {
                             var elWidth = el.scrollWidth;
                             if (elWidth > containerWidth) {
                                 TweenLite.set(el, {scaleX: containerWidth / elWidth});
