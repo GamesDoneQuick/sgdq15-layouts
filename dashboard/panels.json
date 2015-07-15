@@ -33,5 +33,12 @@
     "width": 2,
     "file": "omnibar.jade",
     "faIcon": "fa-minus"
+  },
+  {
+    "name": "break",
+    "title": "Break Screen",
+    "width": 2,
+    "file": "break.jade",
+    "faIcon": "fa-coffee"
   }
 ]

@@ -21,7 +21,7 @@
         <div id="image"></div>
         <div id="top" class="bar"><span>DONATE AND WIN PRIZES!</span></div>
         <div id="bottom" class="bar">
-            <sgdq-qplate id="description" origin-dist=12></sgdq-qplate>
+            <sgdq-qplate id="description" origin-dist=12><span id="descriptionText"></span></sgdq-qplate>
             <div id="bidBar" class="bar">
                 <sgdq-qplate id="bid" origin-dist=8></sgdq-qplate>
             </div>
@@ -30,14 +30,68 @@
     </div>
     <sgdq-omnibar></sgdq-omnibar>
 </div>
-
 <script>
-    var description = document.querySelector('#description');
+    'use strict';
+
+    var description = document.querySelector('#descriptionText');
     var bid = document.querySelector('#bid');
+    var image = document.querySelector('#image');
+    var timeline = new TimelineLite({onComplete: function() {
+        this.restart();
+    }});
 
-    description.fillHopperText('Prize Description that takes<br>up two lines maximum');
-    bid.fillHopperText('$5');
+    var prizes = [];
+    var grandPrizes = [];
+
+    var lastShownGrandPrize = null;
+
+    nodecg.listenFor('breakDemand', function(prize) {
+        showPrize(prize, true);
+    });
+
+    nodecg.Replicant('currentPrizes')
+        .on('change', function(oldVal, newVal) {
+            prizes = newVal.filter(function(prize) {
+                return !prize.grand;
+            });
+
+            grandPrizes = newVal.filter(function(prize) {
+                return prize.grand;
+            });
+
+            cyclePrizes();
+        });
+
+    function cyclePrizes() {
+        timeline.clear();
+
+        var prizesToDisplay = prizes.slice(0);
+
+        if (grandPrizes.length) {
+            var lastShownGrandPrizeIdx = grandPrizes.indexOf(lastShownGrandPrize);
+            var nextGrandPrizeIdx = lastShownGrandPrizeIdx >= grandPrizes.length - 1
+                ? 0
+                : lastShownGrandPrizeIdx + 1;
+            var nextGrandPrize = grandPrizes[nextGrandPrizeIdx];
+            if (nextGrandPrize) prizesToDisplay.unshift(nextGrandPrize);
+        }
+
+        prizesToDisplay.forEach(function(prize) {
+            showPrize(prize);
+        });
+    }
+
+    function showPrize(prize, immediate) {
+        if (immediate) timeline.clear();
+
+        timeline.call(function() {
+            image.style.backgroundImage = 'url(' + prize.image + ')';
+            description.innerText = prize.description;
+            bid.fillHopperText(prize.minimumbid);
+        }).to({}, 5, {});
+
+        if (immediate) timeline.call(cyclePrizes);
+    }
 </script>
-
 </body>
 </html>

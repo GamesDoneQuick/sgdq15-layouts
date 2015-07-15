@@ -57,16 +57,18 @@ body {
     margin-top: 1px;
     margin-left: 10px;
     height: 100%;
+    width: 260px;
+}
+
+#descriptionText {
+    white-space: normal;
 }
 
 #bid {
     height: 46px;
     font-size: 34px;
-    margin-top: -0.06em;
-}
-
-#bid /deep/ #next {
-    margin-top: 0.06em;
+    margin-top: -0.16em;
+    text-align: center;
 }
 
 #minBid {
