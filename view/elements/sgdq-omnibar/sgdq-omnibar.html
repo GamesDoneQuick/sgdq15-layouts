@@ -345,13 +345,20 @@
                 this.tl.call(this._showLabel, ['DONATION BIDS', '25px'], this);
 
                 // Figure out what bids to display in this batch
-                var bidsToDisplay = window.currentBids.slice(0, 3);
-                var lastBidSpeedrun = bidsToDisplay[bidsToDisplay.length - 1].speedrun;
-                var numBids = window.currentBids.length;
-                for (var i = 2; i < numBids; i++) {
-                    if (window.currentBids[i].speedrun !== lastBidSpeedrun) break;
-                    bidsToDisplay.push(window.currentBids[i]);
-                }
+                var bidsToDisplay = [];
+                window.currentBids.forEach(function(bid) {
+                    // Don't show closed bids in the automatic rotation.
+                    if (bid.state.toLowerCase() === 'closed') return;
+
+                    // If we have already have our three bids determined, we still need to check
+                    // if any of the remaining bids are for the same speedrun as the third bid.
+                    // This ensures that we are never displaying a partial list of bids for a given speedrun.
+                    if (bidsToDisplay.length < 3) {
+                        bidsToDisplay.push(bid);
+                    } else if (bid.speedrun === bidsToDisplay[bidsToDisplay.length - 1].speedrun) {
+                        bidsToDisplay.push(bid);
+                    }
+                });
 
                 // Loop over each bid and queue it up on the timeline
                 bidsToDisplay.forEach(function(bid) {
