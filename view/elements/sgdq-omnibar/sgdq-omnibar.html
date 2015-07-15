@@ -379,7 +379,6 @@
             // GSAP is dumb with `call` sometimes. Putting this in a near-zero duration tween seems to be more reliable.
             this.tl.to({}, 0.01, {
                 onComplete: function() {
-                    self.$.twoLines.style.display = 'block';
                     self.topText = bid.description;
                 }
             });
@@ -445,7 +444,6 @@
             // GSAP is dumb with `call` sometimes. Putting this in a near-zero duration tween seems to be more reliable.
             this.tl.to({}, 0.01, {
                 onComplete: function() {
-                    self.$.twoLines.style.display = 'block';
                     self.topText = 'PROVIDED BY ' + prize.provided;
                 }
             });
@@ -474,8 +472,6 @@
                 // GSAP is dumb with `call` sometimes. Putting this in a near-zero duration tween seems to be more reliable.
                 this.tl.to({}, 0.01, {
                     onComplete: function() {
-                        self.$.twoLines.style.display = 'block';
-
                         /* Depending on how we enter the very end of the schedule, we might end up in this func
                          * after window.nextRun has been set to null. In that case, we immediately clear the
                          * timeline and bail out to showing bids again.
@@ -562,11 +558,14 @@
                         self.$.fullLine.fillHopperText('');
                     },
                     onComplete: function () {
-                        self.$.twoLines.style.display = 'block';
                         self.$.fullLine.style.display = 'none';
                     }
                 })
             }
+
+            tmpTL.call(function() {
+                self.$.twoLines.style.display = 'block';
+            });
 
             if (this.labelShowing) {
                 tmpTL.to(this.$.label, 0.25, {
