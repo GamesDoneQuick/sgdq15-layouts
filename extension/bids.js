@@ -108,6 +108,23 @@ module.exports = function (nodecg) {
                 parentBidsById[bid.fields.parent].options.push(formattedChildBid);
             });
 
+            // Ah, but now we have to sort all these child bids by how much they have raised so far!
+            for (var id in parentBidsById) {
+                if (!parentBidsById.hasOwnProperty(id)) continue;
+                var bid = parentBidsById[id];
+                if (!bid.options) continue;
+                bid.options = bid.options.sort(function (a, b) {
+                    if (a.total > b.total) {
+                        return 1;
+                    }
+                    if (a.total < b.total) {
+                        return -1;
+                    }
+                    // a must be equal to b
+                    return 0;
+                });
+            }
+
             // After all that, deep-compare our newly-calculated parentBidsById object against the existing value.
             // Only assign the replicant if it's actually different.
             if (equal(parentBidsById, opts.replicant.value)) {
