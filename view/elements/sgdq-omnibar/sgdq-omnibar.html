@@ -93,10 +93,22 @@
             margin-bottom: -13px; /* easiest way to position both this and #bottomLine properly */
         }
 
+        #topLine .closed {
+            opacity: 0.75;
+        }
+
         #bottomLine {
             font-weight: 600;
             font-size: 26px;
             transform-origin: left;
+        }
+
+        #bottomLine .closed-green {
+            color: #a7d385;
+        }
+
+        #bottomLine .closed-red {
+            color: #d38585;
         }
 
         #fullLine {
@@ -202,14 +214,6 @@
                 type: Number,
                 value: -1
             },
-            topText: {
-                type: String,
-                observer: 'topTextChanged'
-            },
-            bottomText: {
-                type: String,
-                observer: 'bottomTextChanged'
-            },
             total: {
                 type: String,
                 value: '$0',
@@ -227,14 +231,6 @@
                     self.$.bottomLine.fit();
                 }
             });
-        },
-
-        topTextChanged: function(newVal) {
-            this.$.topLine.fillHopperText(newVal);
-        },
-
-        bottomTextChanged: function(newVal) {
-            this.$.bottomLine.fillHopperText(newVal);
         },
 
         /*
@@ -376,10 +372,26 @@
                 this.tl.call(this._showLabel, ['DONATION BIDS', '25px'], this);
             }
 
+            var topSpan = document.createElement('span');
+            var bottomSpan = document.createElement('span');
+            topSpan.innerHTML = bid.description;
+
+            // If this bid is closed, add the "closed" class to its spans, and append "(CLOSED)" to the top line.
+            if (bid.state.toLowerCase() === 'closed') {
+                topSpan.innerHTML += ' (CLOSED)';
+                topSpan.classList.add('closed');
+                bottomSpan.classList.add('closed');
+
+                // If this bid is an incentive, add .closed-green or .closed-red depending on if it met the goal or not.
+                if (!bid.options) {
+                    bottomSpan.classList.add(bid.goalMet ? 'closed-green' : 'closed-red');
+                }
+            }
+
             // GSAP is dumb with `call` sometimes. Putting this in a near-zero duration tween seems to be more reliable.
             this.tl.to({}, 0.01, {
                 onComplete: function() {
-                    self.topText = bid.description;
+                    self.$.topLine.fillHopper(topSpan);
                 }
             });
 
@@ -389,16 +401,27 @@
                 bid.options.forEach(function(option, index) {
                     if (index > 2) return;
                     self.tl.call(function() {
-                        self.bottomText = (index + 1) + '. ' + option.description + ' - ' + option.total;
+                        // If this bid is closed, add .closed-green to the first (winning) option.
+                        // Add .closed-red to the others.
+                        if (bid.state.toLowerCase() === 'closed') {
+                            if (index === 0) {
+                                bottomSpan.classList.add('closed-green');
+                            } else {
+                                bottomSpan.classList.remove('closed-green');
+                                bottomSpan.classList.add('closed-red');
+                            }
+                        }
+
+                        bottomSpan.innerHTML = (index + 1) + '. ' + option.description + ' - ' + option.total;
+                        self.$.bottomLine.fillHopper(bottomSpan);
                     }, null, null, '+=' + (0.08 + (index * self.displayDuration)));
                 })
             } else {
                 this.tl.call(function() {
-                    self.bottomText = bid.total + ' / ' + bid.goal;
+                    bottomSpan.innerHTML = bid.total + ' / ' + bid.goal;
+                    self.$.bottomLine.fillHopper(bottomSpan);
                 }, null, null, '+=0.08');
             }
-
-
 
             // Give the bid some time to show
             this.tl.to({}, this.displayDuration, {});
@@ -444,15 +467,16 @@
             // GSAP is dumb with `call` sometimes. Putting this in a near-zero duration tween seems to be more reliable.
             this.tl.to({}, 0.01, {
                 onComplete: function() {
-                    self.topText = 'PROVIDED BY ' + prize.provided;
+                    self.$.topLine.fillHopperText('PROVIDED BY ' + prize.provided);
                 }
             });
 
             this.tl.call(function() {
                 if (prize.grand) {
-                    self.bottomText = 'Grand Prize: ' + prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
+                    self.$.bottomLine.fillHopperText('Grand Prize: ' + prize.name + ' (Minimum Bid: '
+                            + prize.minimumbid + ')');
                 } else {
-                    self.bottomText = prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')';
+                    self.$.bottomLine.fillHopperText(prize.name + ' (Minimum Bid: ' + prize.minimumbid + ')');
                 }
             }, null, null, '+=0.08');
 
@@ -477,7 +501,7 @@
                          * timeline and bail out to showing bids again.
                          */
                         if (window.nextRun) {
-                            self.topText = window.nextRun.runners.join(', ');
+                            self.$.topLine.fillHopperText(window.nextRun.runners.join(', '));
                         } else {
                             self.tl.clear();
                             self.tl.call(self.showBids, null, self);
@@ -486,7 +510,7 @@
                 });
 
                 this.tl.call(function() {
-                    self.bottomText = window.nextRun.game + ' - ' + window.nextRun.category;
+                    self.$.bottomLine.fillHopperText(window.nextRun.game + ' - ' + window.nextRun.category);
                 }, null, null, '+=0.08');
 
                 // Give it some time to show
@@ -600,8 +624,8 @@
             return TweenLite.to(this.$.labelContainer, this.$.topLine.duration / 2 + 0.01, {
                 onStart: function () {
                     self.labelShowing = false;
-                    self.topText = '';
-                    self.bottomText = '';
+                    self.$.topLine.fillHopperText('');
+                    self.$.bottomLine.fillHopperText('');
                 },
                 x: '-100%',
                 ease: Power3.easeIn,

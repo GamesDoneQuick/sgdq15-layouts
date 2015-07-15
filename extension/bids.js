@@ -90,6 +90,7 @@ module.exports = function (nodecg) {
                         formattedParentBid.options = [];
                     } else {
                         formattedParentBid.goal = numeral(bid.fields.goal).format('$0,0[.]00');
+                        formattedParentBid.goalMet = bid.fields.total >= bid.fields.goal;
                     }
 
                     parentBidsById[bid.pk] = formattedParentBid;
