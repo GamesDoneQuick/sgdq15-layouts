@@ -91,13 +91,20 @@ body {
     text-align: center;
 }
 
-#image {
+#preloader {
+    display: none;
+}
+
+#nextImage {
+    width: 0;
+}
+
+.image {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url(http://i571.photobucket.com/albums/ss157/nomdepixel/ducktails%20shop_zpss0pw6zan.png~original);
     background-size: cover;
-    background-position: center;
+    background-position: 0 50%;
 }

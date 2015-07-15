@@ -9,6 +9,7 @@
 
     <script src="components/gsap/src/minified/TweenMax.min.js"></script>
     <script src="components/gsap/src/minified/plugins/TextPlugin.min.js"></script>
+    <script src="components/imagesloaded/imagesloaded.pkgd.min.js"></script>
     <script src="//use.typekit.net/mvu5oqo.js"></script>
     <script>try{Typekit.load();}catch(e){}</script>
 
@@ -18,7 +19,9 @@
 <body>
 <div id="container">
     <div id="prizes">
-        <div id="image"></div>
+        <div id="image" class="image"></div>
+        <div id="nextImage" class="image"></div>
+        <div id="preloader"></div>
         <div id="top" class="bar"><span>DONATE AND WIN PRIZES!</span></div>
         <div id="bottom" class="bar">
             <sgdq-qplate id="description" origin-dist=12><span id="descriptionText"></span></sgdq-qplate>
@@ -31,11 +34,14 @@
     <sgdq-omnibar></sgdq-omnibar>
 </div>
 <script>
+window.onload = function() {
     'use strict';
 
     var description = document.querySelector('#descriptionText');
     var bid = document.querySelector('#bid');
     var image = document.querySelector('#image');
+    var nextImage = document.querySelector('#nextImage');
+    var preloader = document.querySelector('#preloader');
     var timeline = new TimelineMax({repeat: -1});
 
     var prizes = [];
@@ -43,17 +49,19 @@
 
     var lastShownGrandPrize = null;
 
-    nodecg.listenFor('breakDemand', function(prize) {
+    var swipeDuration = 1;
+
+    nodecg.listenFor('breakDemand', function (prize) {
         showPrize(prize, true);
     });
 
     nodecg.Replicant('currentPrizes')
-        .on('change', function(oldVal, newVal) {
-            prizes = newVal.filter(function(prize) {
+        .on('change', function (oldVal, newVal) {
+            prizes = newVal.filter(function (prize) {
                 return !prize.grand;
             });
 
-            grandPrizes = newVal.filter(function(prize) {
+            grandPrizes = newVal.filter(function (prize) {
                 return prize.grand;
             });
 
@@ -74,7 +82,7 @@
             if (nextGrandPrize) prizesToDisplay.unshift(nextGrandPrize);
         }
 
-        prizesToDisplay.forEach(function(prize) {
+        prizesToDisplay.forEach(function (prize) {
             showPrize(prize);
         });
     }
@@ -82,14 +90,42 @@
     function showPrize(prize, immediate) {
         if (immediate) timeline.clear();
 
-        timeline.call(function() {
-            image.style.backgroundImage = 'url(' + prize.image + ')';
-            description.innerText = prize.description;
-            bid.fillHopperText(prize.minimumbid);
-        }).to({}, 5, {});
+        /* This timeline is fun to read.
+         * We pause it to preload the image then resume,
+         * start image swipe,
+         * start text flips, timed such that middle of the flip aligns with the middle of the swipe,
+         * reset image, nextimage divs,
+         * stall for 5 seconds to display prize
+         */
+        timeline
+            .call(function () {
+                timeline.pause();
+                preloader.innerHTML = 'img src="' + prize.image + '">';
+                imagesLoaded('#preloader', function () {
+                    nextImage.style.backgroundImage = 'url(' + prize.image + ')';
+                    preloader.innerHTML = '';
+                    timeline.play();
+                });
+            })
+            .to(nextImage, swipeDuration, {
+                width: '100%',
+                ease: Power1.easeInOut
+            })
+            .call(function () {
+                description.innerText = prize.description === '' ?
+                    'Prize Description that takes up two lines maximum' : prize.description;
+                bid.fillHopperText(prize.minimumbid);
+            }, null, null, "-="+ ((swipeDuration/2)+0.35))
+            .call(function () {
+                image.style.backgroundImage = 'url(' + prize.image + ')';
+                nextImage.style.backgroundImage = 'none';
+                nextImage.style.width = 0;
+            })
+            .to({}, 5, {});
 
         if (immediate) timeline.call(cyclePrizes);
     }
+};
 </script>
 </body>
 </html>
