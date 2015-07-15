@@ -5,6 +5,7 @@
         :host {
             display: block;
             transform-style: preserve-3d;
+            transform-origin: left; /* Prevents the element from losing its positioned when scaled via .fit() */
         }
 
         #display,
@@ -58,6 +59,10 @@
                 type: Number,
                 value: '7',
                 observer: 'onOriginDistChanged'
+            },
+            debounceTime: {
+                type: Number,
+                value: 10
             }
         },
 
@@ -71,7 +76,7 @@
         ready: function () {
             // Watch #hopper for changes. Upon a change, flip #display to the contents of #hopper.
             var self = this, observer = new MutationObserver(function (mutations) {
-                self.debounce('flip', self._flipToHopperContent, 10);
+                self.debounce('flip', self._flipToHopperContent, self.debounceTime);
             }).observe(this.$.hopper, {childList: true, subtree: true, characterData: true});
         },
 
@@ -101,13 +106,16 @@
 
         _flipToHopperContent: function() {
             var self = this;
-            var tl = new TimelineLite();
 
             // Get the <content> nodes from within #hopper. Because we only have one <content> tag,
             // we can kinda cheat and use the "this.$$" selector to easily reference it.
             var distributedNodes = Polymer.dom(this.$$('content')).getDistributedNodes();
 
-            tl.to(this.$.display, this.duration / 2, {
+            // Kill any existing timeline
+            if (this.tl) this.tl.kill();
+            this.tl = new TimelineLite();
+
+            this.tl.to(this.$.display, this.duration / 2, {
                 rotationX: this.direction === 'down' ? '-90deg' : '90deg',
                 ease: this.easeIn,
                 onComplete: function() {
@@ -136,28 +144,11 @@
             })
         },
 
-        fit: function(containerEl, str) {
-            return;
-
-            // Make containerEl param optional.
-            if (typeof str === 'undefined' && typeof containerEl === 'string') {
-                str = containerEl;
-                containerEl = null;
-            }
-
+        fit: function(containerEl) {
             // Default containerEl to the parent node.
             containerEl = containerEl || this.parentNode;
             var containerWidth = this._getElementContentWidth(containerEl);
-
-            // If the str argument was provided, use the measured width of that string for further calculations.
-            // Otherwise, use the actual current width of the element.
-            var width;
-            if (str) {
-                this.$.yardstick.innerHTML = str;
-                width = this.$.yardstick.scrollWidth;
-            } else {
-                width = this.scrollWidth;
-            }
+            var width = this.scrollWidth;
 
             // If the element is wider than the container, scale it down the minimum amount required to make it fit.
             // Otherwise, scale it back to normal.

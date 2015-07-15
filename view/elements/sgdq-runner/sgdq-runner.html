@@ -133,7 +133,7 @@
 
         <div id="runnerInfoContainer">
             <hr/>
-            <sgdq-qplate id="runnerInfo" center></sgdq-qplate>
+            <sgdq-qplate id="runnerInfo" debounce-time=300></sgdq-qplate>
             <hr/>
         </div>
         <div id="timeContainer" class$="{{hideCaps(hideLeftCap, hideRightCap, '')}}">
@@ -182,8 +182,12 @@
         },
 
         handleChange: function() {
-            // If the handle and streamlink are identical, just show the streamlink.
-            if (this.handle === this.streamlink) {
+            // If the handle and streamlink are both '?', just show '?'.
+            // Else, if the handle and streamlink are identical, just show the streamlink.
+            // Else, restart the timeline and alternate between both.
+            if (this.handle === '?' && this.streamlink === '?') {
+                this.$.runnerInfo.fillHopperText('?');
+            } else if (this.handle === this.streamlink) {
                 this.runnerInfoTl.pause();
                 this.$.runnerInfo.fillHopper(this.streamlinkElement);
             } else {
@@ -236,7 +240,7 @@
             // Create repeating timeline to alternate between showing the runner's display name and
             // their stream link.
             var RUN_INFO_DISPLAY_DURATION = 4;
-            self.runnerInfoTl = new TimelineMax({repeat: -1});
+            self.runnerInfoTl = new TimelineMax({repeat: -1, paused: true});
             self.runnerInfoTl.to({}, 0.01, {
                 onComplete: function() {
                     self.$.runnerInfo.fillHopperText(self.handle);
