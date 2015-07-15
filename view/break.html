@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Break</title>
+    <link rel="stylesheet" href="font/gamegirl_classic.css">
+    <link rel="stylesheet" href="style/layouts.css">
+    <link rel="stylesheet" href="style/break.css">
+
+    <script src="components/gsap/src/minified/TweenMax.min.js"></script>
+    <script src="components/gsap/src/minified/plugins/TextPlugin.min.js"></script>
+    <script src="//use.typekit.net/mvu5oqo.js"></script>
+    <script>try{Typekit.load();}catch(e){}</script>
+
+    <link rel="import" href="elements/sgdq-qplate/sgdq-qplate.html">
+    <link rel="import" href="elements/sgdq-omnibar/sgdq-omnibar.html">
+</head>
+<body>
+<div id="container">
+    <div id="prizes">
+        <div id="image"></div>
+        <div id="top" class="bar"><span>DONATE AND WIN PRIZES!</span></div>
+        <div id="bottom" class="bar">
+            <sgdq-qplate id="description"></sgdq-qplate>
+            <div id="bidBar" class="bar">
+                <sgdq-qplate center id="bid"></sgdq-qplate>
+            </div>
+        </div>
+        <div id="minBid"><span>MIN BID</span></div>
+    </div>
+    <sgdq-omnibar></sgdq-omnibar>
+</div>
+
+<script>
+    var description = document.querySelector('#description');
+    var bid = document.querySelector('#bid');
+
+    description.flipTo('Prize Description that takes<br>up two lines maximum');
+    bid.flipTo('$5');
+</script>
+
+</body>
+</html>
