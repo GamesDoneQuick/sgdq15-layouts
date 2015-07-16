@@ -79,7 +79,8 @@ module.exports = function (nodecg) {
                         name: bid.fields.name,
                         description: bid.fields.shortdescription || 'No shortdescription for bid #' + bid.pk,
                         total: numeral(bid.fields.total).format('$0,0[.]00'),
-                        state: bid.fields.state
+                        state: bid.fields.state,
+                        speedrun: bid.fields.public.split(' -- ')[0].substring(6)
                     };
 
                     // If this parent bid is not a target, that means it is a donation war that has options.
