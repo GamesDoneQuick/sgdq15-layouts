@@ -29,9 +29,8 @@
                 <sgdq-qplate id="bid" origin-dist=8></sgdq-qplate>
             </div>
         </div>
-        <div id="minBid"><span>MIN BID</span></div>
     </div>
-    <sgdq-omnibar></sgdq-omnibar>
+    <div id="minBid"><span>MIN BID</span></div>
 </div>
 <script>
 window.onload = function() {
@@ -50,6 +49,7 @@ window.onload = function() {
     var lastShownGrandPrize = null;
 
     var swipeDuration = 1;
+    var displayDuration = 10;
 
     nodecg.listenFor('breakDemand', function (prize) {
         showPrize(prize, true);
@@ -103,6 +103,7 @@ window.onload = function() {
                 preloader.innerHTML = 'img src="' + prize.image + '">';
                 imagesLoaded('#preloader', function () {
                     nextImage.style.backgroundImage = 'url(' + prize.image + ')';
+                    nextImage.style.opacity = 1;
                     preloader.innerHTML = '';
                     timeline.play();
                 });
@@ -120,8 +121,9 @@ window.onload = function() {
                 image.style.backgroundImage = 'url(' + prize.image + ')';
                 nextImage.style.backgroundImage = 'none';
                 nextImage.style.width = 0;
+                nextImage.style.opacity = 0;
             })
-            .to({}, 5, {});
+            .to({}, displayDuration, {});
 
         if (immediate) timeline.call(cyclePrizes);
     }

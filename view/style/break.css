@@ -14,6 +14,7 @@ body {
     left: 905px;
     width: 359px;
     height: 280px;
+    overflow: hidden;
 }
 
 .bar {
@@ -73,18 +74,19 @@ body {
 
 #minBid {
     position: absolute;
-    bottom: -7px;
-    right: 14px;
+    bottom: 95px;
+    right: 30px;
     height: 15px;
     width: 60px;
     font-size: 12px;
     border: solid 1px black;
     background-color: #6fccdd;
+    box-sizing: border-box;
 }
 
 #minBid span {
     position: absolute;
-    top: -2px;
+    top: -3px;
     left: 0;
     width: 100%;
     font-family: "tablet-gothic";
@@ -97,6 +99,8 @@ body {
 
 #nextImage {
     width: 0;
+    opacity: 0;
+    border-right: solid 1px black;
 }
 
 .image {
