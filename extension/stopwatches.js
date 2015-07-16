@@ -1,5 +1,6 @@
 'use strict';
 
+var app = require('express')();
 var Rieussec = require('rieussec');
 var NUM_STOPWATCHES = 4;
 
@@ -36,48 +37,108 @@ module.exports = function (nodecg) {
         return rieussec;
     });
 
-    nodecg.listenFor('startTime', function(index) {
+    nodecg.listenFor('startTime', startStopwatch);
+    nodecg.listenFor('pauseTime', pauseStopwatch);
+    nodecg.listenFor('finishTime', finishStopwatch);
+    nodecg.listenFor('resetTime', resetStopwatch);
+    nodecg.listenFor('setTime', setStopwatch);
+
+    app.get('/sgdq15-layouts/stopwatches', function (req, res) {
+        res.json(stopwatches.value);
+    });
+
+    app.put('/sgdq15-layouts/stopwatch/:index/start', function (req, res) {
+        var result = startStopwatch(req.params.index);
+        if (result) {
+            res.status(200).json(result);
+        } else {
+            res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
+        }
+    });
+
+    app.put('/sgdq15-layouts/stopwatch/:index/pause', function (req, res) {
+        var result = pauseStopwatch(req.params.index);
+        if (result) {
+            res.status(200).json(result);
+        } else {
+            res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
+        }
+    });
+
+    app.put('/sgdq15-layouts/stopwatch/:index/finish', function (req, res) {
+        var result = finishStopwatch(req.params.index);
+        if (result) {
+            res.status(200).json(result);
+        } else {
+            res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
+        }
+    });
+
+    app.put('/sgdq15-layouts/stopwatch/:index/reset', function (req, res) {
+        var result = resetStopwatch(req.params.index);
+        if (result) {
+            res.status(200).json(result);
+        } else {
+            res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
+        }
+    });
+
+    nodecg.mount(app);
+
+    function startStopwatch(index) {
         if (index === 'all') {
             rieussecs.forEach(function(sw) { sw.start(); });
+            return stopwatches.value;
         } else if (index >= 0 && index < NUM_STOPWATCHES) {
             rieussecs[index].start();
+            return stopwatches.value[index];
         } else {
             nodecg.log.error('index "%d" sent to "startTime" is out of bounds', index);
+            return false;
         }
-    });
+    }
 
-    nodecg.listenFor('pauseTime', function(index) {
+    function pauseStopwatch (index) {
         if (index === 'all') {
             rieussecs.forEach(function(sw) { sw.pause(); });
+            return stopwatches.value;
         } else if (index >= 0 && index < NUM_STOPWATCHES) {
             rieussecs[index].pause();
+            return stopwatches.value[index];
         } else {
             nodecg.log.error('index "%d" sent to "pauseTime" is out of bounds', index);
+            return false;
         }
-    });
+    }
 
-    nodecg.listenFor('finishTime', function(index) {
+    function finishStopwatch (index) {
         if (index === 'all') {
             rieussecs.forEach(function(sw) { sw.pause(); });
+            return stopwatches.value;
         } else if (index >= 0 && index < NUM_STOPWATCHES) {
             rieussecs[index].pause();
             stopwatches.value[index].state = 'finished';
+            return stopwatches.value[index];
         } else {
             nodecg.log.error('index "%d" sent to "finishTime" is out of bounds', index);
+            return false;
         }
-    });
+    }
 
-    nodecg.listenFor('resetTime', function(index) {
+    function resetStopwatch (index) {
         if (index === 'all') {
             rieussecs.forEach(function(sw) { sw.reset(); });
+            return stopwatches.value;
         } else if (index >= 0 && index < NUM_STOPWATCHES) {
             rieussecs[index].reset();
+            return stopwatches.value[index];
         } else {
             nodecg.log.error('index "%d" sent to "resetTime" is out of bounds', index);
+            return false;
         }
-    });
+    }
 
-    nodecg.listenFor('setTime', function(data) {
+    function setStopwatch (data) {
         var index = data.index;
         if (index >= 0 && index < NUM_STOPWATCHES) {
             // Pause all timers while we do our work.
@@ -102,20 +163,23 @@ module.exports = function (nodecg) {
                     rieussec.start();
                 }
             });
+
+            return stopwatches.value[index];
         } else {
             nodecg.log.error('index "%d" sent to "setTime" is out of bounds', index);
+            return false;
         }
-    });
-
-    function msToTime(duration) {
-        var seconds = parseInt((duration/1000)%60),
-            minutes = parseInt((duration/(1000*60))%60),
-            hours = parseInt((duration/(1000*60*60))%24);
-
-        hours = (hours < 10) ? '0' + hours : hours;
-        minutes = (minutes < 10) ? '0' + minutes : minutes;
-        seconds = (seconds < 10) ? '0' + seconds : seconds;
-
-        return hours + ':' + minutes + ':' + seconds;
     }
 };
+
+function msToTime(duration) {
+    var seconds = parseInt((duration/1000)%60),
+        minutes = parseInt((duration/(1000*60))%60),
+        hours = parseInt((duration/(1000*60*60))%24);
+
+    hours = (hours < 10) ? '0' + hours : hours;
+    minutes = (minutes < 10) ? '0' + minutes : minutes;
+    seconds = (seconds < 10) ? '0' + seconds : seconds;
+
+    return hours + ':' + minutes + ':' + seconds;
+}
