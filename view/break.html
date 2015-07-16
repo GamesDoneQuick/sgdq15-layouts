@@ -15,6 +15,19 @@
 
     <link rel="import" href="elements/sgdq-qplate/sgdq-qplate.html">
     <link rel="import" href="elements/sgdq-omnibar/sgdq-omnibar.html">
+
+    <style>
+        #description {
+            white-space: normal;
+
+            /* Limit the number of lines of text to 2. Any overflow will be truncated w/ ellipses. */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+    </style>
 </head>
 <body>
 <div id="container">
@@ -24,7 +37,7 @@
         <div id="preloader"></div>
         <div id="top" class="bar"><span>DONATE AND WIN PRIZES!</span></div>
         <div id="bottom" class="bar">
-            <sgdq-qplate id="description" origin-dist=12><span id="descriptionText"></span></sgdq-qplate>
+            <sgdq-qplate id="description" origin-dist=14></sgdq-qplate>
             <div id="bidBar" class="bar">
                 <sgdq-qplate id="bid" origin-dist=8></sgdq-qplate>
             </div>
@@ -36,7 +49,7 @@
 window.onload = function() {
     'use strict';
 
-    var description = document.querySelector('#descriptionText');
+    var description = document.querySelector('#description');
     var bid = document.querySelector('#bid');
     var image = document.querySelector('#image');
     var nextImage = document.querySelector('#nextImage');
@@ -113,8 +126,7 @@ window.onload = function() {
                 ease: Power1.easeInOut
             })
             .call(function () {
-                description.innerText = prize.description === '' ?
-                    'Prize Description that takes up two lines maximum' : prize.description;
+                description.fillHopperText(prize.description || prize.name);
                 bid.fillHopperText(prize.minimumbid);
             }, null, null, "-="+ ((swipeDuration/2)+0.35))
             .call(function () {
