@@ -28,8 +28,15 @@ module.exports = function (nodecg) {
         clearInterval(updateInterval);
         updateInterval = setInterval(update.bind(this), POLL_INTERVAL);
         update()
-            .then(function (updated) {
-                cb(null, updated);
+            .spread(function (updatedCurrent, updatedAll) {
+                var updatedEither = updatedCurrent || updatedAll;
+                if (updatedEither) {
+                    nodecg.log.info('Prizes successfully updated');
+                } else {
+                    nodecg.log.info('Prizes unchanged, not updated');
+                }
+
+                cb(null, updatedEither);
             }, function (error) {
                 cb(error);
             });
@@ -53,8 +60,8 @@ module.exports = function (nodecg) {
         });
 
         return Q.all([
-            currentPromise,
-            allPromise
+            currentPromise.promise,
+            allPromise.promise
         ]);
     }
 

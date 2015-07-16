@@ -26,8 +26,14 @@ module.exports = function (nodecg) {
         clearInterval(updateInterval);
         updateInterval = setInterval(update.bind(this), POLL_INTERVAL);
         update()
-            .then(function (wasUpdated) {
-                cb(null, wasUpdated);
+            .then(function (updated) {
+                if (updated) {
+                    nodecg.log.info('Schedule successfully updated');
+                } else {
+                    nodecg.log.info('Schedule unchanged, not updated');
+                }
+
+                cb(null, updated);
             }, function (error) {
                 cb(error);
             });

@@ -14,6 +14,13 @@
     "faIcon": "fa-gift"
   },
   {
+    "name": "bids",
+    "title": "Current Bids",
+    "width": 4,
+    "file": "bids.jade",
+    "faIcon": "fa-money"
+  },
+  {
     "name": "total",
     "title": "Total",
     "width": 2,

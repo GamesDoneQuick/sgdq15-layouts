@@ -41,6 +41,12 @@ module.exports = function (nodecg) {
         updateInterval = setInterval(update, POLL_INTERVAL);
         update()
             .then(function (updated) {
+                if (updated) {
+                    nodecg.log.info('Donation total successfully updated');
+                } else {
+                    nodecg.log.info('Donation total unchanged, not updated');
+                }
+
                 cb(null, updated);
             }, function (error) {
                 cb(error);
