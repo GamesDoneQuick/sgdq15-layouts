@@ -241,6 +241,9 @@
                         }
                     });
 
+            // By default, show '?'
+            self.$.runnerInfo.fillHopperText('?');
+
             // Create repeating timeline to alternate between showing the runner's display name and
             // their stream link.
             var RUN_INFO_DISPLAY_DURATION = 4;
