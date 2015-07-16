@@ -87,7 +87,8 @@ module.exports = function (nodecg) {
                         category: rows[i].category || 'Any%',
                         startTime: Date.parse(rows[i]['dateandtimecdtutc-5']) || null,
                         streamlinks: streamlinks || ['Unknown'],
-                        index: i
+                        index: i,
+                        type: 'run'
                     });
                 }
                 /* jshint +W083 */

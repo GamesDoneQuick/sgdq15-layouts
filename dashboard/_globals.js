@@ -17,7 +17,6 @@
                 if (substrRegex.test(run.game) || substrRegex.test(run.runners)) {
                     // the typeahead jQuery plugin expects suggestions to a
                     // JavaScript object, refer to typeahead docs for more info
-                    run.type = 'run';
                     matches.push(run);
                 }
             });
@@ -40,7 +39,6 @@
             // contains the substring `q`, add it to the `matches` array
             $.each(bids, function (i, bid) {
                 if (substrRegex.test(bid.speedrun) || substrRegex.test(bid.name)) {
-                    bid.type = 'bid';
                     matches.push(bid);
                 }
             });
@@ -63,7 +61,6 @@
             // contains the substring `q`, add it to the `matches` array
             $.each(prizes, function (i, prize) {
                 if (substrRegex.test(prize.name) || substrRegex.test(prize.provided)) {
-                    prize.type = 'prize';
                     matches.push(prize);
                 }
             });
