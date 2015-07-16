@@ -25,52 +25,6 @@
         nodecg.sendMessage('barCTA', selected);
     });
 
-    var bidMatcher = function (bids) {
-        return function findMatches(q, cb) {
-            var matches, substrRegex;
-
-            // an array that will be populated with substring matches
-            matches = [];
-
-            // regex used to determine if a string contains the substring `q`
-            substrRegex = new RegExp(q, 'i');
-
-            // iterate through the pool of strings and for any string that
-            // contains the substring `q`, add it to the `matches` array
-            $.each(bids, function (i, bid) {
-                if (substrRegex.test(bid.speedrun) || substrRegex.test(bid.name)) {
-                    bid.type = 'bid';
-                    matches.push(bid);
-                }
-            });
-
-            cb(matches);
-        };
-    };
-
-    var prizeMatcher = function (prizes) {
-        return function findMatches(q, cb) {
-            var matches, substrRegex;
-
-            // an array that will be populated with substring matches
-            matches = [];
-
-            // regex used to determine if a string contains the substring `q`
-            substrRegex = new RegExp(q, 'i');
-
-            // iterate through the pool of strings and for any string that
-            // contains the substring `q`, add it to the `matches` array
-            $.each(prizes, function (i, prize) {
-                if (substrRegex.test(prize.name) || substrRegex.test(prize.provided)) {
-                    prize.type = 'prize';
-                    matches.push(prize);
-                }
-            });
-
-            cb(matches);
-        };
-    };
-
     var bids = nodecg.Replicant('allBids').on('change', handleReplicantChanges);
     var prizes = nodecg.Replicant('allPrizes').on('change', handleReplicantChanges);
 
@@ -89,19 +43,31 @@
             args.push({
                 name: 'bids',
                 displayKey: 'name',
-                source: bidMatcher(bids.value),
+                source: window.bidMatcher(bids.value),
                 templates: {
                     header: '<h4 class="tt-category-name">Bids</h4>',
                     suggestion: function (result) {
-                        return [
-                            '<div>',
-                                '<div class="tt-suggestion-topline">',
-                                    '<span class="result-main">' + result.name + '</span>',
-                                    '<span class="result-aux">' + result.total + ' / ' + result.goal + '</span>',
-                                '</div>',
-                                '<span class="result-sub">' + result.speedrun + '</span>',
-                            '</div>'
-                        ].join('\n');
+                        if(result.options) {
+                            return [
+                                '<div>',
+                                    '<div class="tt-suggestion-topline">',
+                                        '<span class="result-main">' + result.name + '</span>',
+                                        '<span class="result-aux">' + result.total + '</span>',
+                                    '</div>',
+                                    '<span class="result-sub">' + result.speedrun + '</span>',
+                                '</div>'
+                            ].join('\n');
+                        } else {
+                            return [
+                                '<div>',
+                                    '<div class="tt-suggestion-topline">',
+                                        '<span class="result-main">' + result.name + '</span>',
+                                        '<span class="result-aux">' + result.total + ' / ' + result.goal + '</span>',
+                                    '</div>',
+                                    '<span class="result-sub">' + result.speedrun + '</span>',
+                                '</div>'
+                            ].join('\n');
+                        }
                     }
                 }
             });
@@ -111,7 +77,7 @@
             args.push({
                 name: 'prizes',
                 displayKey: 'name',
-                source: prizeMatcher(prizes.value),
+                source: window.prizeMatcher(prizes.value),
                 templates: {
                     header: '<h4 class="tt-category-name">Prizes</h4>',
                     suggestion: function (result) {

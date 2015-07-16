@@ -41,7 +41,7 @@
                 {
                     name: 'schedule',
                     displayKey: 'game',
-                    source: scheduleMatcher(newVal),
+                    source: window.scheduleMatcher(newVal),
                     templates: {
                         suggestion: function (result) {
                             return [
@@ -129,31 +129,6 @@
     }
 
     /* Typeahead */
-    var scheduleMatcher = function (schedule) {
-        return function findMatches(q, cb) {
-            var matches, substrRegex;
-
-            // an array that will be populated with substring matches
-            matches = [];
-
-            // regex used to determine if a string contains the substring `q`
-            substrRegex = new RegExp(q, 'i');
-
-            // iterate through the pool of strings and for any string that
-            // contains the substring `q`, add it to the `matches` array
-            $.each(schedule, function (i, run) {
-                if (substrRegex.test(run.game) || substrRegex.test(run.runners)) {
-                    // the typeahead jQuery plugin expects suggestions to a
-                    // JavaScript object, refer to typeahead docs for more info
-                    run.type = 'run';
-                    matches.push(run);
-                }
-            });
-
-            cb(matches);
-        };
-    };
-
     manualBtn.click(function () {
         var runIndex = manualTypeahead.data('runIndex');
         if (typeof(runIndex) !== 'number') return;
