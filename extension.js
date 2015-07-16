@@ -35,4 +35,11 @@ module.exports = function(nodecg) {
         nodecg.log.error('Failed to load "stopwatches" lib:', e.stack);
         process.exit(1);
     }
+
+    try {
+        require('./extension/sponsors')(nodecg);
+    } catch (e) {
+        nodecg.log.error('Failed to load "sponsors" lib:', e.stack);
+        process.exit(1);
+    }
 };

@@ -6,10 +6,34 @@
         :host {
             display: flex;
         }
+
+        #current,
+        #next {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        #current {
+            /* Ensure that this always displays on top */
+            z-index: 1;
+        }
+
+        #next {
+            opacity: 0;
+        }
     </style>
 
     <template>
-        <sgdq-container hide-tl="{{hideTl}}" hide-tr="{{hideTr}}" hide-bl="{{hideBl}}" hide-br="{{hideBr}}"></sgdq-container>
+        <sgdq-container hide-tl="{{hideTl}}" hide-tr="{{hideTr}}" hide-bl="{{hideBl}}" hide-br="{{hideBr}}">
+            <div id="current"></div>
+            <div id="next"></div>
+        </sgdq-container>
     </template>
 </dom-module>
 
@@ -33,7 +57,109 @@
             hideBr: {
                 type: Boolean,
                 reflectToAttribute: true
+            },
+            duration: {
+                type: Number,
+                value: 30
+            },
+            sponsorImageUrls: {
+                type: Array
+            },
+            currentImage: {
+                type: Object,
+                value: {
+                    url: '',
+                    index: -1
+                },
+                readOnly: true
             }
+        },
+
+        /*
+         * Lifecycle
+         */
+        ready: function() {
+            var self = this;
+
+            nodecg.Replicant('sponsorImageUrls')
+                    .on('change', function(oldVal, newVal) {
+                        self.sponsorImageUrls = newVal;
+
+                        // Update the currentImage index to avoid things breaking
+                        if (self.currentImage.index > -1) {
+                            var tmp = {
+                                url: self.currentImage.url,
+                                index: newVal.indexOf(self.currentImage.url)
+                            };
+
+                            self._setCurrentImage(tmp);
+                        }
+
+                        // If no log is showing yet, show the first logo immediately
+                        if (!self.$.current.style.backgroundImage) {
+                            self._setCurrentImage({
+                                url: self.sponsorImageUrls[0],
+                                index: 0
+                            });
+
+                            TweenLite.fromTo(self.$.current, 1,
+                                    {opacity: 0},
+                                    {
+                                        onStart: function() {
+                                            self.$.current.style.backgroundImage = 'url("' + self.sponsorImageUrls[0] + '")';
+                                        },
+                                        opacity: 1,
+                                        ease: Power1.easeInOut
+                                    });
+                        }
+                    });
+
+            // Cycle through sponsor logos every this.duration seconds
+            setInterval(function() {
+                var urls = self.sponsorImageUrls;
+
+                // If there's no images, do nothing
+                if (!urls) return;
+                if (urls.length <= 0) return;
+
+                // Get the next image index
+                var nextIdx = self.currentImage.index + 1;
+
+                // If this index is greater than the max, loop back to the start
+                if (nextIdx >= urls.length) nextIdx = 0;
+
+                var nextUrl = urls[nextIdx];
+
+                console.log(nextIdx, nextUrl);
+
+                // If the next url is the same as the current one, don't do anything
+                var currentUrl = self.currentImage.url;
+                if (currentUrl === nextUrl) return;
+
+                self._setCurrentImage({
+                    url: nextUrl,
+                    index: nextIdx
+                });
+
+                // Set #next's background image to the next image url.
+                self.$.next.style.backgroundImage = 'url("' + nextUrl + '")';
+
+                // Create one-time animation to fade from #current to #next.
+                var tl = new TimelineLite();
+                tl.add('start');
+                tl.to(self.$.current, 1, {
+                    opacity: 0,
+                    ease: Power1.easeInOut
+                }, 'start');
+                tl.to(self.$.next, 1, {
+                    opacity: 1,
+                    ease: Power1.easeInOut
+                }, 'start');
+
+                // Reset, prep for next iteration
+                tl.set(self.$.current, {backgroundImage: 'url("' + nextUrl + '")'});
+                tl.set([self.$.current, self.$.next], {clearProps: 'opacity'}, '+=0.1');
+            }, this.duration * 1000);
         }
     });
 </script>
