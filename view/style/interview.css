@@ -1,0 +1,104 @@
+#container {
+    position: absolute;
+    top: 513px;
+    left: 64px;
+    width: 1154px;
+    height: 120px;
+
+    font-family: 'tablet-gothic-wide';
+
+    -webkit-filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.7));
+    filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.7));
+    overflow: visible;
+}
+
+#background {
+    position: absolute;
+    top: 14px;
+    left: 38px;
+    width: 1078px;
+    height: 82px;
+    box-sizing: border-box;
+
+    border: solid 1px black;
+    border-radius: 5px;
+    background-color: #2496b8;
+}
+
+#main {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#top {
+    width: 522px;
+    height: 25px;
+    box-sizing: border-box;
+    border: solid 1px black;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border-bottom: none;
+    background: linear-gradient(to bottom, #2495b6, #015368);
+}
+
+hr {
+    height: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    border: solid 1px black;
+    border-radius: 4px;
+    background: linear-gradient(to bottom, #44c8f5, #065a70);
+}
+
+#top img {
+    position: relative;
+    top: -3px;
+    left: 93px;
+}
+
+#middle {
+    width: 1136px;
+    height: 46px;
+    box-sizing: border-box;
+    border-left: solid 1px black;
+    border-right: solid 1px black;
+    background: linear-gradient(to right, #e4f5fc, #ace0f4 6%, #ace0f4 94%, #e4f5fc);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+#bottom {
+    width: 252px;
+    height: 32px;
+    box-sizing: border-box;
+    border: solid 1px black;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-top: none;
+    background: linear-gradient(to bottom, #126981, #2494b6);
+
+    color: white;
+    text-align: center;
+    font-size: 22px;
+}
+
+#bottom span {
+    position: relative;
+    top: -0.16em;
+}
+
+sgdq-qplate {
+    width: 250px;
+    text-align: center;
+}

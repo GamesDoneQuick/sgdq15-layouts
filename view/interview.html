@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Break</title>
+    <link rel="stylesheet" href="font/gamegirl_classic.css">
+    <link rel="stylesheet" href="style/layouts.css">
+    <link rel="stylesheet" href="style/interview.css">
+
+    <script src="components/gsap/src/minified/TweenMax.min.js"></script>
+    <script src="components/gsap/src/minified/plugins/TextPlugin.min.js"></script>
+    <script src="components/imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <script src="//use.typekit.net/mvu5oqo.js"></script>
+    <script>try{Typekit.load();}catch(e){}</script>
+
+    <link rel="import" href="elements/sgdq-qplate/sgdq-qplate.html">
+</head>
+<body>
+<div id="container">
+    <div id="background"></div>
+    <div id="main">
+        <div id="top"><img src="img/sgdq_interview_title.png"></div>
+        <hr/>
+        <div id="middle">
+            <sgdq-qplate id="name1"></sgdq-qplate>
+            <sgdq-qplate id="name2"></sgdq-qplate>
+            <sgdq-qplate id="name3"></sgdq-qplate>
+            <sgdq-qplate id="name4"></sgdq-qplate>
+        </div>
+        <hr/>
+        <div id="bottom"><span>#SGDQ2015</span></div>
+    </div>
+</div>
+<script>
+    window.onload = function() {
+        'use strict';
+
+        [name1, name2, name3, name4].forEach(function(el) {
+            el.fillHopperText('twentyfivecharacterswwwww');
+        });
+    };
+</script>
+</body>
+</html>
