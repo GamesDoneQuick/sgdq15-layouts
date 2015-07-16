@@ -59,6 +59,14 @@ body {
     margin-left: 10px;
     height: 100%;
     width: 260px;
+    white-space: normal;
+
+    /* Limit the number of lines of text to 2. Any overflow will be truncated w/ ellipses. */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 }
 
 #descriptionText {
