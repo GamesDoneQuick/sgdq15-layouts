@@ -182,14 +182,18 @@
         },
 
         handleChange: function() {
-            // If the handle and streamlink are both '?', just show '?'.
+            this.runnerInfoTl.pause();
+
+            // If no handle nor streamlink, just show '?'.
             // Else, if the handle and streamlink are identical, just show the streamlink.
+            // Else, if there is a handle but no streamlink, just show the streamlink.
             // Else, restart the timeline and alternate between both.
-            if (this.handle === '?' && this.streamlink === '?') {
+            if (!this.handle && !this.streamlink) {
                 this.$.runnerInfo.fillHopperText('?');
             } else if (this.handle === this.streamlink) {
-                this.runnerInfoTl.pause();
                 this.$.runnerInfo.fillHopper(this.streamlinkElement);
+            } else if (this.handle && !this.streamlink) {
+                this.$.runnerInfo.fillHopperText(this.handle);
             } else {
                 this.runnerInfoTl.restart();
             }
@@ -214,8 +218,8 @@
 
             nodecg.Replicant('currentRun')
                     .on('change', function(oldVal, newVal) {
-                        self.handle = newVal.runners[self.index] || '?';
-                        self.streamlink = newVal.streamlinks[self.index] || '?';
+                        self.handle = newVal.runners[self.index];
+                        self.streamlink = newVal.streamlinks[self.index];
                     });
 
             nodecg.Replicant('stopwatches')
