@@ -9,9 +9,7 @@
     width: 888px;
     height: 117px;
     overflow: hidden;
-
     display: flex;
-    flex-direction: row-reverse;
 }
 
 sgdq-game {
@@ -32,4 +30,5 @@ sgdq-runner {
 sgdq-sponsors {
     width: 380px;
     height: 100%;
+    z-index: 2;
 }
