@@ -14,6 +14,9 @@
     function handleReplicantChanges() {
         if ($onDemandTypeahead.typeahead) $onDemandTypeahead.typeahead('destroy');
 
+        // Clear the "selected" value because we can no longer trust it to be accurate.
+        selected = null;
+
         var args = [
             {
                 hint: true,
