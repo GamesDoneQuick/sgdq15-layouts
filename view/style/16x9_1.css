@@ -4,11 +4,14 @@
 
 #sidebar {
     position: absolute;
-    top: 229px;
+    top: 226px;
     right: 0;
     width: 325px;
-    height: 200px;
+    height: 149px;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 #bottombar {
@@ -32,6 +35,6 @@ sgdq-sponsors {
 }
 
 sgdq-runner {
-    margin-top: 3px;
-    margin-bottom: 12px;
+    margin-top: 7px;
+    margin-bottom: 6px;
 }

@@ -22,8 +22,10 @@
     <div id="sidebar">
         <sgdq-game></sgdq-game>
         <div id="cameraPlaceholder"></div>
-        <sgdq-runner index="0"></sgdq-runner>
-        <sgdq-runner index="1"></sgdq-runner>
+        <div id="runners">
+            <sgdq-runner index="0"></sgdq-runner>
+            <sgdq-runner index="1" hide-if-empty></sgdq-runner>
+        </div>
         <sgdq-sponsors></sgdq-sponsors>
     </div>
     <sgdq-omnibar></sgdq-omnibar>

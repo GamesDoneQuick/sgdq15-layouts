@@ -119,10 +119,6 @@
         sgdq-qplate /deep/ .face {
             margin-top: -0.06em;
         }
-
-        sgdq-qplate /deep/ #next {
-            margin-top: 0.06em;
-        }
     </style>
 
     <template>
@@ -164,6 +160,11 @@
                 reflectToAttribute: true
             },
             hideRightCap: {
+                type: Boolean,
+                value: false,
+                reflectToAttribute: true
+            },
+            hideIfEmpty: {
                 type: Boolean,
                 value: false,
                 reflectToAttribute: true
@@ -216,10 +217,23 @@
         ready: function() {
             var self = this;
 
+            self.hideIfEmptyTL = new TimelineLite({paused: true});
+            if (self.hideIfEmpty) {
+                self.hideIfEmptyTL
+                    .to(self, 0.75, {opacity: 0})
+                    .to(self, 0.25, {marginTop: 0, height: 0});
+            }
+
+
             nodecg.Replicant('currentRun')
                     .on('change', function(oldVal, newVal) {
-                        self.handle = newVal.runners[self.index];
-                        self.streamlink = newVal.streamlinks[self.index];
+                        if (newVal.runners[self.index]) {
+                            self.handle = newVal.runners[self.index];
+                            self.streamlink = newVal.streamlinks[self.index];
+                            self.hideIfEmptyTL.reverse();
+                        } else {
+                            self.hideIfEmptyTL.play();
+                        }
                     });
 
             nodecg.Replicant('stopwatches')
