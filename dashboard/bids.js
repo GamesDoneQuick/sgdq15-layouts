@@ -11,7 +11,7 @@
             newVal.forEach(function(bid) {
                 html += '<tr><td>' + bid.name + '</td>' +
                     '<td>' + bid.description + '</td>' +
-                    '<td>' + bid.total + '</td>';
+                    '<td>' + bid.total + '</td></tr>';
             });
             $bidsTable.find('tbody').html(html);
         });
