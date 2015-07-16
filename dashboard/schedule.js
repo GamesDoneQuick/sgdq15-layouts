@@ -1,39 +1,33 @@
 (function() {
     'use strict';
 
-    var panel = $bundle.filter('.schedule');
-    var nextBtn = panel.find('.js-next');
-    var prevBtn = panel.find('.js-prev');
-    var updateGroup = panel.find('.js-update');
-    var updateBtn = updateGroup.find('button');
-    var manualTypeahead = panel.find('.typeahead');
-    var manualBtn = panel.find('.js-manualBtn');
-    var editModal = $('#sgdq15-layouts_editRun');
+    var $panel = $bundle.filter('.schedule');
+    var $nextBtn = $panel.find('.js-next');
+    var $prevBtn = $panel.find('.js-prev');
+    var $updateGroup = $panel.find('.js-update');
+    var $manualTypeahead = $panel.find('.typeahead');
+    var $editModal = $('#sgdq15-layouts_editRun');
+    var $runInfo = $panel.find('.runInfo');
+    var $nextRun = $panel.find('.js-nextRun');
 
-    var runInfo = panel.find('.runInfo');
-    var runInfoGame = runInfo.find('.runInfo-game');
-    var runInfoConsole = runInfo.find('.runInfo-console');
-    var runInfoRunners = runInfo.find('.runInfo-runners');
-    var runInfoStreamlinks = runInfo.find('.runInfo-streamlinks');
-    var runInfoEstimate = runInfo.find('.runInfo-estimate');
-    var runInfoCategory = runInfo.find('.runInfo-category');
-    var runInfoComments = runInfo.find('.runInfo-comments');
-    var runInfoIndex = runInfo.find('.runInfo-index');
-    var nextRun = panel.find('.js-nextRun');
+    var selectedRun = null;
 
     // Init tooltip(s)
-    panel.find('[data-toggle="tooltip"]').tooltip();
+    $panel.find('[data-toggle="tooltip"]').tooltip();
 
     var schedule = nodecg.Replicant('schedule')
         .on('change', function(oldVal, newVal) {
+            // Clear the "selected" value because we can no longer trust it to be accurate.
+            selectedRun = null;
+
             if (currentRun.value && (currentRun.value.index+1 < newVal.length)) {
-                nextRun.html(newVal[currentRun.value.index+1].game);
+                $nextRun.html(newVal[currentRun.value.index+1].game);
             } else {
-                nextRun.html('None');
+                $nextRun.html('None');
             }
 
-            if (manualTypeahead.typeahead) manualTypeahead.typeahead('destroy');
-            manualTypeahead.typeahead({
+            if ($manualTypeahead.typeahead) $manualTypeahead.typeahead('destroy');
+            $manualTypeahead.typeahead({
                     hint: true,
                     highlight: true,
                     minLength: 1
@@ -62,52 +56,54 @@
         .on('change', function(oldVal, newVal) {
             if (!newVal) return;
 
-            runInfoGame.find('.form-control-static').text(newVal.game);
-            runInfoConsole.find('.form-control-static').text(newVal.console);
-            runInfoRunners.find('.form-control-static').text(newVal.runners.join(', '));
-            runInfoStreamlinks.find('.form-control-static').text(newVal.streamlinks.join(', '));
-            runInfoEstimate.find('.form-control-static').text(newVal.estimate);
-            runInfoCategory.find('.form-control-static').text(newVal.category);
-            runInfoComments.find('.form-control-static').text(newVal.comments);
-            runInfoIndex.find('.form-control-static').text(newVal.index);
+            $runInfo.find('.runInfo-game').text(newVal.game);
+            $runInfo.find('.runInfo-console').text(newVal.console);
+            $runInfo.find('.runInfo-runners').text(newVal.runners.join(', '));
+            $runInfo.find('.runInfo-streamlinks').text(newVal.streamlinks.join(', '));
+            $runInfo.find('.runInfo-estimate').text(newVal.estimate);
+            $runInfo.find('.runInfo-category').text(newVal.category);
+            $runInfo.find('.runInfo-comments').text(newVal.comments);
+            $runInfo.find('.runInfo-index').text(newVal.index);
 
             if (schedule.value && (newVal.index+1 < schedule.value.length)) {
-                nextRun.html(schedule.value[newVal.index+1].game);
+                $nextRun.html(schedule.value[newVal.index+1].game);
             } else {
-                nextRun.html('None');
+                $nextRun.html('None');
             }
 
             // Disable "prev" button if at start of schedule
-            prevBtn.prop('disabled', newVal.index <= 0);
+            $prevBtn.prop('disabled', newVal.index <= 0);
 
             // Disable "next" button if at end of schedule
-            nextBtn.prop('disabled', schedule.value && newVal.index >= schedule.value.length-1);
+            $nextBtn.prop('disabled', schedule.value && newVal.index >= schedule.value.length-1);
         });
 
-    nextBtn.click(function () {
+    $nextBtn.click(function () {
         var nextIndex = currentRun.value.index + 1;
         currentRun.value = schedule.value[nextIndex];
     });
-    prevBtn.click(function () {
+
+    $prevBtn.click(function () {
         var prevIndex = currentRun.value.index - 1;
         currentRun.value = schedule.value[prevIndex];
     });
-    updateBtn.click(function () {
+
+    $updateGroup.find('button').click(function () {
         var self = this;
         $(self).prop('disabled', true);
         nodecg.sendMessage('updateSchedule', function (err, updated) {
             if (err) {
                 console.error(err.message);
-                showUpdateResult(updateGroup, 'danger', 'ERROR! Check console');
+                showUpdateResult($updateGroup, 'danger', 'ERROR! Check console');
                 return;
             }
 
             if (updated) {
                 console.info('[sgdq15-layouts] Schedule successfully updated');
-                showUpdateResult(updateGroup, 'success', 'Got updated schedule!');
+                showUpdateResult($updateGroup, 'success', 'Got updated schedule!');
             } else {
                 console.info('[sgdq15-layouts] Schedule unchanged, not updated');
-                showUpdateResult(updateGroup, 'default', 'Schedule unchanged, not updating');
+                showUpdateResult($updateGroup, 'default', 'Schedule unchanged, not updating');
             }
         });
     });
@@ -129,45 +125,40 @@
     }
 
     /* Typeahead */
-    manualBtn.click(function () {
-        var runIndex = manualTypeahead.data('runIndex');
-        if (typeof(runIndex) !== 'number') return;
-        currentRun.value = schedule.value[runIndex];
-        manualTypeahead.data('runIndex', null);
+    $panel.find('.js-manualBtn').click(function () {
+        if (selectedRun) currentRun.value = selectedRun;
     });
 
-    manualTypeahead.bind('typeahead:selected', onTypeaheadSelected);
-    manualTypeahead.bind('typeahead:autocompleted', onTypeaheadSelected);
+    $manualTypeahead.bind('typeahead:selected', onTypeaheadSelected);
+    $manualTypeahead.bind('typeahead:autocompleted', onTypeaheadSelected);
 
     function onTypeaheadSelected(obj, datum) {
-        // Add the currently selected run's index as a data prop
-        manualTypeahead.data('runIndex', datum.index);
+        selectedRun = datum;
     }
 
-    //triggered when modal is about to be shown
-    editModal.on('show.bs.modal', function() {
-        // Populate inputs with current values
-        editModal.find('input[name="game"]').val(currentRun.value.game);
-        editModal.find('input[name="console"]').val(currentRun.value.console);
-        editModal.find('input[name="runners"]').val(currentRun.value.runners);
-        editModal.find('input[name="streamlinks"]').val(currentRun.value.streamlinks);
-        editModal.find('input[name="category"]').val(currentRun.value.category);
-        editModal.find('input[name="estimate"]').val(currentRun.value.estimate);
+    // Right before the modal is shown, populate inputs with current values.
+    $editModal.on('show.bs.modal', function() {
+        $editModal.find('input[name="game"]').val(currentRun.value.game);
+        $editModal.find('input[name="console"]').val(currentRun.value.console);
+        $editModal.find('input[name="runners"]').val(currentRun.value.runners);
+        $editModal.find('input[name="streamlinks"]').val(currentRun.value.streamlinks);
+        $editModal.find('input[name="category"]').val(currentRun.value.category);
+        $editModal.find('input[name="estimate"]').val(currentRun.value.estimate);
     });
 
-    editModal.find('.js-save').click(function() {
-        currentRun.value.game = editModal.find('input[name="game"]').val();
-        currentRun.value.console = editModal.find('input[name="console"]').val();
-        currentRun.value.category = editModal.find('input[name="category"]').val();
-        currentRun.value.estimate = editModal.find('input[name="estimate"]').val();
+    $editModal.find('.js-save').click(function() {
+        currentRun.value.game = $editModal.find('input[name="game"]').val();
+        currentRun.value.console = $editModal.find('input[name="console"]').val();
+        currentRun.value.category = $editModal.find('input[name="category"]').val();
+        currentRun.value.estimate = $editModal.find('input[name="estimate"]').val();
 
-        currentRun.value.runners = editModal.find('input[name="runners"]').val()
+        currentRun.value.runners = $editModal.find('input[name="runners"]').val()
             .split(',')
             .map(function(runner) {
                 return runner.trim();
             });
 
-        currentRun.value.streamlinks = editModal.find('input[name="streamlinks"]').val().split(',')
+        currentRun.value.streamlinks = $editModal.find('input[name="streamlinks"]').val().split(',')
             .map(function(streamlink) {
                 return streamlink.trim();
             });

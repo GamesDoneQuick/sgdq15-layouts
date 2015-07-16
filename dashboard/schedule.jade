@@ -1,9 +1,9 @@
 script(src="/dashboard/sgdq15-layouts/components/typeahead.js/dist/typeahead.jquery.min.js")
 
 mixin runInfoProperty(name)
-    div(class="runInfo-#{name}" style="display: flex; align-items: baseline;")
+    div(style="display: flex; align-items: baseline;")
         label.control-label=name
-        p.form-control-static(style="word-wrap: break-word;") ?
+        p(class="runInfo-#{name} form-control-static" style="word-wrap: break-word;") ?
 
 div(style="display: flex;")
     .column
