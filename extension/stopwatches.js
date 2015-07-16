@@ -9,6 +9,15 @@ module.exports = function (nodecg) {
     var defaultStopwatches = [defaultStopwatch, defaultStopwatch, defaultStopwatch, defaultStopwatch];
     var stopwatches = nodecg.Replicant('stopwatches', {defaultValue: defaultStopwatches});
 
+    // Add the runner's name to the stopwatch, because testrunner needs that for his API stuff.
+    // We cheat and don't define a default here, because extension/schedule.js should have already done it.
+    nodecg.Replicant('currentRun')
+        .on('change', function(oldVal, newVal) {
+            newVal.runners.forEach(function(runner, index) {
+                stopwatches.value[index].runner = runner;
+            });
+        });
+
     // Make sure all timers are set to "paused"
     stopwatches.value.forEach(function(stopwatch) {
         stopwatch.state = stopwatch.time === '00:00:00' ? 'stopped' : 'paused';
