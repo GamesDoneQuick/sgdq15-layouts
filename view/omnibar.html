@@ -6,8 +6,10 @@
     <link rel="stylesheet" href="style/layouts.css">
     <link rel="stylesheet" href="style/omnibar.css">
 
+    <script src="/components/imagesloaded/imagesloaded.pkgd.min.js"></script>
     <script src="components/gsap/src/minified/TweenMax.min.js"></script>
     <script src="components/gsap/src/minified/plugins/TextPlugin.min.js"></script>
+    <script src="lib/nextTick.js"></script>
     <script src="//use.typekit.net/mvu5oqo.js"></script>
     <script>try {Typekit.load();} catch (e) {}</script>
 
@@ -15,6 +17,7 @@
 </head>
 <body>
 <div id="container">
+    <div id="imagePreloader"></div>
     <sgdq-omnibar></sgdq-omnibar>
     <div id="ftb" class="fullscreen"></div>
     <div id="nextImage" class="fullscreen"></div>
@@ -27,6 +30,87 @@
     var FADE_EASE = Power1.easeInOut;
     var IMAGE_AD_DURATION = 30;
     var container = document.getElementById('container');
+    var imagePreloader = document.getElementById('imagePreloader');
+
+    var preloadedUrls = [];
+    function isPreloaded(url) {
+        return preloadedUrls.indexOf(url) > -1;
+    }
+
+    function preload(type, url, cb) {
+        // If the image is already preloaded, immediately invoke the callback.
+        if (isPreloaded(url)) {
+            window.nextTick(function() {
+                cb(null, url);
+            });
+            return;
+        }
+
+        if (type === 'image') {
+            // Create image preloader
+            var imgEl = document.createElement('img');
+            imgEl.src = url;
+            imagePreloader.appendChild(imgEl);
+
+            var imgLoad = window.imagesLoaded(imagePreloader);
+            imgLoad.on('done', function() {
+                // Double-check that the image we're trying to show is loaded.
+                imgLoad.images.forEach(function(image) {
+                    if (!isPreloaded(image.img.src)) preloadedUrls.push(image.img.src);
+                    cb(null, url);
+                });
+            });
+        } else if (type === 'video') {
+            /* We only allow WebM because we know it will have its metadata at the start of the file,
+             * which this preload method depends on. */
+
+            // Create a hidden and muted video tag that will be used to preload the video.
+            var videoLoader = document.createElement('video');
+            videoLoader.style.display = 'none';
+            videoLoader.muted = true;
+
+            // Create a "source" tag for this webm and append it to videoLoader.
+            var source = document.createElement('source');
+            source.src = url;
+            source.type = 'video/webm';
+            videoLoader.appendChild(source);
+            videoLoader.fullyLoaded = false;
+
+            videoLoader.addEventListener('loadedmetadata', function () {
+                console.log('loadedmetadata');
+            }, false);
+
+            videoLoader.addEventListener('progress', function () {
+                if (videoLoader.fullyLoaded) return;
+                if (videoLoader.duration) {
+                    var percent = (videoLoader.buffered.end(0) / videoLoader.duration) * 100;
+                    nodecg.sendMessage('adLoadProgress', {
+                        url: url,
+                        percent: percent
+                    });
+
+                    if (percent >= 100) {
+                        console.log('loaded!');
+                        if (!isPreloaded(url)) preloadedUrls.push(url);
+                        videoLoader.fullyLoaded = true;
+                        videoLoader.remove();
+                        cb(null, url);
+                    }
+
+                    // Seek the video to force the conservative browser to buffer more of it
+                    videoLoader.currentTime++;
+                } else {
+                    console.log('progress, but metadata is not loaded so video duration is unknown');
+                }
+            }, false);
+
+            videoLoader.addEventListener('canplaythrough', function () {
+                console.log('canplaythrough');
+            }, false);
+        } else {
+            throw new Error ('Invalod type: ' + type);
+        }
+    }
 </script>
 
 <!-- Image Advertisements -->
@@ -48,15 +132,30 @@
     });
 
     nodecg.listenFor('showAdImage', function(url) {
-        console.log('showing image', url);
-        url = 'url("' + url + '")';
+        // If this image is already preloaded, immediately show it.
+        // Else, preload before showing.
+        if (isPreloaded(url)) {
+            showAdImage(url);
+        } else {
+            preload('image', url, function(err, url) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
 
+                showAdImage(url);
+            });
+        }
+    });
+
+    function showAdImage(url) {
         // Clear any existing tweens. Advertisements ain't nothin' to fuck wit.
         imageAdTl.clear();
         imageAdTl.add('start');
 
         // If there is an existing image being displayed, we need to crossfade to the new image.
         // Else, just fade the new image up.
+        var cssUrl = 'url("' + url + '")';
         if (currentImage.style.backgroundImage) {
             imageAdTl.to(currentImage, FADE_DURATION, {
                 opacity: 0,
@@ -64,7 +163,7 @@
             }, 'start');
             imageAdTl.to(nextImage, FADE_DURATION, {
                 onStart: function() {
-                    nextImage.style.backgroundImage = url;
+                    nextImage.style.backgroundImage = cssUrl;
                 },
                 opacity: 1,
                 ease: FADE_EASE
@@ -78,7 +177,7 @@
         } else {
             imageAdTl.to(currentImage, FADE_DURATION, {
                 onStart: function() {
-                    currentImage.style.backgroundImage = url;
+                    currentImage.style.backgroundImage = cssUrl;
                 },
                 opacity: 1,
                 ease: FADE_EASE
@@ -93,8 +192,7 @@
                 currentImage.style.backgroundImage = '';
             }
         }, 'start+=' + (IMAGE_AD_DURATION + FADE_DURATION))
-
-    });
+    }
 </script>
 
 <!-- Video Advertisements -->
@@ -118,80 +216,51 @@
     });
 
     nodecg.listenFor('playAdVideo', function(url) {
-        console.log('preloading', url);
-        preloadWebm(url, function(err, source, duration) {
-            if (err) {
-                console.error(err);
-                return;
-            }
+        if (isPreloaded(url)) {
+            showAdVideo(url);
+        } else {
+            preload('video', url, function(err, url) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
 
-            // Remove any existing video
-            while (document.getElementById('videoPlayer')) {
-                document.getElementById('videoPlayer').remove();
-            }
-
-            // Copy the source element into our player and play it.
-            var videoPlayer = document.createElement('video');
-            videoPlayer.style.visibility = 'hidden';
-            videoPlayer.id = 'videoPlayer';
-            videoPlayer.classList.add('fullscreen');
-            videoPlayer.appendChild(source);
-            videoPlayer.play();
-
-            // The videos sometimes look at bit weird when they first start playing.
-            // To polish things up a bit, we hide the video until the 'playing' event is fired.
-            videoPlayer.addEventListener('playing', function() {
-                this.style.visibility = 'visible';
+                showAdVideo(url);
             });
-
-            // When the video ends, remove it from the page.
-            videoPlayer.addEventListener('ended', function() {
-                this.remove();
-            });
-
-            container.appendChild(videoPlayer);
-        });
+        }
     });
 
-    // We only allow WebM because we know it will have its metadata at the start of the file,
-    // which this preload method depends on.
-    function preloadWebm(src, cb) {
-        // Create a hidden and muted video tag that will be used to preload the video.
-        var videoLoader = document.createElement('video');
-        videoLoader.style.display = 'none';
-        videoLoader.muted = true;
+    function showAdVideo(url) {
+        // Remove any existing video
+        while (document.getElementById('videoPlayer')) {
+            document.getElementById('videoPlayer').remove();
+        }
 
-        // Create a "source" tag for this webm and append it to videoLoader.
+        // Create a source element
         var source = document.createElement('source');
-        source.src = src;
+        source.src = url;
         source.type = 'video/webm';
-        videoLoader.appendChild(source);
-        videoLoader.fullyLoaded = false;
 
-        videoLoader.addEventListener('loadedmetadata', function () {
-            console.log('loadedmetadata');
-        }, false);
+        // Create a video element, append the source
+        var videoPlayer = document.createElement('video');
+        videoPlayer.style.visibility = 'hidden';
+        videoPlayer.id = 'videoPlayer';
+        videoPlayer.classList.add('fullscreen');
+        videoPlayer.appendChild(source);
+        videoPlayer.play();
 
-        videoLoader.addEventListener('progress', function () {
-            if (videoLoader.fullyLoaded) return;
-            if (videoLoader.duration) {
-                var percent = (videoLoader.buffered.end(0) / videoLoader.duration) * 100;
-                if (percent >= 100) {
-                    console.log('loaded!');
-                    var duration = videoLoader.duration;
-                    videoLoader.fullyLoaded = true;
-                    videoLoader.removeChild(source);
-                    cb(null, source, duration);
-                }
-                videoLoader.currentTime++;
-            } else {
-                console.log('progress, but metadata is not loaded so video duration is unknown');
-            }
-        }, false);
+        // The videos sometimes look at bit weird when they first start playing.
+        // To polish things up a bit, we hide the video until the 'playing' event is fired.
+        videoPlayer.addEventListener('playing', function() {
+            this.style.visibility = 'visible';
+        });
 
-        videoLoader.addEventListener('canplaythrough', function () {
-            console.log('canplaythrough');
-        }, false);
+        // When the video ends, remove it from the page.
+        videoPlayer.addEventListener('ended', function() {
+            this.remove();
+        });
+
+        container.appendChild(videoPlayer);
     }
 </script>
 </body>

@@ -42,17 +42,17 @@
             $images.html('');
             newVal.forEach(function (adImage) {
                 var div = document.createElement('div');
-                div.classList.add('adImage');
+                div.classList.add('ad');
                 div.setAttribute('data-url', adImage.url);
 
                 var span = document.createElement('span');
-                span.classList.add('adImage-filename');
+                span.classList.add('ad-filename');
                 span.innerHTML = adImage.filename;
                 span.setAttribute('title', adImage.filename);
                 div.appendChild(span);
 
                 var button = document.createElement('button');
-                button.classList.add('adImage-play');
+                button.classList.add('ad-play');
                 button.innerHTML = '<i class="fa fa-play"></i>';
                 button.addEventListener('click', function() {
                     var url = this.parentNode.getAttribute('data-url');
@@ -70,17 +70,17 @@
             $videos.html('');
             newVal.forEach(function (adVideo) {
                 var div = document.createElement('div');
-                div.classList.add('adVideo');
+                div.classList.add('ad');
                 div.setAttribute('data-url', adVideo.url);
 
                 var span = document.createElement('span');
-                span.classList.add('adVideo-filename');
+                span.classList.add('ad-filename');
                 span.innerHTML = adVideo.filename;
                 span.setAttribute('title', adVideo.filename);
                 div.appendChild(span);
 
                 var button = document.createElement('button');
-                button.classList.add('adVideo-play');
+                button.classList.add('ad-play');
                 button.innerHTML = '<i class="fa fa-play"></i>';
                 button.addEventListener('click', function() {
                     var url = this.parentNode.getAttribute('data-url');
@@ -99,16 +99,18 @@
 
     var ftb = nodecg.Replicant('ftb', {defaultValue: false})
         .on('change', function(oldVal, newVal) {
+            var $videoPlayButtons = $panel.find('#sgdq-ad-videos .ad-play');
+
             if (newVal) {
                 $ftb.addClass('btn-danger');
                 $ftb.addClass('faded');
-                $panel.find('.adVideo-play')
+                $videoPlayButtons
                     .attr('disabled', false)
                     .attr('title', '');
             } else {
                 $ftb.removeClass('btn-danger');
                 $ftb.removeClass('faded');
-                $panel.find('.adVideo-play')
+                $videoPlayButtons
                     .attr('disabled', true)
                     .attr('title', 'Fade to black before playing a video!');
             }
@@ -133,9 +135,26 @@
 
     nodecg.listenFor('hideAdImage', handleHideAdImage);
 
-
     // Provide a button to immediately stop any playing ad video.
     $panel.find('.ctrl-stopVideo').click(function() {
         nodecg.sendMessage('stopAdVideo');
+    });
+
+    // Handle load progress reports from the view
+    nodecg.listenFor('adLoadProgress', function(data) {
+        var $play = $panel
+            .find('.ad')
+            .filter(function() {
+                return $(this).data('url') === data.url;
+            })
+            .find('.ad-play');
+
+        if (data.percent < 100) {
+            $play.attr('disabled', true);
+            $play.html(parseInt(data.percent) + '%');
+        } else {
+            $play.attr('disabled', false);
+            $play.html('<i class="fa fa-play"></i>');
+        }
     });
 })();

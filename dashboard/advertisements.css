@@ -6,32 +6,27 @@
   margin-left: 16px;
   flex-grow: 1;
 }
-.sgdq15-layouts.advertisements .adImage,
-.sgdq15-layouts.advertisements .adVideo {
+.sgdq15-layouts.advertisements .ad {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5em;
 }
-.sgdq15-layouts.advertisements .adImage-filename,
-.sgdq15-layouts.advertisements .adVideo-filename {
+.sgdq15-layouts.advertisements .ad-filename {
   font-weight: bold;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.sgdq15-layouts.advertisements .adImage-play,
-.sgdq15-layouts.advertisements .adVideo-play {
+.sgdq15-layouts.advertisements .ad-play {
   color: #43ac6a;
   flex-shrink: 0;
   margin-left: 0.5em;
 }
-.sgdq15-layouts.advertisements .adImage-play:hover:not([disabled]),
-.sgdq15-layouts.advertisements .adVideo-play:hover:not([disabled]) {
+.sgdq15-layouts.advertisements .ad-play:hover:not([disabled]) {
   color: #358753;
 }
-.sgdq15-layouts.advertisements .adImage-play[disabled],
-.sgdq15-layouts.advertisements .adVideo-play[disabled] {
+.sgdq15-layouts.advertisements .ad-play[disabled] {
   opacity: 0.5;
 }
 .sgdq15-layouts.advertisements .column {

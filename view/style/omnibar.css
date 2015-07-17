@@ -1,3 +1,7 @@
+#imagePreloader {
+    display: none;
+}
+
 sgdq-omnibar {
     z-index: 0;
 }
