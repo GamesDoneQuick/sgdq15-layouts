@@ -56,35 +56,11 @@ window.onload = function() {
 
     nodecg.Replicant('currentPrizes')
         .on('change', function (oldVal, newVal) {
-            prizes = newVal.filter(function (prize) {
-                return !prize.grand;
+            timeline.clear();
+            newVal.forEach(function (prize) {
+                showPrize(prize);
             });
-
-            grandPrizes = newVal.filter(function (prize) {
-                return prize.grand;
-            });
-
-            cyclePrizes();
         });
-
-    function cyclePrizes() {
-        timeline.clear();
-
-        var prizesToDisplay = prizes.slice(0);
-
-        if (grandPrizes.length) {
-            var lastShownGrandPrizeIdx = grandPrizes.indexOf(lastShownGrandPrize);
-            var nextGrandPrizeIdx = lastShownGrandPrizeIdx >= grandPrizes.length - 1
-                ? 0
-                : lastShownGrandPrizeIdx + 1;
-            var nextGrandPrize = grandPrizes[nextGrandPrizeIdx];
-            if (nextGrandPrize) prizesToDisplay.unshift(nextGrandPrize);
-        }
-
-        prizesToDisplay.forEach(function (prize) {
-            showPrize(prize);
-        });
-    }
 
     function showPrize(prize, immediate) {
         if (immediate) timeline.clear();
