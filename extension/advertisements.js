@@ -26,9 +26,9 @@ module.exports = function(nodecg) {
         usePolling: true // Non-polling is really buggy for us right now.
     });
 
-    watcher.on('add', debounce(reloadAdvertisements, 200));
-    watcher.on('change', debounce(reloadAdvertisements, 200));
-    watcher.on('unlink', debounce(reloadAdvertisements, 200));
+    watcher.on('add', debounce(reloadAdvertisements, 500));
+    watcher.on('change', debounce(reloadAdvertisements, 500));
+    watcher.on('unlink', debounce(reloadAdvertisements, 500));
     watcher.on('error', function(e) {
         nodecg.error(e.stack);
     });
