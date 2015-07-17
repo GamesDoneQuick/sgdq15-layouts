@@ -1,9 +1,13 @@
+.sgdq15-layouts.advertisements #sgdq-adImage-buttons,
 .sgdq15-layouts.advertisements #sgdq-adVideo-buttons {
   display: flex;
   justify-content: space-between;
 }
-.sgdq15-layouts.advertisements #sgdq-adVideo-buttons .ctrl-stopVideo {
-  margin-left: 16px;
+.sgdq15-layouts.advertisements .ctrl-hideImage {
+  flex-grow: 1;
+}
+.sgdq15-layouts.advertisements .ctrl-stopVideo {
+  margin-left: 12px;
   flex-grow: 1;
 }
 .sgdq15-layouts.advertisements .ad {
