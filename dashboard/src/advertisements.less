@@ -1,0 +1,49 @@
+.sgdq15-layouts.advertisements {
+    #sgdq-adVideo-buttons {
+        display: flex;
+        justify-content: space-between;
+
+        .ctrl-stopVideo {
+            margin-left: 16px;
+            flex-grow: 1;
+        }
+    }
+
+    .adImage,
+    .adVideo {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5em;
+    }
+
+    .adImage-filename,
+    .adVideo-filename {
+        font-weight: bold;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .adImage-play,
+    .adVideo-play {
+        color: #43ac6a;
+        flex-shrink: 0;
+        margin-left: 0.5em;
+
+        &:hover:not([disabled]) {color: #358753;}
+        &[disabled] {opacity: 0.5;}
+    }
+
+    .column {
+        margin: 0 10px;
+
+        &:first-of-type {
+            margin-right: 10px;
+        }
+
+        &:last-of-type {
+            margin-left: 10px;
+        }
+    }
+}

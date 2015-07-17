@@ -47,5 +47,12 @@
     "width": 2,
     "file": "break.jade",
     "faIcon": "fa-coffee"
+  },
+  {
+    "name": "advertisements",
+    "title": "Advertisements",
+    "width": 4,
+    "file": "Advertisements.jade",
+    "faIcon": "fa-video-camera"
   }
 ]

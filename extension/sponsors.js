@@ -10,7 +10,7 @@ var ALLOWED_EXTS = [
 ];
 
 module.exports = function(nodecg) {
-    nodecg.log.info('Monitoring "%s" for changes, additions, or removals of sponsor pngs...', SPONSOR_IMAGES_PATH);
+    nodecg.log.info('Monitoring "%s" for changes to sponsor logos...', SPONSOR_IMAGES_PATH);
 
     var sponsorImageUrls = nodecg.Replicant('sponsorImageUrls');
 
@@ -22,12 +22,12 @@ module.exports = function(nodecg) {
     });
 
     watcher.on('add', reloadImages);
-
     watcher.on('change', reloadImages);
-
     watcher.on('unlink', reloadImages);
+    watcher.on('error', function(e) {
+        nodecg.error(e.stack);
+    });
 
-    watcher.on('error', reloadImages);
 
     // Initialize
     reloadImages();
@@ -35,7 +35,7 @@ module.exports = function(nodecg) {
     // On changed/added/deleted
     function reloadImages(filename) {
         if (filename) {
-            nodecg.log.info('Sponsor image "%s" changed, reloading all sponsor images...', filename);
+            nodecg.log.info('Sponsor logo "%s" changed, reloading all sponsor logos...', path.basename(filename));
         }
 
         // Array with URLs to all the images

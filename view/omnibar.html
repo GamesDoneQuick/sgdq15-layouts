@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Omnibar</title>
+    <link rel="stylesheet" href="style/layouts.css">
+    <link rel="stylesheet" href="style/omnibar.css">
+
+    <script src="components/gsap/src/minified/TweenMax.min.js"></script>
+    <script src="components/gsap/src/minified/plugins/TextPlugin.min.js"></script>
+    <script src="//use.typekit.net/mvu5oqo.js"></script>
+    <script>try {Typekit.load();} catch (e) {}</script>
+
+    <link rel="import" href="elements/sgdq-omnibar/sgdq-omnibar.html">
+</head>
+<body>
+<div id="container">
+    <sgdq-omnibar></sgdq-omnibar>
+    <div id="ftb" class="fullscreen"></div>
+    <div id="nextImage" class="fullscreen"></div>
+    <div id="currentImage" class="fullscreen"></div>
+</div>
+
+<!-- Constants -->
+<script>
+    var FADE_DURATION = 0.5;
+    var FADE_EASE = Power1.easeInOut;
+    var IMAGE_AD_DURATION = 30;
+    var container = document.getElementById('container');
+</script>
+
+<!-- Image Advertisements -->
+<script>
+    var currentImage = document.getElementById('currentImage');
+    var nextImage = document.getElementById('nextImage');
+    var imageAdTl = new TimelineLite({autoRemoveChildren: true});
+
+    nodecg.listenFor('hideAdImage', function() {
+        imageAdTl.clear();
+        imageAdTl.to([currentImage, nextImage], FADE_DURATION, {
+            opacity: 0,
+            ease: FADE_EASE,
+            onComplete: function() {
+                currentImage.style.backgroundImage = '';
+                nextImage.style.backgroundImage = '';
+            }
+        });
+    });
+
+    nodecg.listenFor('showAdImage', function(url) {
+        console.log('showing image', url);
+        url = 'url("' + url + '")';
+
+        // Clear any existing tweens. Advertisements ain't nothin' to fuck wit.
+        imageAdTl.clear();
+        imageAdTl.add('start');
+
+        // If there is an existing image being displayed, we need to crossfade to the new image.
+        // Else, just fade the new image up.
+        if (currentImage.style.backgroundImage) {
+            imageAdTl.to(currentImage, FADE_DURATION, {
+                opacity: 0,
+                ease: FADE_EASE
+            }, 'start');
+            imageAdTl.to(nextImage, FADE_DURATION, {
+                onStart: function() {
+                    nextImage.style.backgroundImage = url;
+                },
+                opacity: 1,
+                ease: FADE_EASE
+            }, 'start');
+            imageAdTl.call(function() {
+                currentImage.style.opacity = 1;
+                nextImage.style.opacity = 0;
+                currentImage.style.backgroundImage = nextImage.style.backgroundImage;
+                nextImage.style.backgroundImage = '';
+            });
+        } else {
+            imageAdTl.to(currentImage, FADE_DURATION, {
+                onStart: function() {
+                    currentImage.style.backgroundImage = url;
+                },
+                opacity: 1,
+                ease: FADE_EASE
+            }, 'start');
+        }
+
+        // Fade out after FADE_DURATION seconds.
+        imageAdTl.to(currentImage, FADE_DURATION, {
+            opacity: 0,
+            ease: FADE_EASE,
+            onComplete: function() {
+                currentImage.style.backgroundImage = '';
+            }
+        }, 'start+=' + (IMAGE_AD_DURATION + FADE_DURATION))
+
+    });
+</script>
+
+<!-- Video Advertisements -->
+<script>
+    var videoContainer = document.getElementById('videoContainer');
+    var ftb = document.getElementById('ftb');
+
+    nodecg.Replicant('ftb', {defaultValue: false})
+            .on('change', function(oldVal, newVal) {
+                if (newVal) {
+                    TweenLite.to(ftb, FADE_DURATION, {opacity: 1, ease: FADE_EASE})
+                } else {
+                    TweenLite.to(ftb, FADE_DURATION, {opacity: 0, ease: FADE_EASE})
+                }
+            });
+
+    nodecg.listenFor('stopAdVideo', function() {
+        while (document.getElementById('videoPlayer')) {
+            document.getElementById('videoPlayer').remove();
+        }
+    });
+
+    nodecg.listenFor('playAdVideo', function(url) {
+        console.log('preloading', url);
+        preloadWebm(url, function(err, source, duration) {
+            if (err) {
+                console.error(err);
+                return;
+            }
+
+            // Remove any existing video
+            while (document.getElementById('videoPlayer')) {
+                document.getElementById('videoPlayer').remove();
+            }
+
+            // Copy the source element into our player and play it.
+            var videoPlayer = document.createElement('video');
+            videoPlayer.style.visibility = 'hidden';
+            videoPlayer.id = 'videoPlayer';
+            videoPlayer.classList.add('fullscreen');
+            videoPlayer.appendChild(source);
+            videoPlayer.play();
+
+            // TODO: remove
+            videoPlayer.muted = true;
+
+            // The videos sometimes look at bit weird when they first start playing.
+            // To polish things up a bit, we hide the video until the 'playing' event is fired.
+            videoPlayer.addEventListener('playing', function() {
+                this.style.visibility = 'visible';
+            });
+
+            // When the video ends, remove it from the page.
+            videoPlayer.addEventListener('ended', function() {
+                this.remove();
+            });
+
+            container.appendChild(videoPlayer);
+        });
+    });
+
+    // We only allow WebM because we know it will have its metadata at the start of the file,
+    // which this preload method depends on.
+    function preloadWebm(src, cb) {
+        // Create a hidden and muted video tag that will be used to preload the video.
+        var videoLoader = document.createElement('video');
+        videoLoader.style.display = 'none';
+        videoLoader.muted = true;
+
+        // Create a "source" tag for this webm and append it to videoLoader.
+        var source = document.createElement('source');
+        source.src = src;
+        source.type = 'video/webm';
+        videoLoader.appendChild(source);
+        videoLoader.fullyLoaded = false;
+
+        videoLoader.addEventListener('loadedmetadata', function () {
+            console.log('loadedmetadata');
+        }, false);
+
+        videoLoader.addEventListener('progress', function () {
+            if (videoLoader.fullyLoaded) return;
+            if (videoLoader.duration) {
+                var percent = (videoLoader.buffered.end(0) / videoLoader.duration) * 100;
+                if (percent >= 100) {
+                    console.log('loaded!');
+                    var duration = videoLoader.duration;
+                    videoLoader.fullyLoaded = true;
+                    videoLoader.removeChild(source);
+                    cb(null, source, duration);
+                }
+                videoLoader.currentTime++;
+            } else {
+                console.log('progress, but metadata is not loaded so video duration is unknown');
+            }
+        }, false);
+
+        videoLoader.addEventListener('canplaythrough', function () {
+            console.log('canplaythrough');
+        }, false);
+    }
+</script>
+</body>
+</html>

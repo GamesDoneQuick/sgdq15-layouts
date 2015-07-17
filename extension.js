@@ -42,4 +42,11 @@ module.exports = function(nodecg) {
         nodecg.log.error('Failed to load "sponsors" lib:', e.stack);
         process.exit(1);
     }
+
+    try {
+        require('./extension/advertisements')(nodecg);
+    } catch (e) {
+        nodecg.log.error('Failed to load "advertisements" lib:', e.stack);
+        process.exit(1);
+    }
 };
