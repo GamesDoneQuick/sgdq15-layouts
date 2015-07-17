@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Break</title>
-    <link rel="stylesheet" href="font/gamegirl_classic.css">
+    <title>Interview</title>
     <link rel="stylesheet" href="style/layouts.css">
     <link rel="stylesheet" href="style/interview.css">
 
@@ -17,7 +16,10 @@
 </head>
 <body>
 <div id="container">
-    <div id="background"></div>
+    <div id="bgContainer">
+        <div id="background"></div>
+    </div>
+
     <div id="main">
         <div id="top"><img src="img/sgdq_interview_title.png"></div>
         <hr/>
@@ -35,9 +37,131 @@
     window.onload = function() {
         'use strict';
 
-        [name1, name2, name3, name4].forEach(function(el) {
-            el.fillHopperText('twentyfivecharacterswwwww');
-        });
+        window.timeline = new TimelineMax({paused: true, autoRound: false});
+        // Starting hidden
+        timeline
+            .set('hr', {borderWidth: '1px', width: 0})
+            .to('hr', 0.5, {
+                width: '100%',
+                autoRound: false,
+                ease: Power2.easeIn
+            })
+            .call(displayNames)
+            .set('#middle', {borderWidth: '1px', height: 0})
+            .to('#middle', 0.4, {
+                height: '46px',
+                autoRound: false
+            })
+            .add('showTopBottom')
+            .set(['#top', '#bottom', '#background'], {borderWidth: '1px', height: 0})
+            .to('#top', 0.2, {
+                height: '25px',
+                marginTop: '6px',
+                autoRound: false
+            })
+            .to('#bottom', 0.2, {
+                height: '32px',
+                autoRound: false
+            }, 'showTopBottom')
+            .to('#background', 0.2, {
+                height: '82px',
+                autoRound: false
+            }, 'showTopBottom')
+            .set('#top', {
+                overflow: 'visible'
+            })
+            .to('#top img', 0.1, {
+                top: '-3px',
+                autoRound: false
+            });
+
+        function displayNames() {
+            namesPlates.forEach(function(name, idx) {
+                if (timeline.reversed()) {
+                    name.fillHopperText('');
+                } else {
+                    name.fillHopperText(currentNames[idx]);
+                }
+            });
+        }
+
+        function fitPlates(required, shrinking) {
+            var fontSize = '27px';
+            if (required === 3) {
+                fontSize = '24px';
+            } else if (required === 4) {
+                fontSize = '18px';
+            }
+
+            var tl = new TimelineLite({autoRemoveChildren: true});
+            if (shrinking) {
+                tl.to(namesPlates, 0.5, {
+                        fontSize: fontSize,
+                        autoRound: false
+                    })
+                    .add('widthChange')
+                    .to(namesPlates.slice(0, required), 0.5, {
+                        width: '100%'
+                    })
+                    .to(namesPlates.slice(required), 0.5, {
+                        width: '0%'
+                    }, 'widthChange');
+            } else {
+                tl.to(namesPlates.slice(0, required), 0.5, {
+                        width: '100%'
+                    })
+                    .to(namesPlates.slice(required), 0.5, {
+                        width: '0%'
+                    }, '0')
+                    .to(namesPlates, 0.5, {
+                        fontSize: fontSize,
+                        autoRound: false
+                    });
+            }
+        }
+
+        var namesPlates = [name1, name2, name3, name4];
+        var currentNames = ['a', 'a', 'a', 'a'];
+
+        var isShowing = nodecg.Replicant('interviewShowing', {defaultValue: false})
+            .on('change', function(oldVal, newVal) {
+                if (newVal) {
+                    timeline.play();
+                } else {
+                    timeline.reverse();
+                }
+            });
+
+        var interviewNames = nodecg.Replicant('interviewNames')
+            .on('change', function(oldVal, newVal) {
+                var currentPlates = 0;
+                var requiredPlates = 0;
+
+                currentNames.forEach(function(name) {
+                    if (name !== '') currentPlates++;
+                });
+
+                currentNames = ['', '', '', ''];
+                var nextPlateIdx = 0;
+                newVal.forEach(function(name) {
+                    if (name !== '') {
+                        requiredPlates += 1;
+                        currentNames[nextPlateIdx] = name;
+                        nextPlateIdx += 1;
+                    }
+                });
+
+                if (requiredPlates > currentPlates) {
+                    fitPlates(requiredPlates, true);
+                    setTimeout(displayNames, 1000);
+                    //displayNames();
+                } else {
+                    displayNames();
+                    setTimeout(function() {
+                        fitPlates(requiredPlates, false);
+                    }, 700);
+                }
+            });
     };
 </script>
 </body>

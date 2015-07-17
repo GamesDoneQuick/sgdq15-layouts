@@ -3,7 +3,7 @@
     top: 513px;
     left: 64px;
     width: 1154px;
-    height: 120px;
+    height: 127px;
 
     font-family: 'tablet-gothic-wide';
 
@@ -12,15 +12,23 @@
     overflow: visible;
 }
 
-#background {
+#bgContainer {
     position: absolute;
-    top: 14px;
+    top: 21px;
     left: 38px;
     width: 1078px;
     height: 82px;
     box-sizing: border-box;
 
-    border: solid 1px black;
+    display: flex;
+    align-items: center;
+}
+
+#background {
+    width: 1078px;
+    height: 0;
+    box-sizing: border-box;
+    border: solid 0 black;
     border-radius: 5px;
     background-color: #2496b8;
 }
@@ -40,49 +48,52 @@
 
 #top {
     width: 522px;
-    height: 25px;
+    height: 0;
     box-sizing: border-box;
-    border: solid 1px black;
+    border: solid 0 black;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     border-bottom: none;
     background: linear-gradient(to bottom, #2495b6, #015368);
+    overflow: hidden;
 }
 
 hr {
     height: 8px;
-    width: 100%;
+    width: 0;
     box-sizing: border-box;
     margin: 0;
-    border: solid 1px black;
+    border: solid 0 black;
     border-radius: 4px;
     background: linear-gradient(to bottom, #44c8f5, #065a70);
 }
 
 #top img {
     position: relative;
-    top: -3px;
+    top: 1px;
     left: 93px;
 }
 
 #middle {
     width: 1136px;
-    height: 46px;
+    height: 0;
     box-sizing: border-box;
-    border-left: solid 1px black;
-    border-right: solid 1px black;
+    border: solid 0 black;
+    border-top: none;
+    border-bottom: none;
     background: linear-gradient(to right, #e4f5fc, #ace0f4 6%, #ace0f4 94%, #e4f5fc);
 
     display: flex;
     align-items: center;
     justify-content: space-around;
+    overflow: hidden;
 }
 
 #bottom {
     width: 252px;
-    height: 32px;
+    height: 0;
     box-sizing: border-box;
-    border: solid 1px black;
+    border: solid 0 black;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
     border-top: none;
@@ -91,6 +102,7 @@ hr {
     color: white;
     text-align: center;
     font-size: 22px;
+    overflow: hidden;
 }
 
 #bottom span {
@@ -99,6 +111,6 @@ hr {
 }
 
 sgdq-qplate {
-    width: 250px;
+    width: 100%;
     text-align: center;
 }

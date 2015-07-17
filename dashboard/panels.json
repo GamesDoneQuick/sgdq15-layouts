@@ -54,5 +54,12 @@
     "width": 4,
     "file": "advertisements.jade",
     "faIcon": "fa-video-camera"
+  },
+  {
+    "name": "interview",
+    "title": "Interviews",
+    "width": 3,
+    "file": "interview.jade",
+    "faIcon": "fa-microphone"
   }
 ]
