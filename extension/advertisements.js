@@ -3,6 +3,7 @@
 var chokidar = require('chokidar');
 var path = require('path');
 var fs = require('fs');
+var debounce = require('debounce');
 var ADVERTISEMENTS_PATH = path.resolve(__dirname, '../view/advertisements');
 var BASE_URL = '/view/sgdq15-layouts/advertisements/';
 var IMAGE_EXTS = ['.png', '.jpg'];
@@ -25,9 +26,9 @@ module.exports = function(nodecg) {
         usePolling: true // Non-polling is really buggy for us right now.
     });
 
-    watcher.on('add', reloadAdvertisements);
-    watcher.on('change', reloadAdvertisements);
-    watcher.on('unlink', reloadAdvertisements);
+    watcher.on('add', debounce(reloadAdvertisements, 200));
+    watcher.on('change', debounce(reloadAdvertisements, 200));
+    watcher.on('unlink', debounce(reloadAdvertisements, 200));
     watcher.on('error', function(e) {
         nodecg.error(e.stack);
     });
