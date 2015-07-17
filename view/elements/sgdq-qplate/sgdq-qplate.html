@@ -91,6 +91,8 @@
         },
 
         fillHopperText: function(text) {
+            if (Polymer.dom(this).innerHTML === text) return;
+
             this._emptyLightDom();
 
             // Place the new text in the light DOM (aka, the <content> tag in #hopper).
