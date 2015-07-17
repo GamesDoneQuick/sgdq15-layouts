@@ -138,9 +138,6 @@
             videoPlayer.appendChild(source);
             videoPlayer.play();
 
-            // TODO: remove
-            videoPlayer.muted = true;
-
             // The videos sometimes look at bit weird when they first start playing.
             // To polish things up a bit, we hide the video until the 'playing' event is fired.
             videoPlayer.addEventListener('playing', function() {
