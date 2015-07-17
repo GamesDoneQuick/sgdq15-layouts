@@ -35,8 +35,6 @@
         }
     };
 
-    nodecg.listenFor('showAdImage', startImageCountdown);
-
     nodecg.Replicant('adImages')
         .on('change', function (oldVal, newVal) {
             $images.html('');
@@ -153,6 +151,7 @@
             $play.attr('disabled', true);
             $play.html(data.progress);
         } else {
+            if (data.type === 'image') startImageCountdown();
             $play.attr('disabled', false);
             $play.html('<i class="fa fa-play"></i>');
         }

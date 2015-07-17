@@ -55,7 +55,8 @@
             nodecg.sendMessage('adLoadProgress', {
                 url: url,
                 status: 'loading',
-                progress: 'Loading'
+                progress: 'Loading',
+                type: 'image'
             });
 
             var imgLoad = window.imagesLoaded(imagePreloader);
@@ -67,7 +68,8 @@
                         nodecg.sendMessage('adLoadProgress', {
                             url: url,
                             status: 'done',
-                            progress: 'Done'
+                            progress: 'Done',
+                            type: 'image'
                         });
                         cb(null, url);
                     }
@@ -100,14 +102,16 @@
                     nodecg.sendMessage('adLoadProgress', {
                         url: url,
                         status: 'loading',
-                        progress: parseInt(percent) + '%'
+                        progress: parseInt(percent) + '%',
+                        type: 'video'
                     });
 
                     if (percent >= 100) {
                         nodecg.sendMessage('adLoadProgress', {
                             url: url,
                             status: 'done',
-                            progress: '100%'
+                            progress: '100%',
+                            type: 'video'
                         });
 
                         if (!isPreloaded(url)) preloadedUrls.push(url);
