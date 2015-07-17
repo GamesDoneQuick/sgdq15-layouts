@@ -149,9 +149,9 @@
             })
             .find('.ad-play');
 
-        if (data.percent < 100) {
+        if (data.status === 'loading') {
             $play.attr('disabled', true);
-            $play.html(parseInt(data.percent) + '%');
+            $play.html(data.progress);
         } else {
             $play.attr('disabled', false);
             $play.html('<i class="fa fa-play"></i>');

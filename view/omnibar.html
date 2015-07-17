@@ -24,7 +24,7 @@
     <div id="currentImage" class="fullscreen"></div>
 </div>
 
-<!-- Constants -->
+<!-- Globals & Constants -->
 <script>
     var FADE_DURATION = 0.5;
     var FADE_EASE = Power1.easeInOut;
@@ -52,12 +52,25 @@
             imgEl.src = url;
             imagePreloader.appendChild(imgEl);
 
+            nodecg.sendMessage('adLoadProgress', {
+                url: url,
+                status: 'loading',
+                progress: 'Loading'
+            });
+
             var imgLoad = window.imagesLoaded(imagePreloader);
             imgLoad.on('done', function() {
                 // Double-check that the image we're trying to show is loaded.
                 imgLoad.images.forEach(function(image) {
                     if (!isPreloaded(image.img.src)) preloadedUrls.push(image.img.src);
-                    cb(null, url);
+                    if (image.img.src.indexOf(url)) {
+                        nodecg.sendMessage('adLoadProgress', {
+                            url: url,
+                            status: 'done',
+                            progress: 'Done'
+                        });
+                        cb(null, url);
+                    }
                 });
             });
         } else if (type === 'video') {
@@ -86,11 +99,17 @@
                     var percent = (videoLoader.buffered.end(0) / videoLoader.duration) * 100;
                     nodecg.sendMessage('adLoadProgress', {
                         url: url,
-                        percent: percent
+                        status: 'loading',
+                        progress: parseInt(percent) + '%'
                     });
 
                     if (percent >= 100) {
-                        console.log('loaded!');
+                        nodecg.sendMessage('adLoadProgress', {
+                            url: url,
+                            status: 'done',
+                            progress: '100%'
+                        });
+
                         if (!isPreloaded(url)) preloadedUrls.push(url);
                         videoLoader.fullyLoaded = true;
                         videoLoader.remove();
