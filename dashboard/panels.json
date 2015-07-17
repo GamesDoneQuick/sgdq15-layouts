@@ -52,7 +52,7 @@
     "name": "advertisements",
     "title": "Advertisements",
     "width": 4,
-    "file": "Advertisements.jade",
+    "file": "advertisements.jade",
     "faIcon": "fa-video-camera"
   }
 ]
