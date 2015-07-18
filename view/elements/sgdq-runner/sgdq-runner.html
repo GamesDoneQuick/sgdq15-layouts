@@ -90,17 +90,33 @@
             margin-right: 5px;
         }
 
+        #runnerInfoContainer.hideLeftCap,
         #timeContainer.hideLeftCap {
             align-self: flex-end;
+            margin-left: 0;
+            padding: 0;
         }
 
+        #runnerInfoContainer.hideRightCap,
         #timeContainer.hideRightCap {
             align-self: flex-start;
+            margin-right: 0;
+            padding: 0;
         }
 
         #timeContainer.hideLeftCap.hideRightCap {
             margin-left: 17%;
             margin-right: 17%;
+        }
+
+        .hideLeftCap hr,
+        .hideRightCap hr {
+            margin: 0 -5px;
+        }
+
+        #runnerInfoContainer.hideRightCap,
+        #runnerInfoContainer.hideLeftCap {
+            width: 100%;
         }
 
         #time {
@@ -128,7 +144,7 @@
             <div class$="{{hideCaps(hideLeftCap, hideRightCap, 'bezel bezel-right')}}"></div>
         </div>
 
-        <div id="runnerInfoContainer">
+        <div id="runnerInfoContainer" class$="{{hideCaps(hideLeftCap, hideRightCap, '')}}">
             <hr/>
             <sgdq-qplate id="runnerInfo" debounce-time=300></sgdq-qplate>
             <hr/>
@@ -225,7 +241,6 @@
                     .to(self, 0.25, {marginTop: 0, height: 0});
             }
 
-
             nodecg.Replicant('currentRun')
                     .on('change', function(oldVal, newVal) {
                         self.handle = newVal.runners[self.index];
@@ -288,7 +303,7 @@
                 if (elWidth > containerWidth) {
                     TweenLite.set(el, {scaleX: containerWidth / elWidth});
                 } else {
-                    TweenLite.set(el, {scaleX: 1});
+                    TweenLite.set(el, {clearProps: 'scaleX'});
                 }
             });
         },
