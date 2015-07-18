@@ -25,8 +25,8 @@
 #right {
     position: absolute;
     top: 478px;
-    right: 22px;
-    width: 396px;
+    right: 21px;
+    width: 397px;
     height: 117px;
 }
 
@@ -44,6 +44,22 @@ sgdq-game /deep/ sgdq-container {
 }
 
 sgdq-runner {
-    width: 364px;
+    width: 353px;
     font-size: 23px;
+}
+
+sgdq-runner #runnerInfoContainer {
+    height: 41px;
+}
+
+sgdq-runner #timeContainer {
+    width: 253px !important;
+}
+
+sgdq-runner #time {
+    height: 35px !important;
+}
+
+sgdq-runner #runnerInfo {
+    margin-bottom: 3px;
 }
