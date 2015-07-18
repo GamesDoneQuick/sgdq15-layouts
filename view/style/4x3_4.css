@@ -40,6 +40,14 @@ sgdq-runner:nth-of-type(odd) {
     left: -1px;
 }
 
+sgdq-runner #runnerInfoContainer {
+    width: 302px !important;
+}
+
 sgdq-runner #timeContainer {
-    width: 158px;
+    width: 172px;
+}
+
+sgdq-runner hr {
+    margin: 0 -4px !important;
 }
