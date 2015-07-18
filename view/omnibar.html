@@ -17,32 +17,50 @@
 </head>
 <body>
 <div id="container">
-    <div id="imagePreloader"></div>
-    <sgdq-omnibar></sgdq-omnibar>
-    <div id="ftb" class="fullscreen"></div>
-    <div id="nextImage" class="fullscreen"></div>
-    <div id="currentImage" class="fullscreen"></div>
+    <div id="imagePreloader" class="hideOnDenied"></div>
+    <sgdq-omnibar class="hideOnDenied"></sgdq-omnibar>
+    <div id="ftb" class="fullscreen hideOnDenied"></div>
+    <div id="nextImage" class="fullscreen hideOnDenied"></div>
+    <div id="currentImage" class="fullscreen hideOnDenied"></div>
+    <div id="errorIndicator" class="showOnDenied">
+        <p>Another instance of the omnibar is open somewhere! Close that then refresh this one.</p>
+    </div>
 </div>
 
 <!-- Heartbeat -->
 <script>
     /* Send a heartbeat every 500ms. If our heartbeat is rejected, replace the omnibar with a small red rectangle
      * to indicate to the operator that the page must be reloaded. */
-    var heartbeatOK = false;
+    var heartbeatOK;
     var heartbeatInterval = setInterval(function() {
         nodecg.socket.emit('adHeartbeat', null, function(accepted) {
+            // If nothing has changed, return
+            if (heartbeatOK === accepted) return;
+
+            var toHide = document.getElementsByClassName('hideOnDenied');
+            var toShow = document.getElementsByClassName('showOnDenied');
+
             heartbeatOK = accepted;
-            if (!accepted) {
+
+            if (accepted) {
+                forEachNode(toHide, function(node) {
+                    node.style.visibility = 'visible';
+                });
+
+                forEachNode(toShow, function(node) {
+                    node.style.visibility = 'hidden';
+                });
+            } else {
+                forEachNode(toHide, function(node) {
+                    console.log(node.style.visiblilty);
+                    node.style.visibility = 'hidden';
+                });
+
+                forEachNode(toShow, function(node) {
+                    node.style.visibility = 'visible';
+                });
+
                 clearInterval(heartbeatInterval);
-
-                while (document.body.firstChild) {
-                    document.body.removeChild(document.body.firstChild);
-                }
-
-                var h2 = document.createElement('h2');
-                h2.id = 'heartbeatDenied';
-                h2.innerHTML = 'Heartbeat Denied!';
-                document.body.appendChild(h2);
             }
         });
     }, 1000);
@@ -55,6 +73,13 @@
     var IMAGE_AD_DURATION = 30;
     var container = document.getElementById('container');
     var imagePreloader = document.getElementById('imagePreloader');
+
+    function forEachNode(nodeList, cb) {
+        var len = nodeList.length;
+        for (var i = 0; i < len; i++) {
+            cb(nodeList.item(i));
+        }
+    }
 
     var preloadedUrls = [];
     function isPreloaded(url) {
