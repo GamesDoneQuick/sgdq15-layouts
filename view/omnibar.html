@@ -23,7 +23,10 @@
     <div id="nextImage" class="fullscreen hideOnDenied"></div>
     <div id="currentImage" class="fullscreen hideOnDenied"></div>
     <div id="errorIndicator" class="showOnDenied">
-        <p>Another instance of the omnibar is open somewhere! Close that then refresh this one.</p>
+        <p>
+            Another instance of the omnibar is open somewhere! Once the other instance(s) is closed,
+            this error will go away after 1-2 seconds.
+        </p>
     </div>
 </div>
 
@@ -59,8 +62,6 @@
                 forEachNode(toShow, function(node) {
                     node.style.visibility = 'visible';
                 });
-
-                clearInterval(heartbeatInterval);
             }
         });
     }, 1000);
