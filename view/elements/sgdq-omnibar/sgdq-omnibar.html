@@ -323,6 +323,10 @@
                 self.showCTA(true);
             });
 
+            nodecg.listenFor('barGDQMonitor', function(message) {
+                self.showGDQMonitor(message);
+            });
+
             // Bids are the first thing we show, so we use this to start our loop
             self.showCTA();
         },
@@ -330,6 +334,30 @@
         /*
          * Methods
          */
+
+        showGDQMonitor: function(message) {
+            if (typeof message === 'undefined' || message === '') return;
+
+            var self = this;
+            // Always immediate
+            this.tl.clear();
+
+            this.tl.add('showGDQMonitor_start');
+            this.tl.add(this._hideLabel(), 'showGDQMonitor_start');
+
+            this.tl.set(this.$.fullLine, {display: 'block'});
+            this.tl.call(function() {
+                self.$.fullLine.fillHopperText(message);
+            });
+            this.tl.call(function() {
+                self.$.fullLine.fillHopperText('');
+            }, null, null, 'showGDQMonitor_start+=' + (this.displayDuration + this.$.fullLine.duration));
+            this.tl.set(this.$.fullLine, {display: 'none'}, '+=' + this.$.fullLine.duration);
+            this.tl.call(function(){
+                self.showBids();
+            });
+        },
+
         showBids: function (immediate) {
             var self = this;
             if (immediate) this.tl.clear();

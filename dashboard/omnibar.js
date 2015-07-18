@@ -25,6 +25,10 @@
         nodecg.sendMessage('barCTA', selected);
     });
 
+    $panel.find('.ctrl-gdqMonitor').click(function() {
+        nodecg.sendMessage('barGDQMonitor', $panel.find('.ctrl-gdqMonitorText').val());
+    });
+
     var bids = nodecg.Replicant('allBids').on('change', handleReplicantChanges);
     var prizes = nodecg.Replicant('allPrizes').on('change', handleReplicantChanges);
 
