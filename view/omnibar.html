@@ -32,11 +32,17 @@
 
 <!-- Heartbeat -->
 <script>
+    nodecg.listenFor('adKill', function() {
+        window.location.href = 'omnibar_killed.html';
+    });
+
     /* Send a heartbeat every 500ms. If our heartbeat is rejected, replace the omnibar with a small red rectangle
      * to indicate to the operator that the page must be reloaded. */
     var heartbeatOK;
-    var heartbeatInterval = setInterval(function() {
-        nodecg.socket.emit('adHeartbeat', null, function(accepted) {
+    var heartbeatInterval = setInterval(emitHeartbeat, 1000);
+    emitHeartbeat();
+    function emitHeartbeat () {
+        nodecg.socket.emit('adHeartbeat', null, function (accepted) {
             // If nothing has changed, return
             if (heartbeatOK === accepted) return;
 
@@ -46,25 +52,24 @@
             heartbeatOK = accepted;
 
             if (accepted) {
-                forEachNode(toHide, function(node) {
+                forEachNode(toHide, function (node) {
                     node.style.visibility = 'visible';
                 });
 
-                forEachNode(toShow, function(node) {
+                forEachNode(toShow, function (node) {
                     node.style.visibility = 'hidden';
                 });
             } else {
-                forEachNode(toHide, function(node) {
-                    console.log(node.style.visiblilty);
+                forEachNode(toHide, function (node) {
                     node.style.visibility = 'hidden';
                 });
 
-                forEachNode(toShow, function(node) {
+                forEachNode(toShow, function (node) {
                     node.style.visibility = 'visible';
                 });
             }
         });
-    }, 1000);
+    }
 </script>
 
 <!-- Globals & Constants -->

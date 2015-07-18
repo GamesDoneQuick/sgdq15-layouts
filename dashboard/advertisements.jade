@@ -1,3 +1,6 @@
+link(rel="import" href="/components/paper-dialog/paper-dialog.html")
+link(rel="import" href="/components/paper-button/paper-button.html")
+
 div(style="display: flex;")
     .column
         .ncg-label(style="margin-top: 0px;") IMAGES
@@ -11,3 +14,13 @@ div(style="display: flex;")
         #sgdq-adVideo-buttons
             button.btn.btn-xs.btn-default.ctrl-ftb(type="button" title="Fade to Black") FTB
             button.btn.btn-xs.btn-default.ctrl-stopVideo(type="button") Stop Video
+
+button.btn.btn-xs.btn-warning.ctrl-panic(type="button") Force close all open instances omnibar.html
+paper-dialog.dialog-panic(with-backdrop="")
+    h2 Kill omnibar.html
+    p Are you sure you wish to kill all open instances of omnibar.html?
+    .buttons
+        paper-button(dialog-dismiss autofocus) Cancel
+        paper-button(dialog-confirm) Yes, close them
+
+

@@ -42,3 +42,7 @@
 .sgdq15-layouts.advertisements .column:last-of-type {
   margin-left: 10px;
 }
+.sgdq15-layouts.advertisements .ctrl-panic {
+  width: 100%;
+  margin-top: 8px;
+}

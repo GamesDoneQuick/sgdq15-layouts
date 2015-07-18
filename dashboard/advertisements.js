@@ -155,4 +155,15 @@
             $play.html('<i class="fa fa-play"></i>');
         }
     });
+
+    // Provide panic button to kill all open instaces of the omnibar/ad player
+    var panicDialog = $panel.find('.dialog-panic')[0];
+    panicDialog.addEventListener('iron-overlay-closed', function(e) {
+        if (e.target.closingReason.confirmed) {
+            nodecg.sendMessage('adKill');
+        }
+    }, false);
+    $panel.find('.ctrl-panic').click(function () {
+        panicDialog.open();
+    });
 })();
