@@ -274,7 +274,7 @@
 
             // Create repeating timeline to alternate between showing the runner's display name and
             // their stream link.
-            var RUN_INFO_DISPLAY_DURATION = 4;
+            var RUN_INFO_DISPLAY_DURATION = 30;
             self.runnerInfoTl = new TimelineMax({repeat: -1, paused: true});
             self.runnerInfoTl.to({}, 0.01, {
                 onComplete: function() {
