@@ -37,8 +37,8 @@ module.exports = function(nodecg) {
 
     // Heartbeat system
     var liveSocketId, heartbeatTimeout;
-    var HEARTBEAT_INTERVAL = 500;
-    io.sockets.on('connection', function (socket) {
+    var HEARTBEAT_INTERVAL = 1000;
+    io.on('connection', function (socket) {
         /* If we have a live socket id...
          *     and this is the live socket, reset the heartbeatTimeout and invoke callback with "true".
          *     Else, invoke callback with "false".
@@ -46,6 +46,7 @@ module.exports = function(nodecg) {
         socket.on('adHeartbeat', function (data, cb) {
             if (liveSocketId) {
                 if (socket.id === liveSocketId) {
+                    clearTimeout(heartbeatTimeout);
                     heartbeatTimeout = setTimeout(function() {
                         liveSocketId = null;
                     }, HEARTBEAT_INTERVAL * 2);
@@ -55,6 +56,14 @@ module.exports = function(nodecg) {
                 }
             } else {
                 liveSocketId = socket.id;
+            }
+        });
+
+        socket.on('disconnect', function () {
+            // If the socket that disconnected is our live socket, immediately clear the live socket id.
+            if (socket.id === liveSocketId) {
+                clearTimeout(heartbeatTimeout);
+                liveSocketId = null;
             }
         });
     });
