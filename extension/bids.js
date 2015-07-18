@@ -75,7 +75,7 @@ module.exports = function (nodecg) {
             var parentBidsById = {};
             var childBids = [];
             bids.forEach(function(bid) {
-                // If this bid is an option for a donation war, don't add it to childBids array.
+                // If this bid is an option for a donation war, add it to childBids array.
                 // Else, add it to the parentBidsById object.
                 if (bid.fields.parent) {
                     childBids.push(bid);

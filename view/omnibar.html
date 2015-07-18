@@ -91,6 +91,7 @@
             videoLoader.appendChild(source);
             videoLoader.fullyLoaded = false;
 
+            // TODO: Calculate percentage based on all buffer chunks, not just the first
             videoLoader.addEventListener('progress', function () {
                 if (videoLoader.fullyLoaded) return;
                 if (videoLoader.duration) {

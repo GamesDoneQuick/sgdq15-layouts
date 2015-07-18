@@ -25,6 +25,10 @@
             align-items: center;
         }
 
+        :host[disabled] {
+            opacity: 0.6;
+        }
+
         #status {
             display: flex;
             flex-direction: column;
@@ -178,7 +182,11 @@
                         if (!newVal) return;
 
                         // Hide the entire element if there is no runner at this index.
-                        self.style.display = (newVal && newVal.runners[self.index]) ? 'flex' : 'none';
+                        if (newVal.runners[self.index]) {
+                            self.removeAttribute('disabled');
+                        } else {
+                            self.setAttribute('disabled', true);
+                        }
 
                         self.runner = newVal.runners[self.index] || '?';
                     });
