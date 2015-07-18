@@ -22,6 +22,7 @@
 
 sgdq-game {
     margin: 7px;
+    height: 112px;
 }
 
 sgdq-runner {
@@ -37,5 +38,5 @@ sgdq-sponsors {
 
 #cameraPlaceholder {
     width: 100%;
-    height: 219px;
+    height: 214px;
 }
