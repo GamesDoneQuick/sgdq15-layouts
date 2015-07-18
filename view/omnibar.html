@@ -92,13 +92,15 @@
             videoLoader.fullyLoaded = false;
 
             videoLoader.addEventListener('loadedmetadata', function () {
-                console.log('loadedmetadata');
+                console.log('loadedmetadata', url);
             }, false);
 
             videoLoader.addEventListener('progress', function () {
+                console.log('progress', url);
                 if (videoLoader.fullyLoaded) return;
                 if (videoLoader.duration) {
                     var percent = (videoLoader.buffered.end(0) / videoLoader.duration) * 100;
+                    console.log(percent);
                     nodecg.sendMessage('adLoadProgress', {
                         url: url,
                         status: 'loading',
@@ -121,17 +123,85 @@
                     }
 
                     // Seek the video to force the conservative browser to buffer more of it
-                    videoLoader.currentTime++;
+                    //videoLoader.currentTime++;
                 } else {
                     console.log('progress, but metadata is not loaded so video duration is unknown');
                 }
             }, false);
 
-            videoLoader.addEventListener('canplaythrough', function () {
-                console.log('canplaythrough');
+            function getLastChunkEndTime() {
+                var numChunks = videoLoader.buffered.length;
+                return videoLoader.buffered.end(numChunks - 1);
+            }
+
+            function printAllChunks() {
+                var numChunks = videoLoader.buffered.length;
+                var str = '';
+                for (var i = 0; i < numChunks; i++) {
+                    str += videoLoader.buffered.start(i) + ' - ' + videoLoader.buffered.end(i);
+                    if (i !== numChunks - 1) str += ', ';
+                }
+                console.log(str);
+            }
+
+            function findEarliestGap() {
+                var numChunks = videoLoader.buffered.length;
+
+                // If we have one chunk that spans the entire video, then hey there's no gaps!
+                if (numChunks === 1) {
+                    var start = videoLoader.buffered.start(0);
+                    var end = videoLoader.buffered.end(0);
+                    if (start === 0 && end === videoLoader.duration) {
+                        console.log('We have a single buffer segment that spans the entire video!');
+                        return;
+                    }
+                }
+
+                // Loop over each chunk, find any gaps.
+                for (var i = 0; i < numChunks; i++) {
+                    var nextIndex = i + 1;
+
+                    // If this is the last chunk and its end is the end of the video, we have no gaps.
+                    // Else we need to buffer the end.
+                    if (nextIndex >= numChunks) {
+                        if (videoLoader.buffered.end(i) === videoLoader.duration) {
+                            console.log('There are no gaps and the entire video seems to be buffered.');
+                            return;
+                        } else {
+                            return videoLoader.buffered.end(i);
+                        }
+                    }
+
+                    var currentEnd = videoLoader.buffered.end(i);
+                    var nextStart = videoLoader.buffered.start(nextIndex);
+                    if (currentEnd !== nextStart) {
+                        return currentEnd;
+                    }
+                }
+            }
+
+            videoLoader.addEventListener('canplay', function () {
+                console.log('canplay', url);
+                var gap = findEarliestGap();
+                if (gap) {
+                    videoLoader.currentTime = gap;
+                    videoLoader.currentTime++;
+                }
+                printAllChunks();
+
+
+
+                // Seek the video to force the conservative browser to buffer more of it
+                /*var count = 0;
+                while (count < 1000 && findEarliestGap()) {
+                    count++;
+                    videoLoader.currentTime = findEarliestGap();
+                    videoLoader.currentTime++;
+                    printAllChunks();
+                }*/
             }, false);
         } else {
-            throw new Error ('Invalod type: ' + type);
+            throw new Error ('Invalid type: ' + type);
         }
     }
 </script>
