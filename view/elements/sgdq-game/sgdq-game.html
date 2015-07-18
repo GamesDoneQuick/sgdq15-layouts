@@ -125,7 +125,8 @@
             nodecg.Replicant('currentRun')
                     .on('change', function(oldVal, newVal) {
                         self.$.game.innerHTML = newVal.game;
-                        self.$.estimate.innerHTML = newVal.estimate;
+
+                        TweenLite.to(self.$.estimate, 0.6, {text:  newVal.estimate});
 
                         // If the category text changed, animate it
                         if (self.$.category.innerText.toLowerCase() !== newVal.category.toLowerCase()) {
