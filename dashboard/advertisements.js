@@ -55,7 +55,6 @@
                 button.addEventListener('click', function() {
                     var url = this.parentNode.getAttribute('data-url');
                     nodecg.sendMessage('showAdImage', url);
-                    startImageCountdown();
                 }, false);
 
                 div.appendChild(button);
