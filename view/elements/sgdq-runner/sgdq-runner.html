@@ -228,13 +228,8 @@
 
             nodecg.Replicant('currentRun')
                     .on('change', function(oldVal, newVal) {
-                        if (newVal.runners[self.index]) {
-                            self.handle = newVal.runners[self.index];
-                            self.streamlink = newVal.streamlinks[self.index];
-                            self.hideIfEmptyTL.reverse();
-                        } else {
-                            self.hideIfEmptyTL.play();
-                        }
+                        self.handle = newVal.runners[self.index];
+                        self.streamlink = newVal.streamlinks[self.index];
                     });
 
             nodecg.Replicant('stopwatches')
