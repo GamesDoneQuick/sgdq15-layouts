@@ -18,14 +18,14 @@
 #right {
     position: absolute;
     top: 457px;
-    right: 53px;
-    width: 397px;
+    right: 55px;
+    width: 395px;
     height: 205px;
     overflow: hidden;
 }
 
 sgdq-sponsors, sgdq-game {
-    height: 120px;
+    height: 119px;
     width: 100%;
 }
 
@@ -38,7 +38,19 @@ sgdq-game /deep/ sgdq-container {
 }
 
 sgdq-runner {
-    width: 311px;
+    width: 313px;
     margin-top: 7px;
     margin-bottom: 7px;
+}
+
+sgdq-runner #timeContainer {
+    width: 158px;
+}
+
+#left sgdq-runner {
+    right: -1px;
+}
+
+#right sgdq-runner {
+    left: -1px;
 }
