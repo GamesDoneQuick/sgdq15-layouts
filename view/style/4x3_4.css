@@ -15,22 +15,31 @@
 }
 
 #cameraPlaceholder {
-    height: 209px;
+    height: 210px;
     margin-top: 12px;
 }
 
 sgdq-game {
     height: 104px;
-    width: 378px;
-    margin: 8px 9px 15px;
+    width: 380px;
+    margin: 8px 8px 15px;
 }
 
 sgdq-runner {
-    width: 311px;
+    width: 313px;
     margin-top: 9px;
     margin-bottom: 4px;
 }
 
 sgdq-runner:nth-of-type(even) {
     align-self: flex-end;
+    right: -1px;
+}
+
+sgdq-runner:nth-of-type(odd) {
+    left: -1px;
+}
+
+sgdq-runner #timeContainer {
+    width: 158px;
 }
