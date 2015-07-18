@@ -5,6 +5,8 @@ var path = require('path');
 var fs = require('fs');
 var debounce = require('debounce');
 var ADVERTISEMENTS_PATH = path.resolve(__dirname, '../view/advertisements');
+var server = require('../../../lib/server');
+var io = server.getIO();
 var BASE_URL = '/view/sgdq15-layouts/advertisements/';
 var IMAGE_EXTS = ['.png', '.jpg'];
 var VIDEO_EXTS = ['.webm'];
@@ -33,7 +35,31 @@ module.exports = function(nodecg) {
         nodecg.error(e.stack);
     });
 
-    // Initialize
+    // Heartbeat system
+    var liveSocketId, heartbeatTimeout;
+    var HEARTBEAT_INTERVAL = 500;
+    io.sockets.on('connection', function (socket) {
+        /* If we have a live socket id...
+         *     and this is the live socket, reset the heartbeatTimeout and invoke callback with "true".
+         *     Else, invoke callback with "false".
+         * Else, this socket becomes the live socket. */
+        socket.on('adHeartbeat', function (data, cb) {
+            if (liveSocketId) {
+                if (socket.id === liveSocketId) {
+                    heartbeatTimeout = setTimeout(function() {
+                        liveSocketId = null;
+                    }, HEARTBEAT_INTERVAL * 2);
+                    cb(true);
+                } else {
+                    cb(false);
+                }
+            } else {
+                liveSocketId = socket.id;
+            }
+        });
+    });
+
+        // Initialize
     reloadAdvertisements();
 
     // On changed/added/deleted

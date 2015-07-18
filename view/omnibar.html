@@ -24,6 +24,28 @@
     <div id="currentImage" class="fullscreen"></div>
 </div>
 
+<!-- Heartbeat -->
+<script>
+    /* Send a heartbeat every 500ms. If our heartbeat is rejected, replace the omnibar with a small red rectangle
+     * to indicate to the operator that the page must be reloaded. */
+    var heartbeatInterval = setInterval(function() {
+        nodecg.socket.emit('adHeartbeat', null, function(accepted) {
+            if (!accepted) {
+                clearInterval(heartbeatInterval);
+
+                while (document.body.firstChild) {
+                    document.body.removeChild(document.body.firstChild);
+                }
+
+                var h2 = document.createElement('h2');
+                h2.id = 'heartbeatDenied';
+                h2.innerHTML = 'Heartbeat Denied!';
+                document.body.appendChild(h2);
+            }
+        });
+    }, 500);
+</script>
+
 <!-- Globals & Constants -->
 <script>
     var FADE_DURATION = 0.5;
