@@ -28,8 +28,10 @@
 <script>
     /* Send a heartbeat every 500ms. If our heartbeat is rejected, replace the omnibar with a small red rectangle
      * to indicate to the operator that the page must be reloaded. */
+    var heartbeatOK = false;
     var heartbeatInterval = setInterval(function() {
         nodecg.socket.emit('adHeartbeat', null, function(accepted) {
+            heartbeatOK = accepted;
             if (!accepted) {
                 clearInterval(heartbeatInterval);
 
@@ -202,6 +204,7 @@
     var imageAdTl = new TimelineLite({autoRemoveChildren: true});
 
     nodecg.listenFor('hideAdImage', function() {
+        if (!heartbeatOK) return;
         imageAdTl.clear();
         imageAdTl.to([currentImage, nextImage], FADE_DURATION, {
             opacity: 0,
@@ -214,6 +217,8 @@
     });
 
     nodecg.listenFor('showAdImage', function(url) {
+        if (!heartbeatOK) return;
+
         // If this image is already preloaded, immediately show it.
         // Else, preload before showing.
         if (isPreloaded(url)) {
@@ -231,6 +236,8 @@
     });
 
     function showAdImage(url) {
+        if (!heartbeatOK) return;
+
         // Clear any existing tweens. Advertisements ain't nothin' to fuck wit.
         imageAdTl.clear();
         imageAdTl.add('start');
@@ -298,6 +305,8 @@
     });
 
     nodecg.listenFor('playAdVideo', function(url) {
+        if (!heartbeatOK) return;
+
         if (isPreloaded(url)) {
             showAdVideo(url);
         } else {
@@ -313,6 +322,8 @@
     });
 
     function showAdVideo(url) {
+        if (!heartbeatOK) return;
+
         // Remove any existing video
         while (document.getElementById('videoPlayer')) {
             document.getElementById('videoPlayer').remove();
