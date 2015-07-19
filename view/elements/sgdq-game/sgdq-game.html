@@ -74,7 +74,7 @@
 
     <template>
         <sgdq-container hide-tl="{{hideTl}}" hide-tr="{{hideTr}}" hide-bl="{{hideBl}}" hide-br="{{hideBr}}">
-            <div id="game"></div>
+            <sgdq-qplate id="game" debounce-time=300></sgdq-qplate>
             <div id="categoryContainer">
                 <div class="thickline"></div>
                 <div id="categoryWrapper">
@@ -124,7 +124,7 @@
 
             nodecg.Replicant('currentRun')
                     .on('change', function(oldVal, newVal) {
-                        self.$.game.innerHTML = newVal.game;
+                        self.$.game.fillHopperText(newVal.game);
 
                         TweenLite.to(self.$.estimate, 0.6, {text:  newVal.estimate});
 
