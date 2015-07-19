@@ -43,3 +43,7 @@ sgdq-runner {
     margin-top: 9px;
     margin-bottom: 10px;
 }
+
+sgdq-runner #timeContainer{
+    width: 214px;
+}

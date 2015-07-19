@@ -39,3 +39,7 @@ sgdq-runner {
 sgdq-runner:nth-of-type(even) {
     align-self: flex-end;
 }
+
+sgdq-runner #timeContainer{
+    width: 172px;
+}
