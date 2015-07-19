@@ -206,12 +206,12 @@
             this.runnerInfoTl.pause();
 
             // If no handle nor streamlink, just show '?'.
-            // Else, if the handle and streamlink are identical, just show the streamlink.
+            // Else, if the handle and streamlink are identical, or there is no handle, just show the streamlink.
             // Else, if there is a handle but no streamlink, just show the streamlink.
             // Else, restart the timeline and alternate between both.
             if (!this.handle && !this.streamlink) {
                 this.$.runnerInfo.fillHopperText('?');
-            } else if (this.handle === this.streamlink) {
+            } else if (this.handle === this.streamlink || (!this.handle && this.streamlink)) {
                 this.$.runnerInfo.fillHopper(this.streamlinkElement);
             } else if (this.handle && !this.streamlink) {
                 this.$.runnerInfo.fillHopperText(this.handle);
