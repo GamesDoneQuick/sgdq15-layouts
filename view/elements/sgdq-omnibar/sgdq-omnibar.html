@@ -334,6 +334,37 @@
             if (typeof message === 'undefined' || message === '') return;
 
             var self = this;
+
+            // Create scrolling elements
+            // Only scrolls when needed, otherwise centered
+            // Based on gxl-credits, modified to be horizontal
+
+            var outer = document.createElement('div');
+            outer.style.width = '1080px';
+            outer.style.height = '50px';
+            outer.style.textAlign = 'center';
+            outer.style['-webkit-mask-image'] = '-webkit-linear-gradient(left, #000000 96%, rgba(0, 0, 0, 0) 100%)';
+
+            var inner = document.createElement('div');
+            inner.style.paddingLeft = '25px';
+            inner.style['-webkit-mask-image'] = '-webkit-linear-gradient(left, rgba(0, 0, 0, 0) 0%, #000000 4%, #000000 98%, rgba(0, 0, 0, 0) 100%)';
+
+            var text = document.createElement('span');
+            text.style.position = 'relative';
+
+            text.innerHTML = message;
+            inner.appendChild(text);
+            outer.appendChild(inner);
+
+            // scroll at constant speed of ???px/sec regardless of content length
+            // thus variable duration, calculate here
+            var width = 0;
+            var containerWidth = 1030; // 1080 - roughly 50px padding
+
+            var speed = 75; // px/sec
+            var distance = 0;
+            var scrollDuration = 0;
+
             // Always immediate
             this.tl.clear();
 
@@ -342,14 +373,39 @@
 
             this.tl.set(this.$.fullLine, {display: 'block'});
             this.tl.call(function() {
-                self.$.fullLine.fillHopperText(message);
+                self.$.fullLine.autoFit = false;
+                self.$.fullLine.removeAttribute('center');
+                self.$.fullLine.fillHopper(outer);
             });
-            this.tl.call(function() {
-                self.$.fullLine.fillHopperText('');
-            }, null, null, 'showGDQMonitor_start+=' + (this.displayDuration + this.$.fullLine.duration));
-            this.tl.set(this.$.fullLine, {display: 'none'}, '+=' + this.$.fullLine.duration);
-            this.tl.call(function(){
-                self.showBids();
+
+            // Need to wait for text to be added to DOM inside the display div
+            this.$.fullLine.addEventListener('flipped', function flipped() {
+                self.$.fullLine.removeEventListener('flipped', flipped);
+                text = self.$.fullLine.$$('span');
+
+                // scroll at constant speed of ???px/sec regardless of content length
+                // thus variable duration, calculate here
+                width = text.offsetWidth;
+                distance = width - containerWidth;
+                scrollDuration = Math.max(0, distance / speed);
+
+                // Distance will be negative if we don't need to scroll
+                if (distance > 0) {
+                    self.tl.to(text, scrollDuration, {
+                        left: -distance + 'px',
+                        ease: Linear.easeNone,
+                        autoRound: false
+                    }, '+=' + (((self.displayDuration+scrollDuration)/2) - (scrollDuration/2)));
+                }
+
+                self.tl.call(function() {
+                    self.$.fullLine.fillHopperText('');
+                }, null, null, 'showGDQMonitor_start+=' + (self.displayDuration + scrollDuration + self.$.fullLine.duration));
+                self.tl.set(self.$.fullLine, {display: 'none'}, '+=' + self.$.fullLine.duration);
+                self.tl.call(function(){
+                    self.$.fullLine.autoFit = true;
+                    self.showBids();
+                });
             });
         },
 
