@@ -20,6 +20,8 @@ sgdq-game {
 
 sgdq-runner {
     margin-top: 12px;
+    left: -1px;
+    width: 326px;
 }
 
 sgdq-sponsors {
