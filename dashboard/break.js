@@ -16,6 +16,7 @@
 
         // Clear the "selected" value because we can no longer trust it to be accurate.
         selected = null;
+        $onDemandTypeahead.val('');
 
         var args = [
             {

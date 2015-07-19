@@ -19,6 +19,7 @@
         .on('change', function(oldVal, newVal) {
             // Clear the "selected" value because we can no longer trust it to be accurate.
             selectedRun = null;
+            $manualTypeahead.val('');
 
             if (currentRun.value && (currentRun.value.index+1 < newVal.length)) {
                 $nextRun.html(newVal[currentRun.value.index+1].game);
