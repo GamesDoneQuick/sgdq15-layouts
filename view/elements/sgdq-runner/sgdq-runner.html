@@ -240,12 +240,18 @@
             self.hideIfEmptyTL = new TimelineLite({paused: true});
             if (self.hideIfEmpty) {
                 self.hideIfEmptyTL
-                    .to(self, 0.75, {opacity: 0})
-                    .to(self, 0.25, {marginTop: 0, height: 0});
+                    .to(self, 0.5, {opacity: 0, ease: Power1.easeInOut})
+                    .to(self, 0.25, {marginTop: 0, height: 0, ease: Power1.easeInOut});
             }
 
             nodecg.Replicant('currentRun')
                     .on('change', function(oldVal, newVal) {
+                        if (newVal.runners[self.index]) {
+                            self.hideIfEmptyTL.reverse();
+                        } else {
+                            self.hideIfEmptyTL.play();
+                        }
+
                         self.handle = newVal.runners[self.index];
                         self.streamlink = newVal.streamlinks[self.index];
                     });
