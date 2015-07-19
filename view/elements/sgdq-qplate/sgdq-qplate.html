@@ -74,6 +74,14 @@
          * Lifecycle
          */
         ready: function () {
+            // Kinda silly hack to prevent qplates from having zero height when the page loads.
+            // We create a span, attach it to the light dom so it inherits its parent's styling,
+            // then put it in #display so it actually renders and enters the page flow.
+            var span = document.createElement('span');
+            span.innerHTML = '&nbsp;';
+            Polymer.dom(this).appendChild(span);
+            this.$.display.appendChild(span.cloneNode(true));
+
             // Watch #hopper for changes. Upon a change, flip #display to the contents of #hopper.
             var self = this, observer = new MutationObserver(function (mutations) {
                 self.debounce('flip', self._flipToHopperContent, self.debounceTime);
