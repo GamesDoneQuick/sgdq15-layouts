@@ -18,8 +18,8 @@
 #right {
     position: absolute;
     top: 396px;
-    right: 19px;
-    width: 389px;
+    right: 18px;
+    width: 391px;
     height: 259px;
     overflow: hidden;
 }
@@ -42,4 +42,32 @@ sgdq-runner {
     font-size: 22px;
     margin-top: 22px;
     margin-bottom: 17px;
+}
+
+#left sgdq-runner {
+    right: -2px;
+}
+
+#right sgdq-runner {
+    left: -2px;
+}
+
+sgdq-runner #runnerInfoContainer {
+    width: 365px !important;
+}
+
+sgdq-runner #runnerInfo {
+    margin-bottom: 3px !important;
+}
+
+sgdq-runner #timeContainer {
+    width: 208px !important;
+}
+
+sgdq-runner #time {
+    height: 33px !important;
+}
+
+sgdq-runner .bezel {
+    height: calc(100% + 7px) !important;
 }
