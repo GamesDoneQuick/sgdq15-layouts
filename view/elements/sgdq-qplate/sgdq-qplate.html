@@ -127,31 +127,32 @@
 
             this.tl.to(this.$.display, this.duration / 2, {
                 rotationX: this.direction === 'down' ? '-90deg' : '90deg',
-                ease: this.easeIn,
-                onComplete: function() {
-                    // Empty #display.
-                    while (self.$.display.firstChild) {
-                        self.$.display.removeChild(self.$.display.firstChild);
-                    }
+                ease: this.easeIn
+            }).call(function() {
+                // Empty #display.
+                while (self.$.display.firstChild) {
+                    self.$.display.removeChild(self.$.display.firstChild);
+                }
 
-                    // Then, clone the distributedNodes into it. We clone because otherwise we'd be triggering
-                    // the mutationObserver that is watching #hopper over and over again.
-                    distributedNodes.forEach(function(node) {
-                        self.$.display.appendChild(node.cloneNode(true));
-                    });
+                // Then, clone the distributedNodes into it. We clone because otherwise we'd be triggering
+                // the mutationObserver that is watching #hopper over and over again.
+                distributedNodes.forEach(function(node) {
+                    self.$.display.appendChild(node.cloneNode(true));
+                });
 
-                    // Automatically horizontally scale this qplate to fit in its
-                    // parent based on this new content, if desired.
-                    if (self.autoFit) {
-                        self.fit();
-                    }
+                // Automatically horizontally scale this qplate to fit in its
+                // parent based on this new content, if desired.
+                if (self.autoFit) {
+                    self.fit();
                 }
             }).set(this.$.display, {
                 rotationX: this.direction === 'down' ? '90deg' : '-90deg'
             }).to(this.$.display, this.duration / 2, {
                 rotationX: 0,
                 ease: this.easeOut
-            })
+            }).call(function() {
+                self.fire('flipped');
+            });
         },
 
         fit: function(containerEl) {
