@@ -277,16 +277,13 @@
         // Else, just fade the new image up.
         var cssUrl = 'url("' + url + '")';
         if (currentImage.style.backgroundImage) {
+            imageAdTl.set(nextImage, {opacity: 1}, 'start');
             imageAdTl.to(currentImage, FADE_DURATION, {
-                opacity: 0,
-                ease: FADE_EASE
-            }, 'start');
-            imageAdTl.to(nextImage, FADE_DURATION, {
                 onStart: function() {
                     nextImage.style.backgroundImage = cssUrl;
                 },
-                opacity: 1,
-                ease: FADE_EASE
+                opacity: 0,
+                ease: Linear.easeNone
             }, 'start');
             imageAdTl.call(function() {
                 currentImage.style.opacity = 1;
