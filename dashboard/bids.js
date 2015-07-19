@@ -10,7 +10,7 @@
             var html = '';
             newVal.forEach(function(bid) {
                 html += '<tr><td>' + bid.name + '</td>' +
-                    '<td>' + bid.description + '</td>' +
+                    '<td>' + bid.speedrun + '</td>' +
                     '<td>' + bid.total + '</td></tr>';
             });
             $bidsTable.find('tbody').html(html);
