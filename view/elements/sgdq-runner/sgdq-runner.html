@@ -189,20 +189,19 @@
                 value: false,
                 reflectToAttribute: true
             },
-            handle: String,
-            handleElement: {
-                type: Object,
-                observer: 'handleChange'
+            handle: {
+                type: String,
+                observer: 'handleOrStreamlinkChanged'
             },
             streamlink: String,
             streamlinkElement: {
                 type: Object,
-                observer: 'handleChange',
+                observer: 'handleOrStreamlinkChanged',
                 computed: 'computeStreamlinkElement(streamlink)'
             }
         },
 
-        handleChange: function() {
+        handleOrStreamlinkChanged: function() {
             this.runnerInfoTl.pause();
 
             // If no handle nor streamlink, just show '?'.
