@@ -129,10 +129,10 @@ module.exports = function (nodecg) {
                 if (!bid.options) continue;
                 bid.options = bid.options.sort(function (a, b) {
                     if (a.total > b.total) {
-                        return 1;
+                        return -1;
                     }
                     if (a.total < b.total) {
-                        return -1;
+                        return 1;
                     }
                     // a must be equal to b
                     return 0;
