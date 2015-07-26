@@ -339,8 +339,11 @@
             // Only scrolls when needed, otherwise centered
             // Based on gxl-credits, modified to be horizontal
 
+            var trackerWidth = self.$.totalContainer.offsetWidth;
+
             var outer = document.createElement('div');
-            outer.style.width = '1080px';
+            var outerWidth = 1145 - trackerWidth;
+            outer.style.width = outerWidth + 'px';
             outer.style.height = '50px';
             outer.style.textAlign = 'center';
             outer.style['-webkit-mask-image'] = '-webkit-linear-gradient(left, #000000 96%, rgba(0, 0, 0, 0) 100%)';
@@ -359,7 +362,7 @@
             // scroll at constant speed of ???px/sec regardless of content length
             // thus variable duration, calculate here
             var width = 0;
-            var containerWidth = 1030; // 1080 - roughly 50px padding
+            var containerWidth = outerWidth - 50;
 
             var speed = 75; // px/sec
             var distance = 0;
