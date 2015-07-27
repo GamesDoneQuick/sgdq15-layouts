@@ -1,7 +1,7 @@
 'use strict';
 
 // Schedule is kept in a google document
-var SCHEDULE_KEY = '1GmSClaGLBzBTfRvxdaKl-KdHhqk7P6MeweE_KvAYKps';
+var SCHEDULE_KEY = '19vzLgQF8QE6eaSHpv4PUmQXqOyqvsGqq1aKcrRiOh18';
 var POLL_INTERVAL = 3 * 60 * 1000;
 
 var GoogleSpreadsheet = require('google-spreadsheet');
