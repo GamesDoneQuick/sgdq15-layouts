@@ -128,10 +128,12 @@ module.exports = function (nodecg) {
                 bidsArray.push(bid);
                 if (!bid.options) continue;
                 bid.options = bid.options.sort(function (a, b) {
-                    if (a.total > b.total) {
+                    var aTotal = numeral().unformat(a.total);
+                    var bTotal = numeral().unformat(b.total);
+                    if (aTotal > bTotal) {
                         return -1;
                     }
-                    if (a.total < b.total) {
+                    if (aTotal < bTotal) {
                         return 1;
                     }
                     // a must be equal to b
