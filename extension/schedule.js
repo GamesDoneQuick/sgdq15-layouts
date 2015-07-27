@@ -8,7 +8,7 @@ var GoogleSpreadsheet = require('google-spreadsheet');
 var Q = require('q');
 
 module.exports = function (nodecg) {
-    var schedule = nodecg.Replicant('schedule', {defaultValue: []});
+    var schedule = nodecg.Replicant('schedule', {defaultValue: [], persistent: false});
     var currentRun = nodecg.Replicant('currentRun', {defaultValue: {}});
     var scheduleDoc = new GoogleSpreadsheet(SCHEDULE_KEY);
     var lastUpdated = '';
