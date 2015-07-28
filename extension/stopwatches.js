@@ -93,6 +93,15 @@ module.exports = function (nodecg) {
         }
     });
 
+    app.put('/sgdq15-layouts/stopwatch/:index/startfinish', function (req, res) {
+        var result = startFinishStopwatch(req.params.index);
+        if (result) {
+            res.status(200).json(result);
+        } else {
+            res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
+        }
+    });
+
     nodecg.mount(app);
 
     function startStopwatch(index) {
@@ -144,6 +153,29 @@ module.exports = function (nodecg) {
             return stopwatches.value[index];
         } else {
             nodecg.log.error('index "%d" sent to "resetTime" is out of bounds', index);
+            return false;
+        }
+    }
+
+    function startFinishStopwatch(index) {
+        if (index === 'all') {
+            rieussecs.forEach(function(sw, index) {
+                if (stopwatches.value[index].state === 'running') {
+                    finishStopwatch(index);
+                } else {
+                    startStopwatch(index);
+                }
+            });
+            return stopwatches.value;
+        } else if (index >= 0 && index < NUM_STOPWATCHES) {
+            if (stopwatches.value[index].state === 'running') {
+                finishStopwatch(index);
+            } else {
+                startStopwatch(index);
+            }
+            return stopwatches.value[index];
+        } else {
+            nodecg.log.error('index "%d" sent to "startFinishStopwatch" is out of bounds', index);
             return false;
         }
     }

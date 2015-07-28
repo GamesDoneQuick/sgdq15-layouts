@@ -21,3 +21,8 @@ Responds with the current status of the affected stopwatch(es).
 ### PUT /sgdq15-layouts/stopwatch/:index/reset
 Resets one of the four stopwatches to 00:00:00 and stops it. Index is zero-based.
 If index is 'all', resets all stopwatches. Responds with the current status of the affected stopwatch(es).
+
+### PUT /sgdq15-layouts/startfinish/:index/reset
+If the stopwatch *is not* running, this starts it. If the stopwatch *is* running, this sets it to "finished".
+Index is zero-based. If index is 'all', resets all stopwatches. 
+Responds with the current status of the affected stopwatch(es).
