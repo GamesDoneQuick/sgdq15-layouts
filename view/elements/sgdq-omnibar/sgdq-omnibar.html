@@ -417,14 +417,20 @@
             var self = this;
             if (immediate) this.tl.clear();
 
-            if (window.currentBids.length) {
-                this.tl.call(this._showLabel, ['DONATION BIDS', '25px'], this);
+            if (window.currentBids.length > 0) {
+                var shouldShowLabel = false;
 
                 // Figure out what bids to display in this batch
                 var bidsToDisplay = [];
                 window.currentBids.forEach(function(bid) {
                     // Don't show closed bids in the automatic rotation.
                     if (bid.state.toLowerCase() === 'closed') return;
+
+                    // We have at least one bid to show, so show the label
+                    if (!showedLabel) {
+                        showedLabel = true;
+                        this.tl.call(this._showLabel, ['DONATION BIDS', '25px'], this);
+                    }
 
                     // If we have already have our three bids determined, we still need to check
                     // if any of the remaining bids are for the same speedrun as the third bid.
@@ -522,7 +528,7 @@
             var self = this;
             if (immediate) this.tl.clear();
 
-            if (window.currentGrandPrizes.length || window.currentNormalPrizes.length) {
+            if (window.currentGrandPrizes.length > 0 || window.currentNormalPrizes.length > 0) {
                 this.tl.call(this._showLabel, ['RAFFLE PRIZES', '25px'], this);
 
                 var prizesToDisplay = window.currentNormalPrizes.slice(0);
