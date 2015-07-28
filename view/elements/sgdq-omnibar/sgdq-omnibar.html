@@ -274,8 +274,9 @@
                         if (window.currentRun) {
                             var len = newVal.length;
                             for (var i = 0; i < len; i++) {
-                                if (window.currentRun.name === newVal[i].name) {
+                                if (window.currentRun.game === newVal[i].game) {
                                     var newIndexOfCurrentRun = newVal[i].index;
+                                    break;
                                 }
                             }
 
