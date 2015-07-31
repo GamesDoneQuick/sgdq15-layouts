@@ -116,7 +116,14 @@ module.exports = function (nodecg) {
                     description: bid.fields.shortdescription,
                     total: numeral(bid.fields.total).format('$0,0[.]00')
                 };
-                parentBidsById[bid.fields.parent].options.push(formattedChildBid);
+
+                var parent = parentBidsById[bid.fields.parent];
+                if (parent) {
+                    parentBidsById[bid.fields.parent].options.push(formattedChildBid);
+                } else {
+                    nodecg.log.error('Child bid %d\'s parent (bid #%s) could not be found.' +
+                        ' This child bid will be discarded!', bid.pk, bid.fields.parent);
+                }
             });
 
             // Ah, but now we have to sort all these child bids by how much they have raised so far!
