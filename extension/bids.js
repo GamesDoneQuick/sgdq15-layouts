@@ -121,7 +121,7 @@ module.exports = function (nodecg) {
                 if (parent) {
                     parentBidsById[bid.fields.parent].options.push(formattedChildBid);
                 } else {
-                    nodecg.log.error('Child bid %d\'s parent (bid #%s) could not be found.' +
+                    nodecg.log.error('Child bid #%d\'s parent (bid #%s) could not be found.' +
                         ' This child bid will be discarded!', bid.pk, bid.fields.parent);
                 }
             });
