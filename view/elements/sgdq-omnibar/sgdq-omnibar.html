@@ -418,7 +418,7 @@
             if (immediate) this.tl.clear();
 
             if (window.currentBids.length > 0) {
-                var shouldShowLabel = false;
+                var showedLabel = false;
 
                 // Figure out what bids to display in this batch
                 var bidsToDisplay = [];
@@ -429,7 +429,7 @@
                     // We have at least one bid to show, so show the label
                     if (!showedLabel) {
                         showedLabel = true;
-                        this.tl.call(this._showLabel, ['DONATION BIDS', '25px'], this);
+                        self.tl.call(self._showLabel, ['DONATION BIDS', '25px'], self);
                     }
 
                     // If we have already have our three bids determined, we still need to check
