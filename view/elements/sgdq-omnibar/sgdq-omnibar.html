@@ -631,11 +631,8 @@
 
                     // Make the content that will go inside the wrapper.
                     var span = document.createElement('span');
-                    var div = document.createElement('div');
-                    span.innerHTML = '<b>Summer Games Done Quick</b> benefits';
-                    div.id = 'msf';
+                    span.innerHTML = 'Call-to-action line #1';
                     wrapper.appendChild(span);
-                    wrapper.appendChild(div);
 
                     // Put it in the qPlate hopper.
                     self.$.fullLine.fillHopper(wrapper);
@@ -644,7 +641,7 @@
 
             this.tl.call(function() {
                 var b = document.createElement('b');
-                b.textContent = 'Donate at gamesdonequick.com';
+                b.textContent = 'Call-to-action line #2';
 
                 // Put it in the qPlate hopper.
                 self.$.fullLine.fillHopper(b);
