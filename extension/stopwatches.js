@@ -53,57 +53,6 @@ module.exports = function (nodecg) {
     nodecg.listenFor('resetTime', resetStopwatch);
     nodecg.listenFor('setTime', setStopwatch);
 
-    app.get('/sgdq15-layouts/stopwatches', function (req, res) {
-        res.json(stopwatches.value);
-    });
-
-    app.put('/sgdq15-layouts/stopwatch/:index/start', function (req, res) {
-        var result = startStopwatch(req.params.index);
-        if (result) {
-            res.status(200).json(result);
-        } else {
-            res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
-        }
-    });
-
-    app.put('/sgdq15-layouts/stopwatch/:index/pause', function (req, res) {
-        var result = pauseStopwatch(req.params.index);
-        if (result) {
-            res.status(200).json(result);
-        } else {
-            res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
-        }
-    });
-
-    app.put('/sgdq15-layouts/stopwatch/:index/finish', function (req, res) {
-        var result = finishStopwatch(req.params.index);
-        if (result) {
-            res.status(200).json(result);
-        } else {
-            res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
-        }
-    });
-
-    app.put('/sgdq15-layouts/stopwatch/:index/reset', function (req, res) {
-        var result = resetStopwatch(req.params.index);
-        if (result) {
-            res.status(200).json(result);
-        } else {
-            res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
-        }
-    });
-
-    app.put('/sgdq15-layouts/stopwatch/:index/startfinish', function (req, res) {
-        var result = startFinishStopwatch(req.params.index);
-        if (result) {
-            res.status(200).json(result);
-        } else {
-            res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
-        }
-    });
-
-    nodecg.mount(app);
-
     function startStopwatch(index) {
         if (index === 'all') {
             rieussecs.forEach(function(sw) { sw.start(); });
@@ -211,6 +160,64 @@ module.exports = function (nodecg) {
             nodecg.log.error('index "%d" sent to "setTime" is out of bounds', index);
             return false;
         }
+    }
+
+    if (nodecg.bundleConfig.enableRestApi) {
+        nodecg.log.warn('"enableRestApi" is true, the stopwatch REST API will be active.');
+        nodecg.log.warn('This API is COMPLETELY INSECURE. ONLY USE IT ON A SECURE LOCAL NETWORK.');
+
+        app.get('/sgdq15-layouts/stopwatches', function (req, res) {
+            res.json(stopwatches.value);
+        });
+
+        app.put('/sgdq15-layouts/stopwatch/:index/start', function (req, res) {
+            var result = startStopwatch(req.params.index);
+            if (result) {
+                res.status(200).json(result);
+            } else {
+                res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
+            }
+        });
+
+        app.put('/sgdq15-layouts/stopwatch/:index/pause', function (req, res) {
+            var result = pauseStopwatch(req.params.index);
+            if (result) {
+                res.status(200).json(result);
+            } else {
+                res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
+            }
+        });
+
+        app.put('/sgdq15-layouts/stopwatch/:index/finish', function (req, res) {
+            var result = finishStopwatch(req.params.index);
+            if (result) {
+                res.status(200).json(result);
+            } else {
+                res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
+            }
+        });
+
+        app.put('/sgdq15-layouts/stopwatch/:index/reset', function (req, res) {
+            var result = resetStopwatch(req.params.index);
+            if (result) {
+                res.status(200).json(result);
+            } else {
+                res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
+            }
+        });
+
+        app.put('/sgdq15-layouts/stopwatch/:index/startfinish', function (req, res) {
+            var result = startFinishStopwatch(req.params.index);
+            if (result) {
+                res.status(200).json(result);
+            } else {
+                res.status(422).send('Invalid stopwatch index "' + req.params.index + '"');
+            }
+        });
+
+        nodecg.mount(app);
+    } else {
+        nodecg.log.info('"enableRestApi" is false, the stopwatch REST API will be unavailable');
     }
 };
 
