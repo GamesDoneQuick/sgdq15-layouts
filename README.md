@@ -25,7 +25,7 @@ $ npm install
 $ grunt watch
 ```
 
-Now, any changes made to the view Less files will trigger an automatic rebuild.
+Now, any changes made to the dashboard Less files will trigger an automatic rebuild.
 
 ## Timer REST API
 To integrate with the footpedal that [@TestRunnerSRL](https://github.com/TestRunnerSRL) built to enable the runners to start and stop the timer themselves, we created a questionable REST API. Ideally this would have been done directly through a serial or USB port, but there was no time. This REST API is **completely unsecured** and **anyone will be able to manipulate the timers**. As such, this bundle is **not safe to run on the public internet**. Only run it on a trusted secured local network.
