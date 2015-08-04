@@ -28,7 +28,23 @@ $ grunt watch
 Now, any changes made to the view Less files will trigger an automatic rebuild.
 
 ## Fonts
-TODO: Explain typekit font dependencies.
+sgdq15-layouts relies on the following [TypeKit](https://typekit.com/) fonts and weights:
+
+ - Tablet Gothic
+  - Light
+  - SemiBold
+  - Bold
+ - Tablet Gothic Condensed
+  - Bold
+ - Tablet Gothic Narrow
+  - SemiBold Oblique
+  - Bold
+ - Tablet Gothic Wide
+  - Bold
+ - Tablet Gothic Semi Condensed
+  - SemiBold Oblique
+
+If you wish to access agdq15-layouts from anything other than `localhost`, you will need to make your own TypeKit with these fonts and whitelist the appropriate addresses.
 
 ## License
 sgdq15-layouts is provided under the Apache v2 license, which is available to read in the [LICENSE][] file.
