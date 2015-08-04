@@ -27,6 +27,35 @@ $ grunt watch
 
 Now, any changes made to the view Less files will trigger an automatic rebuild.
 
+## Timer REST API
+To integrate with the footpedal that [@TestRunnerSRL](https://github.com/TestRunnerSRL) built to enable the runners to start and stop the timer themselves, we created a questionable REST API. Ideally this would have been done directly through a serial or USB port, but there was no time. This REST API is **completely unsecured** and **anyone will be able to manipulate the timers**. As such, this bundle is **not safe to run on the public internet**. Only run it on a trusted secured local network.
+
+### GET /sgdq15-layouts/stopwatches
+Returns a JSON array containing all 4 stopwatches.
+
+### PUT /sgdq15-layouts/stopwatch/:index/start
+Starts (or resumes, if paused/finished) one of the four stopwatches. Index is zero-based.
+If index is 'all', starts all stopwatches. Responds with the current status of the affected stopwatch(es).
+
+### PUT /sgdq15-layouts/stopwatch/:index/pause
+Pauses one of the four stopwatches. Index is zero-based.
+If index is 'all', pauses all stopwatches. Paused stopwatches have a gray background in the layouts.
+Responds with the current status of the affected stopwatch(es).
+
+### PUT /sgdq15-layouts/stopwatch/:index/finish
+Finishes one of the four stopwatches. Index is zero-based.
+If index is 'all', finishes all stopwatches. Finished stopwatches have a green background in the layouts.
+Responds with the current status of the affected stopwatch(es).
+
+### PUT /sgdq15-layouts/stopwatch/:index/reset
+Resets one of the four stopwatches to 00:00:00 and stops it. Index is zero-based.
+If index is 'all', resets all stopwatches. Responds with the current status of the affected stopwatch(es).
+
+### PUT /sgdq15-layouts/stopwatch/:index/startfinish
+If the stopwatch *is not* running, this starts it. If the stopwatch *is* running, this sets it to "finished".
+Index is zero-based. If index is 'all', resets all stopwatches. 
+Responds with the current status of the affected stopwatch(es).
+
 ## Fonts
 sgdq15-layouts relies on the following [TypeKit](https://typekit.com/) fonts and weights:
 
